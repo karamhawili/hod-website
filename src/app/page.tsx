@@ -18,7 +18,7 @@ async function getFeaturedProject() {
     tags: ["project"],
   });
 
-  return projects[0] as Project; // Return first project from array
+  return projects[0] as Project;
 }
 
 export default async function Home() {

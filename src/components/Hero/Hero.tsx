@@ -6,7 +6,7 @@ export default function Hero() {
     <section className={styles.hero}>
       <div className={styles.logoContainer}>
         <Image
-          src="/logo.svg" // You'll need to add your logo file
+          src="/logo.svg"
           alt="House of Design"
           width={448}
           height={196}
