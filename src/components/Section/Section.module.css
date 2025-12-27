@@ -1,0 +1,82 @@
+.section {
+  composes: animate-on-scroll section-fullheight from global;
+  background: var(--surface-white);
+}
+
+.section.gradient {
+  background: var(--surface-gradient);
+  box-shadow: 0 -10px 20px 0 rgba(0, 0, 0, 0.04);
+}
+
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4.5rem;
+}
+
+/* Header (Top text area) */
+.header {
+  composes: animate-fadeInUp animate-delay-200 from global;
+  max-width: 400px;
+  width: 100%;
+}
+
+.header.align-left {
+  text-align: left;
+  align-self: flex-start;
+}
+
+.header.align-center {
+  text-align: center;
+}
+
+.header.align-right {
+  text-align: right;
+  align-self: flex-end;
+}
+
+/* Title variant */
+.title {
+  font-family: var(--font-serif);
+  font-size: 2.5rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-black);
+}
+
+/* Description variant */
+.description {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+/* Content (Center dynamic area) */
+.content {
+  composes: animate-scaleIn animate-delay-400 from global;
+  width: 100%;
+  max-width: 900px;
+}
+
+/* Action (Bottom CTA) */
+.action {
+  composes: animate-fadeInUp animate-delay-600 from global;
+}
+
+@media (max-width: 768px) {
+  .container {
+    gap: 2rem;
+  }
+
+  .title {
+    font-size: 1.8rem;
+  }
+
+  .description {
+    font-size: 0.875rem;
+  }
+}
