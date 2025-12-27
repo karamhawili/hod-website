@@ -1,19 +1,22 @@
 .hero {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding-inline: var(--container-padding);
+  composes: section-fullheight from global;
   padding-block: 4.5rem;
-  gap: 4.5rem;
 }
 
 .logoContainer {
-  animation: fadeIn 1s ease-in-out;
   flex: 1;
   display: flex;
   align-items: center;
+  opacity: 0;
+  transform: scale(0.95);
+  animation: logoFadeIn 1s ease-in-out forwards;
+}
+
+@keyframes logoFadeIn {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .tagline {
@@ -24,25 +27,11 @@
   color: var(--color-gray-dark);
   text-align: center;
   opacity: 0;
-  animation: fadeInUp 1s ease-in-out 0.3s forwards;
+  transform: translateY(20px);
+  animation: taglineFadeInUp 1s ease-in-out 0.3s forwards;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
+@keyframes taglineFadeInUp {
   to {
     opacity: 1;
     transform: translateY(0);
@@ -50,10 +39,6 @@
 }
 
 @media (max-width: 768px) {
-  .hero {
-    gap: 2rem;
-  }
-
   .logoContainer {
     width: 260px;
   }

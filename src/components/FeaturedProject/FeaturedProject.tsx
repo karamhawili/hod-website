@@ -17,7 +17,7 @@ export default function FeaturedProject({ project }: FeaturedProjectProps) {
   return (
     <section
       ref={ref}
-      className={`${styles.section} ${isVisible ? styles.visible : ""}`}
+      className={`${styles.section} ${isVisible ? "visible" : ""}`}
     >
       <div className={styles.textContent}>
         <p className={styles.description}>
