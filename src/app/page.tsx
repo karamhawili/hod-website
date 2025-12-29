@@ -1,3 +1,4 @@
+import AboutSection from "@/components/AboutSection/AboutSection";
 import FeaturedProject from "@/components/FeaturedProject/FeaturedProject";
 import Hero from "@/components/Hero/Hero";
 import LatestProjects from "@/components/LatestProjects/LatestProjects";
@@ -50,6 +51,7 @@ export default async function Home() {
         <Hero />
         {featuredProject && <FeaturedProject project={featuredProject} />}
         {allProjects && <LatestProjects projects={allProjects} />}
+        <AboutSection />
       </main>
     </>
   );
