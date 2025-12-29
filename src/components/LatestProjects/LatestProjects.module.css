@@ -1,0 +1,122 @@
+.filterWrapper {
+  composes: animate-fadeInUp animate-delay-200 from global;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.filters {
+  display: flex;
+  gap: 3rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.filterButton {
+  font-family: var(--font-sans);
+  font-size: 1.3rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  color: var(--color-brown-dark);
+  background: none;
+  border: none;
+  padding-bottom: 0.5rem;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.filterButton::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--color-brown-dark);
+  transition: width 0.3s ease;
+}
+
+.filterButton:hover,
+.filterButton.active {
+  color: var(--color-black);
+}
+
+.filterButton.active::after {
+  width: 100%;
+}
+
+.projectWrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.projectImage {
+  width: 100%;
+  height: 460px;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.projectOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  background: rgba(255, 255, 255, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.projectTitle {
+  font-family: var(--font-serif);
+  font-size: 3rem;
+  font-weight: 500;
+  color: var(--color-brown-medium);
+  text-transform: uppercase;
+}
+
+.link {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 8px;
+  text-decoration-thickness: 1px;
+  color: var(--color-gray-dark);
+  transition:
+    opacity 0.3s ease,
+    text-underline-offset 0.3s ease;
+}
+
+.link:hover {
+  opacity: 0.8;
+  text-underline-offset: 10px;
+}
+
+@media (max-width: 768px) {
+  .filters {
+    gap: 1rem;
+  }
+
+  .filterButton {
+    font-size: 0.75rem;
+  }
+
+  .projectOverlay {
+    padding: 1.5rem;
+  }
+
+  .projectTitle {
+    font-size: 2rem;
+  }
+
+  .link {
+    font-size: 1.2rem;
+  }
+}
