@@ -25,9 +25,3 @@
   opacity: 0.8;
   text-underline-offset: 10px;
 }
-
-@media (max-width: 768px) {
-  .link {
-    font-size: 0.7rem;
-  }
-}
