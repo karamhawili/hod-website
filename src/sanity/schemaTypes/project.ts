@@ -37,5 +37,22 @@ export const project = defineType({
       rows: 3,
       validation: (rule) => rule.max(200),
     }),
+    defineField({
+      name: "category",
+      title: "Category",
+      type: "string",
+      options: {
+        list: [
+          { title: "Beirut", value: "Beirut" },
+          { title: "Dubai", value: "Dubai" },
+          { title: "Abu Dhabi", value: "Abu Dhabi" },
+          { title: "Cairo", value: "Cairo" },
+          { title: "Doha", value: "Doha" },
+          { title: "Riyadh", value: "Riyadh" },
+        ],
+        layout: "dropdown",
+      },
+      validation: (rule) => rule.required(),
+    }),
   ],
 });
