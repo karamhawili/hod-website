@@ -19,8 +19,12 @@
 /* Header (Top text area) */
 .header {
   composes: animate-fadeInUp animate-delay-200 from global;
-  max-width: 400px;
+  max-width: 900px;
   width: 100%;
+}
+
+.header.limitWidth {
+  max-width: 400px;
 }
 
 .header.align-left {
@@ -57,7 +61,7 @@
 
 /* Content (Center dynamic area) */
 .content {
-  composes: animate-scaleIn animate-delay-400 from global;
+  composes: animate-zoomOut animate-delay-400 from global;
   width: 100%;
   max-width: 900px;
 }

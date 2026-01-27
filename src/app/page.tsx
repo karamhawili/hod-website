@@ -1,6 +1,7 @@
 import AboutSection from "@/components/AboutSection/AboutSection";
 import FeaturedProject from "@/components/FeaturedProject/FeaturedProject";
 import Hero from "@/components/Hero/Hero";
+import InstagramGrid from "@/components/InstagramGrid/InstagramGrid";
 import LatestProjects from "@/components/LatestProjects/LatestProjects";
 import Navigation from "@/components/Navigation/Navigation";
 import { sanityFetch } from "@/sanity/lib/live";
@@ -52,6 +53,7 @@ export default async function Home() {
         {featuredProject && <FeaturedProject project={featuredProject} />}
         {allProjects && <LatestProjects projects={allProjects} />}
         <AboutSection />
+        <InstagramGrid />
       </main>
     </>
   );
