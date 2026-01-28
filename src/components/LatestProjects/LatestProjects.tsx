@@ -20,17 +20,17 @@ export default function LatestProjects({ projects }: LatestProjectsProps) {
   // Filter projects by location if active filter is set
   const filteredProjects = activeLocation
     ? projects.filter(
-        (p) => p.category?.toLowerCase() === activeLocation.toLowerCase()
+        (p) => p.category?.toLowerCase() === activeLocation.toLowerCase(),
       )
     : projects;
 
   // Get the most recent project to display
-  const featuredProject = filteredProjects[0];
+  const featuredProject = filteredProjects[1];
 
   return (
-    <Section background="white">
+    <Section background="white" animate={false}>
       <Section.Header>
-        <Section.Title>LATEST PROJECT</Section.Title>
+        <Section.Title>LATEST PROJECTS</Section.Title>
       </Section.Header>
 
       {/* Location Filter */}

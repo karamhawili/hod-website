@@ -8,22 +8,24 @@ interface SectionProps {
   children: ReactNode;
   background?: "white" | "gradient";
   className?: string;
+  animate?: boolean;
 }
 
 export default function Section({
   children,
   background = "white",
   className = "",
+  animate = true,
 }: SectionProps) {
   const { ref, isVisible } = useScrollAnimation(0.2);
 
   return (
     <section
-      ref={ref}
+      ref={animate ? ref : null}
       className={`
         ${styles.section} 
         ${background === "gradient" ? styles.gradient : ""} 
-        ${isVisible ? "visible" : ""}
+        ${animate ? (isVisible ? "visible" : "") : "visible"} 
         ${className}
       `.trim()}
     >
