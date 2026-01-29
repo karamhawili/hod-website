@@ -1,0 +1,107 @@
+.footer {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(147, 84, 47, 0.01) 0%,
+      rgba(147, 83, 47, 0.2) 100%
+    ),
+    #fff;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.logo {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  color: #333;
+  margin: 0;
+}
+
+.address,
+.contact {
+  font-style: normal;
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: #666;
+  line-height: 1.2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.phone,
+.email {
+  color: #666;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.phone:hover,
+.email:hover {
+  color: #333;
+}
+
+.mapButton {
+  display: inline-block;
+  padding: 0.5rem 2rem;
+  border: 2px solid #333;
+  color: #333;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.mapButton:hover {
+  background-color: #333;
+  color: #fff;
+}
+
+.social {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.social a {
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.social a:hover {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    padding: 3rem 1.5rem;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .mapButton {
+    padding: 0.75rem 2rem;
+    font-size: 0.8rem;
+  }
+}
