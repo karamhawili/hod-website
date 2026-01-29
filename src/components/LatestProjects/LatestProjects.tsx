@@ -72,7 +72,7 @@ export default function LatestProjects({ projects }: LatestProjectsProps) {
       )}
 
       <Section.Action>
-        <Link href="/projects" className={styles.link}>
+        <Link href="#" className={styles.link}>
           VIEW PORTFOLIO
         </Link>
       </Section.Action>

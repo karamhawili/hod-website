@@ -12,7 +12,7 @@ export default function Navigation() {
       <nav className={styles.nav}>
         <button
           className={styles.hamburger}
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => setIsOpen(false)}
           aria-label="Toggle menu"
         >
           <span className={styles.line}></span>

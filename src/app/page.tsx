@@ -1,9 +1,11 @@
 import AboutSection from "@/components/AboutSection/AboutSection";
 import FeaturedProject from "@/components/FeaturedProject/FeaturedProject";
+import Footer from "@/components/Footer/Footer";
 import Hero from "@/components/Hero/Hero";
 import InstagramGrid from "@/components/InstagramGrid/InstagramGrid";
 import LatestProjects from "@/components/LatestProjects/LatestProjects";
 import Navigation from "@/components/Navigation/Navigation";
+import Recognition from "@/components/Recognition/Recognition";
 import { sanityFetch } from "@/sanity/lib/live";
 import { Project } from "@/types/sanity";
 
@@ -54,7 +56,9 @@ export default async function Home() {
         {allProjects && <LatestProjects projects={allProjects} />}
         <AboutSection />
         <InstagramGrid />
+        <Recognition />
       </main>
+      <Footer />
     </>
   );
 }

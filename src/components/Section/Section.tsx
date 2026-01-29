@@ -9,6 +9,7 @@ interface SectionProps {
   background?: "white" | "gradient";
   className?: string;
   animate?: boolean;
+  shadow?: boolean;
 }
 
 export default function Section({
@@ -16,6 +17,7 @@ export default function Section({
   background = "white",
   className = "",
   animate = true,
+  shadow = false,
 }: SectionProps) {
   const { ref, isVisible } = useScrollAnimation(0.2);
 
@@ -24,6 +26,7 @@ export default function Section({
       ref={animate ? ref : null}
       className={`
         ${styles.section} 
+        ${shadow ? styles.shadow : ""}
         ${background === "gradient" ? styles.gradient : ""} 
         ${animate ? (isVisible ? "visible" : "") : "visible"} 
         ${className}

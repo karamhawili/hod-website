@@ -13,7 +13,7 @@ interface FeaturedProjectProps {
 
 export default function FeaturedProject({ project }: FeaturedProjectProps) {
   return (
-    <Section background="gradient">
+    <Section shadow background="gradient">
       <Section.Header>
         <Section.Description>
           House of Design is a leading design studio – shaping some of the
@@ -33,10 +33,7 @@ export default function FeaturedProject({ project }: FeaturedProjectProps) {
       </Section.Content>
 
       <Section.Action>
-        <Link
-          href={`/projects/${project.slug.current}`}
-          className={styles.link}
-        >
+        <Link href={`#`} className={styles.link}>
           VIEW PROJECT
         </Link>
       </Section.Action>

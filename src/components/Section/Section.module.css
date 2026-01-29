@@ -1,6 +1,9 @@
 .section {
   composes: animate-on-scroll section-fullheight from global;
   background: var(--surface-white);
+}
+
+.section.shadow {
   box-shadow: 0 -10px 20px 0 rgba(0, 0, 0, 0.04);
 }
 

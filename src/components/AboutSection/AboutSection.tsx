@@ -23,7 +23,7 @@ export default function AboutSection() {
         />
       </Section.Content>
       <Section.Action>
-        <Link href={`/about`} className={styles.link}>
+        <Link href={`#`} className={styles.link}>
           About Us
         </Link>
       </Section.Action>

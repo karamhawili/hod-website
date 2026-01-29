@@ -19,7 +19,7 @@ export default function InstagramGrid() {
             Treat yourself to an unforgettable break
           </p>
           <Link
-            href="https://instagram.com/hod.houseofdesign"
+            href="https://www.instagram.com/hod.houseofdesign/"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.handle}
