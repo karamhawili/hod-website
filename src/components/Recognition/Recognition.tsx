@@ -29,7 +29,7 @@ const pressItems: PressItem[] = [
     publication: "PRESS",
     title: "Design & Build (BUILD Magazine) Q2 2020",
     alt: "Bar seating with floral arrangements",
-    url: "https://www.build-review.com/issues/design-and-build-2021/37/?utm_source=",
+    url: "https://www.build-review.com/issues/design-and-build-2021/37/",
   },
   {
     id: "3",
@@ -45,7 +45,7 @@ const pressItems: PressItem[] = [
     publication: "PRESS",
     title: "Caterer Middle East / Hotel & Catering",
     alt: "Outdoor dining setup with city view",
-    url: "https://www.caterermiddleeast.com/outlets/addmind-group-invests-in-iris-dubai-with-retractable-roof-new-nightclub-and-pizza-bar?utm_source=chatgpt.com",
+    url: "https://www.caterermiddleeast.com/outlets/addmind-group-invests-in-iris-dubai-with-retractable-roof-new-nightclub-and-pizza-bar",
   },
 ];
 
@@ -53,17 +53,17 @@ const magazineFeatures = [
   {
     publication: "NOUN MAGAZINE",
     quote: "Énergie et créativité",
-    url: "https://www.scribd.com/doc/175579206/Suzy-Nasr-Noun-Magazine?utm_source=chatgpt.com",
+    url: "https://www.scribd.com/doc/175579206/Suzy-Nasr-Noun-Magazine",
   },
   {
     publication: "LOVE THAT DESIGN",
     title: "Online Design Directory",
-    url: "https://www.scribd.com/doc/175579206/Suzy-Nasr-Noun-Magazine?utm_source=chatgpt.com",
+    url: "https://www.scribd.com/doc/175579206/Suzy-Nasr-Noun-Magazine",
   },
   {
     publication: "ARCHITECTURAL DIGEST",
     title: "(International Edition)",
-    url: "https://www.scribd.com/doc/175579206/Suzy-Nasr-Noun-Magazine?utm_source=chatgpt.com",
+    url: "https://www.scribd.com/doc/175579206/Suzy-Nasr-Noun-Magazine",
   },
 ];
 
