@@ -1,0 +1,48 @@
+.wrapper {
+  padding-block: 2.5rem;
+}
+
+.logo {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 2rem;
+  max-height: 538;
+  position: relative;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 5% 10%;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.quote {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--color-gray-dark);
+  text-align: right;
+  margin: 0;
+  max-width: 300px;
+}
+
+.author {
+  font-family: var(--font-script);
+  font-size: 3.2rem;
+  color: var(--color-gray-dark);
+  margin-top: 0.5rem;
+}
