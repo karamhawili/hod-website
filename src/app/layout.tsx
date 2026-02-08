@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import {
   Cormorant_Garamond,
   Darker_Grotesque,
-  Alex_Brush,
+  Great_Vibes,
 } from "next/font/google";
 import "./globals.css";
 
@@ -20,10 +20,10 @@ const darkerGrotesque = Darker_Grotesque({
   display: "swap",
 });
 
-const alexBrush = Alex_Brush({
+const greatVibes = Great_Vibes({
   subsets: ["latin"],
   weight: ["400"],
-  variable: "--font-alex-brush",
+  variable: "--font-great-vibes",
   display: "swap",
 });
 
@@ -41,7 +41,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${darkerGrotesque.variable} ${alexBrush.variable}`}
+      className={`${cormorant.variable} ${darkerGrotesque.variable} ${greatVibes.variable}`}
     >
       <body>{children}</body>
     </html>
