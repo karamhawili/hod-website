@@ -32,7 +32,7 @@
 
 .quote {
   font-family: var(--font-serif);
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 500;
   color: var(--color-gray-dark);
   text-align: right;
@@ -42,7 +42,7 @@
 
 .author {
   font-family: var(--font-script);
-  font-size: 3.2rem;
+  font-size: 2.8rem;
   color: var(--color-gray-dark);
   margin-top: 0.5rem;
 }

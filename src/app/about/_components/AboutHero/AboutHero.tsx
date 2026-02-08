@@ -4,7 +4,7 @@ import styles from "./AboutHero.module.css";
 
 export default function AboutHero() {
   return (
-    <Section shadow background="white" className={styles.wrapper}>
+    <Section shadow background="gradient" className={styles.wrapper}>
       <div className={styles.logo}>
         <Image src="/logo.svg" alt="House of Design" width={200} height={88} />
       </div>
