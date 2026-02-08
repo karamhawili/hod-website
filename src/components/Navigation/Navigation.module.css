@@ -5,6 +5,9 @@
   width: 100%;
   padding: 2rem;
   z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .hamburger {
@@ -26,6 +29,27 @@
 
 .hamburger:hover .line {
   background: var(--color-brown-dark);
+}
+
+/* Home Icon - Right Side */
+.homeIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-black);
+  transition: all 0.3s ease;
+  padding: 0.5rem;
+}
+
+.homeIcon:hover {
+  color: var(--color-brown-dark);
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+.homeIcon svg {
+  width: 24px;
+  height: 24px;
 }
 
 /* Menu Overlay */
@@ -93,4 +117,15 @@
 .menuList a:hover {
   color: var(--color-brown-dark);
   opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .nav {
+    padding: 1.5rem;
+  }
+
+  .homeIcon svg {
+    width: 20px;
+    height: 20px;
+  }
 }
