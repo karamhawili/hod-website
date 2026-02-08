@@ -14,7 +14,8 @@
   justify-content: center;
   width: 100%;
   margin-top: 2rem;
-  max-height: 538;
+  height: auto;
+  max-height: 640px;
   position: relative;
 }
 
