@@ -7,7 +7,6 @@ export default function AboutWorkWithUs() {
     <Section shadow={false} background="white" className={styles.wrapper}>
       <div className={styles.colorBlock}></div>
       <div className={styles.columns}>
-        {/* add a 2 col layout */}
         <div className={styles.leftCol}>
           <div className={styles.textContent}>
             <Section.Header align="left">
@@ -20,7 +19,7 @@ export default function AboutWorkWithUs() {
           </div>
           <div className={styles.leftImage}>
             <Image
-              src="/about-image.png"
+              src="/about/wwu-left.png"
               alt="House of Design"
               width={460}
               height={660}
@@ -30,7 +29,7 @@ export default function AboutWorkWithUs() {
         <div className={styles.rightCol}>
           <div className={styles.rightImage}>
             <Image
-              src="/instagram-2.png"
+              src="/about/wwu-right.jpg"
               alt="House of Design"
               width={460}
               height={660}
@@ -40,10 +39,11 @@ export default function AboutWorkWithUs() {
       </div>
       <div className={styles.bottomImage}>
         <Image
-          src="/brand-image.png"
+          src="/about/wwu-bottom.jpg"
           alt="House of Design"
           width={460}
           height={660}
+          quality={100}
         />
       </div>
     </Section>
