@@ -54,6 +54,63 @@ export default function AboutFounder() {
           </Link>
         </div>
       </div>
+
+      {/* Children intro text */}
+      <p className={styles.childrenIntro}>
+        Above all, the founder is a mother of two beautiful children, who are
+        influenced by her journey in design.
+      </p>
+
+      {/* Daughter's sketches */}
+      <div className={styles.childrenWrapper}>
+        <h3 className={styles.childrenHeader}>
+          SKETCHES FROM THE FOUNDER&apos;S DAUGHTER
+        </h3>
+
+        <div className={styles.sketchesGrid}>
+          <Image
+            src="/about/sketch-01.jpg"
+            alt="Sketch by founder's daughter"
+            width={340}
+            height={240}
+            className={styles.sketchImage}
+          />
+          <Image
+            src="/about/sketch-02.jpg"
+            alt="Sketch by founder's daughter"
+            width={340}
+            height={240}
+            className={styles.sketchImage}
+          />
+          <Image
+            src="/about/sketch-03.jpg"
+            alt="Sketch by founder's daughter"
+            width={340}
+            height={240}
+            className={styles.sketchImage}
+          />
+        </div>
+
+        <div className={styles.signatureWrapper}>
+          <p>Kila Nasr</p>
+        </div>
+      </div>
+
+      {/* Son's quote */}
+      <div className={styles.childrenWrapper}>
+        <h3 className={styles.childrenHeader}>
+          QUOTE FROM THE FOUNDER&apos;S SON
+        </h3>
+
+        <blockquote className={styles.quote}>
+          &ldquo;Too much perfection is more unsettling than a broken
+          design.&ldquo;
+        </blockquote>
+
+        <div className={styles.signatureWrapper}>
+          <p>Jaden Nasr</p>
+        </div>
+      </div>
     </Section>
   );
 }
