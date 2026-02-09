@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Darker_Grotesque } from "next/font/google";
+import {
+  Cormorant_Garamond,
+  Darker_Grotesque,
+  Great_Vibes,
+} from "next/font/google";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -13,6 +17,13 @@ const darkerGrotesque = Darker_Grotesque({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800", "900"],
   variable: "--font-darker-grotesque",
+  display: "swap",
+});
+
+const greatVibes = Great_Vibes({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-great-vibes",
   display: "swap",
 });
 
@@ -30,7 +41,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${darkerGrotesque.variable}`}
+      className={`${cormorant.variable} ${darkerGrotesque.variable} ${greatVibes.variable}`}
     >
       <body>{children}</body>
     </html>

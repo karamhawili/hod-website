@@ -2,9 +2,15 @@ import Link from "next/link";
 import Image from "next/image";
 import styles from "./Footer.module.css";
 
-export default function Footer() {
+interface FooterProps {
+  showGradient?: boolean;
+}
+
+export default function Footer({ showGradient = true }: FooterProps) {
   return (
-    <footer className={styles.footer}>
+    <footer
+      className={`${styles.footer} ${showGradient ? styles.gradient : ""}`}
+    >
       <div className={styles.container}>
         <div className={styles.logo}>
           <Image

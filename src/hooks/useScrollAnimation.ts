@@ -17,7 +17,10 @@ export function useScrollAnimation(threshold = 0.1) {
           observer.unobserve(entry.target);
         }
       },
-      { threshold }
+      {
+        threshold,
+        rootMargin: "50px",
+      },
     );
 
     if (ref.current) {
