@@ -15,7 +15,7 @@ export default function About() {
         <AboutFounder />
         <AboutServices />
       </main>
-      <Footer />
+      <Footer showGradient={false} />
     </>
   );
 }
