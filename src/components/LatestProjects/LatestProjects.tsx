@@ -15,7 +15,9 @@ interface LatestProjectsProps {
 const locations = ["Beirut", "Dubai", "Abu Dhabi", "Cairo", "Doha", "Riyadh"];
 
 export default function LatestProjects({ projects }: LatestProjectsProps) {
-  const [activeLocation, setActiveLocation] = useState<string | null>(null);
+  const [activeLocation, setActiveLocation] = useState<string | null>(
+    locations[0],
+  );
 
   // Filter projects by location if active filter is set
   const filteredProjects = activeLocation
@@ -25,7 +27,8 @@ export default function LatestProjects({ projects }: LatestProjectsProps) {
     : projects;
 
   // Get the most recent project to display
-  const featuredProject = filteredProjects[1];
+  const featuredProject =
+    filteredProjects.length > 0 ? filteredProjects[0] : null;
 
   return (
     <Section background="white" animate={false}>
@@ -39,9 +42,9 @@ export default function LatestProjects({ projects }: LatestProjectsProps) {
           {locations.map((location) => (
             <button
               key={location}
-              // onClick={() =>
-              //   setActiveLocation(activeLocation === location ? null : location)
-              // }
+              onClick={() =>
+                setActiveLocation(activeLocation === location ? null : location)
+              }
               className={`${styles.filterButton} ${
                 activeLocation === location ? styles.active : ""
               }`}
