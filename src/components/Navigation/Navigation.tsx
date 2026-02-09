@@ -73,7 +73,7 @@ export default function Navigation() {
               </Link>
             </li>
             <li>
-              <Link href="/" onClick={() => setIsOpen(false)}>
+              <Link href="/projects" onClick={() => setIsOpen(false)}>
                 Projects
               </Link>
             </li>
