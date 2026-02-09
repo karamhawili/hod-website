@@ -73,7 +73,7 @@ export default function Navigation() {
               </Link>
             </li>
             <li>
-              <Link href="/projects" onClick={() => setIsOpen(false)}>
+              <Link href="/" onClick={() => setIsOpen(false)}>
                 Projects
               </Link>
             </li>
@@ -83,7 +83,7 @@ export default function Navigation() {
               </Link>
             </li>
             <li>
-              <Link href="/contact" onClick={() => setIsOpen(false)}>
+              <Link href="/" onClick={() => setIsOpen(false)}>
                 Contact
               </Link>
             </li>
