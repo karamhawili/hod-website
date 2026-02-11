@@ -9,12 +9,20 @@ import { Project } from "@/types/sanity";
 import styles from "./LatestProjects.module.css";
 
 interface LatestProjectsProps {
+  showLogo?: boolean;
+  showAction?: boolean;
+  hasMaxWidth?: boolean;
   projects: Project[];
 }
 
 const locations = ["Beirut", "Dubai", "Abu Dhabi", "Cairo", "Doha", "Riyadh"];
 
-export default function LatestProjects({ projects }: LatestProjectsProps) {
+export default function LatestProjects({
+  showLogo = false,
+  showAction = true,
+  hasMaxWidth = true,
+  projects,
+}: LatestProjectsProps) {
   const [activeLocation, setActiveLocation] = useState<string | null>(
     locations[0],
   );
@@ -31,7 +39,22 @@ export default function LatestProjects({ projects }: LatestProjectsProps) {
     filteredProjects.length > 0 ? filteredProjects[0] : null;
 
   return (
-    <Section background="white" animate={false}>
+    <Section
+      background="white"
+      animate={false}
+      className={showLogo ? styles.sectionWithLogo : ""}
+    >
+      {showLogo && (
+        <div className={styles.logo}>
+          <Image
+            src="/logo.svg"
+            alt="House of Design"
+            width={200}
+            height={88}
+          />
+        </div>
+      )}
+
       <Section.Header>
         <Section.Title>LATEST PROJECTS</Section.Title>
       </Section.Header>
@@ -57,7 +80,7 @@ export default function LatestProjects({ projects }: LatestProjectsProps) {
 
       {/* Featured Project Image */}
       {featuredProject && (
-        <Section.Content>
+        <Section.Content hasMaxWidth={hasMaxWidth}>
           <div className={styles.projectWrapper}>
             <Image
               src={urlFor(featuredProject.coverImage).url() || ""}
@@ -74,11 +97,13 @@ export default function LatestProjects({ projects }: LatestProjectsProps) {
         </Section.Content>
       )}
 
-      <Section.Action>
-        <Link href="#" className={styles.link}>
-          VIEW PORTFOLIO
-        </Link>
-      </Section.Action>
+      {showAction && (
+        <Section.Action>
+          <Link href="#" className={styles.link}>
+            VIEW PORTFOLIO
+          </Link>
+        </Section.Action>
+      )}
     </Section>
   );
 }
