@@ -19,4 +19,5 @@ export interface Project {
   coverImage: SanityImage;
   excerpt: string;
   category: string;
+  year: number;
 }

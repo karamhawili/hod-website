@@ -39,7 +39,7 @@ export const project = defineType({
     }),
     defineField({
       name: "category",
-      title: "Category",
+      title: "Location",
       type: "string",
       options: {
         list: [
@@ -53,6 +53,18 @@ export const project = defineType({
         layout: "dropdown",
       },
       validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: "year",
+      title: "Year Completed",
+      type: "number",
+      validation: (rule) =>
+        rule
+          .required()
+          .min(2000)
+          .max(new Date().getFullYear())
+          .integer()
+          .error("Please enter a valid year between 2000 and current year"),
     }),
   ],
 });
