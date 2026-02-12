@@ -70,6 +70,9 @@
 .content {
   composes: animate-zoomOut animate-delay-400 from global;
   width: 100%;
+}
+
+.content.maxWidth {
   max-width: 900px;
 }
 

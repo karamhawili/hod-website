@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Section from "@/components/Section";
@@ -9,26 +9,82 @@ import { Project } from "@/types/sanity";
 import styles from "./LatestProjects.module.css";
 
 interface LatestProjectsProps {
+  showLogo?: boolean;
+  showAction?: boolean;
+  hasMaxWidth?: boolean;
   projects: Project[];
 }
 
-const locations = ["Beirut", "Dubai", "Abu Dhabi", "Cairo", "Doha", "Riyadh"];
+export default function LatestProjects({
+  showLogo = false,
+  showAction = true,
+  hasMaxWidth = true,
+  projects,
+}: LatestProjectsProps) {
+  const sortedProjects = useMemo(
+    () => [...projects].sort((a, b) => b.year - a.year),
+    [projects],
+  );
 
-export default function LatestProjects({ projects }: LatestProjectsProps) {
-  const [activeLocation, setActiveLocation] = useState<string | null>(null);
+  const locations = useMemo(
+    () =>
+      sortedProjects.reduce<string[]>((acc, project) => {
+        const location = project.location?.trim();
+
+        if (!location) return acc;
+        if (
+          acc.some(
+            (existing) => existing.toLowerCase() === location.toLowerCase(),
+          )
+        )
+          return acc;
+
+        acc.push(location);
+        return acc;
+      }, []),
+    [sortedProjects],
+  );
+
+  const [activeLocation, setActiveLocation] = useState<string | null>(
+    locations[0] ?? null,
+  );
+
+  const selectedLocation =
+    activeLocation &&
+    locations.some(
+      (location) => location.toLowerCase() === activeLocation.toLowerCase(),
+    )
+      ? activeLocation
+      : (locations[0] ?? null);
 
   // Filter projects by location if active filter is set
-  const filteredProjects = activeLocation
-    ? projects.filter(
-        (p) => p.category?.toLowerCase() === activeLocation.toLowerCase(),
+  const filteredProjects = selectedLocation
+    ? sortedProjects.filter(
+        (p) => p.location?.toLowerCase() === selectedLocation.toLowerCase(),
       )
-    : projects;
+    : sortedProjects;
 
   // Get the most recent project to display
-  const featuredProject = filteredProjects[1];
+  const featuredProject =
+    filteredProjects.length > 0 ? filteredProjects[0] : null;
 
   return (
-    <Section background="white" animate={false}>
+    <Section
+      background="white"
+      animate={false}
+      className={showLogo ? styles.sectionWithLogo : ""}
+    >
+      {showLogo && (
+        <div className={styles.logo}>
+          <Image
+            src="/logo.svg"
+            alt="House of Design"
+            width={200}
+            height={88}
+          />
+        </div>
+      )}
+
       <Section.Header>
         <Section.Title>LATEST PROJECTS</Section.Title>
       </Section.Header>
@@ -39,11 +95,15 @@ export default function LatestProjects({ projects }: LatestProjectsProps) {
           {locations.map((location) => (
             <button
               key={location}
-              // onClick={() =>
-              //   setActiveLocation(activeLocation === location ? null : location)
-              // }
+              onClick={() => {
+                const isActive =
+                  selectedLocation?.toLowerCase() === location.toLowerCase();
+                setActiveLocation(isActive ? null : location);
+              }}
               className={`${styles.filterButton} ${
-                activeLocation === location ? styles.active : ""
+                selectedLocation?.toLowerCase() === location.toLowerCase()
+                  ? styles.active
+                  : ""
               }`}
             >
               {location}
@@ -54,7 +114,7 @@ export default function LatestProjects({ projects }: LatestProjectsProps) {
 
       {/* Featured Project Image */}
       {featuredProject && (
-        <Section.Content>
+        <Section.Content hasMaxWidth={hasMaxWidth}>
           <div className={styles.projectWrapper}>
             <Image
               src={urlFor(featuredProject.coverImage).url() || ""}
@@ -71,11 +131,13 @@ export default function LatestProjects({ projects }: LatestProjectsProps) {
         </Section.Content>
       )}
 
-      <Section.Action>
-        <Link href="#" className={styles.link}>
-          VIEW PORTFOLIO
-        </Link>
-      </Section.Action>
+      {showAction && (
+        <Section.Action>
+          <Link href="/portfolio" className={styles.link}>
+            VIEW PORTFOLIO
+          </Link>
+        </Section.Action>
+      )}
     </Section>
   );
 }
