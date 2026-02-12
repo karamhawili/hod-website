@@ -82,11 +82,6 @@ export default function Navigation() {
                 About
               </Link>
             </li>
-            <li>
-              <Link href="/" onClick={() => setIsOpen(false)}>
-                Contact
-              </Link>
-            </li>
           </ul>
         </div>
       </div>
