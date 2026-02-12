@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Section from "@/components/Section";
@@ -15,24 +15,54 @@ interface LatestProjectsProps {
   projects: Project[];
 }
 
-const locations = ["Beirut", "Dubai", "Abu Dhabi", "Cairo", "Doha", "Riyadh"];
-
 export default function LatestProjects({
   showLogo = false,
   showAction = true,
   hasMaxWidth = true,
   projects,
 }: LatestProjectsProps) {
-  const [activeLocation, setActiveLocation] = useState<string | null>(
-    locations[0],
+  const sortedProjects = useMemo(
+    () => [...projects].sort((a, b) => b.year - a.year),
+    [projects],
   );
 
+  const locations = useMemo(
+    () =>
+      sortedProjects.reduce<string[]>((acc, project) => {
+        const location = project.category?.trim();
+
+        if (!location) return acc;
+        if (
+          acc.some(
+            (existing) => existing.toLowerCase() === location.toLowerCase(),
+          )
+        )
+          return acc;
+
+        acc.push(location);
+        return acc;
+      }, []),
+    [sortedProjects],
+  );
+
+  const [activeLocation, setActiveLocation] = useState<string | null>(
+    locations[0] ?? null,
+  );
+
+  const selectedLocation =
+    activeLocation &&
+    locations.some(
+      (location) => location.toLowerCase() === activeLocation.toLowerCase(),
+    )
+      ? activeLocation
+      : (locations[0] ?? null);
+
   // Filter projects by location if active filter is set
-  const filteredProjects = activeLocation
-    ? projects.filter(
-        (p) => p.category?.toLowerCase() === activeLocation.toLowerCase(),
+  const filteredProjects = selectedLocation
+    ? sortedProjects.filter(
+        (p) => p.category?.toLowerCase() === selectedLocation.toLowerCase(),
       )
-    : projects;
+    : sortedProjects;
 
   // Get the most recent project to display
   const featuredProject =
@@ -65,11 +95,15 @@ export default function LatestProjects({
           {locations.map((location) => (
             <button
               key={location}
-              onClick={() =>
-                setActiveLocation(activeLocation === location ? null : location)
-              }
+              onClick={() => {
+                const isActive =
+                  selectedLocation?.toLowerCase() === location.toLowerCase();
+                setActiveLocation(isActive ? null : location);
+              }}
               className={`${styles.filterButton} ${
-                activeLocation === location ? styles.active : ""
+                selectedLocation?.toLowerCase() === location.toLowerCase()
+                  ? styles.active
+                  : ""
               }`}
             >
               {location}
@@ -99,7 +133,7 @@ export default function LatestProjects({
 
       {showAction && (
         <Section.Action>
-          <Link href="#" className={styles.link}>
+          <Link href="/portfolio" className={styles.link}>
             VIEW PORTFOLIO
           </Link>
         </Section.Action>
