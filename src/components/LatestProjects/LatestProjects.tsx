@@ -29,7 +29,7 @@ export default function LatestProjects({
   const locations = useMemo(
     () =>
       sortedProjects.reduce<string[]>((acc, project) => {
-        const location = project.category?.trim();
+        const location = project.location?.trim();
 
         if (!location) return acc;
         if (
@@ -60,7 +60,7 @@ export default function LatestProjects({
   // Filter projects by location if active filter is set
   const filteredProjects = selectedLocation
     ? sortedProjects.filter(
-        (p) => p.category?.toLowerCase() === selectedLocation.toLowerCase(),
+        (p) => p.location?.toLowerCase() === selectedLocation.toLowerCase(),
       )
     : sortedProjects;
 
