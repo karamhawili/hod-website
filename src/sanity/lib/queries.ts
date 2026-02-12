@@ -10,7 +10,12 @@ export async function getFeaturedProject(): Promise<Project | null> {
         slug,
         coverImage,
         excerpt,
-        category,
+        "location": coalesce(location, category),
+        categories[]->{
+          _id,
+          title,
+          "slug": slug.current
+        },
         year,
         featured,
         overlayTextColor
@@ -31,7 +36,12 @@ export async function getAllProjects(): Promise<Project[]> {
         slug,
         coverImage,
         excerpt,
-        category,
+        "location": coalesce(location, category),
+        categories[]->{
+          _id,
+          title,
+          "slug": slug.current
+        },
         year,
         featured,
         overlayTextColor
@@ -52,7 +62,12 @@ export async function getFeaturedProjects(): Promise<Project[]> {
         slug,
         coverImage,
         excerpt,
-        category,
+        "location": coalesce(location, category),
+        categories[]->{
+          _id,
+          title,
+          "slug": slug.current
+        },
         year,
         featured,
         overlayTextColor

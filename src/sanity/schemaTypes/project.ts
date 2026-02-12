@@ -38,7 +38,7 @@ export const project = defineType({
       validation: (rule) => rule.max(200),
     }),
     defineField({
-      name: "category",
+      name: "location",
       title: "Location",
       type: "string",
       options: {
@@ -53,6 +53,18 @@ export const project = defineType({
         layout: "dropdown",
       },
       validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: "categories",
+      title: "Categories",
+      type: "array",
+      of: [
+        {
+          type: "reference",
+          to: [{ type: "category" }],
+        },
+      ],
+      validation: (rule) => rule.required().min(1),
     }),
     defineField({
       name: "year",

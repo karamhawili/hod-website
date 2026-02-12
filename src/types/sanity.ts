@@ -12,13 +12,20 @@ export interface SanityImage {
   };
 }
 
+export interface Category {
+  _id: string;
+  title: string;
+  slug: string;
+}
+
 export interface Project {
   _id: string;
   title: string;
   slug: { current: string };
   coverImage: SanityImage;
   excerpt: string;
-  category: string;
+  location: string;
+  categories: Category[];
   year: number;
   featured?: boolean;
   overlayTextColor?: "white" | "dark";
