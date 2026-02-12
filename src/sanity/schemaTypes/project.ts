@@ -66,5 +66,26 @@ export const project = defineType({
           .integer()
           .error("Please enter a valid year between 2000 and current year"),
     }),
+    defineField({
+      name: "featured",
+      title: "Featured Project",
+      type: "boolean",
+      description:
+        "Mark this project as featured to highlight it on the homepage",
+      initialValue: false,
+    }),
+    defineField({
+      name: "overlayTextColor",
+      title: "Overlay Text Color",
+      type: "string",
+      description: "Choose text color based on image brightness",
+      options: {
+        list: [
+          { title: "White (for dark images)", value: "white" },
+          { title: "Dark Brown (for light images)", value: "dark" },
+        ],
+      },
+      initialValue: "white",
+    }),
   ],
 });

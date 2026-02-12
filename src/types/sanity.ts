@@ -20,4 +20,6 @@ export interface Project {
   excerpt: string;
   category: string;
   year: number;
+  featured?: boolean;
+  overlayTextColor?: "white" | "dark";
 }

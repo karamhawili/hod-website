@@ -1,37 +1,65 @@
 import { sanityFetch } from "@/sanity/lib/live";
 import { Project } from "@/types/sanity";
 
-export async function getFeaturedProject() {
-  const { data: projects } = await sanityFetch({
+export async function getFeaturedProject(): Promise<Project | null> {
+  const result = await sanityFetch({
     query: `
-      *[_type == "project"] | order(_createdAt desc) [0] {
+      *[_type == "project" && featured == true] | order(_createdAt desc) [0] {
         _id,
         title,
         slug,
         coverImage,
         excerpt,
-        category
+        category,
+        year,
+        featured,
+        overlayTextColor
       }
     `,
     tags: ["project"],
   });
 
-  return projects[0] as Project;
+  return result.data as Project | null;
 }
 
-export async function getAllProjects() {
-  const { data: projects } = await sanityFetch({
+export async function getAllProjects(): Promise<Project[]> {
+  const result = await sanityFetch({
     query: `
       *[_type == "project"] | order(_createdAt desc) {
         _id,
         title,
         slug,
         coverImage,
-        category
+        excerpt,
+        category,
+        year,
+        featured,
+        overlayTextColor
       }
     `,
     tags: ["project"],
   });
 
-  return projects as Project[];
+  return result.data as Project[];
+}
+
+export async function getFeaturedProjects(): Promise<Project[]> {
+  const result = await sanityFetch({
+    query: `
+      *[_type == "project" && featured == true] | order(_createdAt desc) {
+        _id,
+        title,
+        slug,
+        coverImage,
+        excerpt,
+        category,
+        year,
+        featured,
+        overlayTextColor
+      }
+    `,
+    tags: ["project"],
+  });
+
+  return result.data as Project[];
 }
