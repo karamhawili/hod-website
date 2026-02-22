@@ -1,4 +1,5 @@
 import { defineField, defineType } from "sanity";
+import { ImageIcon } from "@sanity/icons";
 
 export const project = defineType({
   name: "project",
@@ -106,4 +107,18 @@ export const project = defineType({
       initialValue: "white",
     }),
   ],
+  preview: {
+    select: {
+      title: "title",
+      slug: "slug.current",
+      media: "coverImage",
+    },
+    prepare({ title, slug, media }) {
+      return {
+        title,
+        subtitle: slug ? `/${slug}` : "No slug",
+        media: media || ImageIcon,
+      };
+    },
+  },
 });
