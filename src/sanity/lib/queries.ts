@@ -23,7 +23,7 @@ export async function getFeaturedProject(): Promise<Project | null> {
           _id,
           title,
           "slug": slug.current,
-          color
+          "color": color.hex
         },
         year,
         featured,
@@ -58,7 +58,7 @@ export async function getAllProjects(): Promise<Project[]> {
           _id,
           title,
           "slug": slug.current,
-          color
+          "color": color.hex
         },
         year,
         featured,
@@ -93,7 +93,7 @@ export async function getFeaturedProjects(): Promise<Project[]> {
           _id,
           title,
           "slug": slug.current,
-          color
+          "color": color.hex
         },
         year,
         featured,

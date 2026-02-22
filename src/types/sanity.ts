@@ -16,7 +16,7 @@ export interface Category {
   _id: string;
   title: string;
   slug: string;
-  color: SanityColor;
+  color: string;
 }
 
 export interface Project {
@@ -40,8 +40,3 @@ export interface HeroBlock {
 }
 
 export type PageBuilderBlock = HeroBlock;
-
-export interface SanityColor {
-  _type: "color";
-  hex: string;
-}
