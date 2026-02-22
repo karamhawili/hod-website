@@ -22,7 +22,8 @@ export async function getFeaturedProject(): Promise<Project | null> {
         categories[]->{
           _id,
           title,
-          "slug": slug.current
+          "slug": slug.current,
+          color
         },
         year,
         featured,
@@ -56,7 +57,8 @@ export async function getAllProjects(): Promise<Project[]> {
         categories[]->{
           _id,
           title,
-          "slug": slug.current
+          "slug": slug.current,
+          color
         },
         year,
         featured,
@@ -90,7 +92,8 @@ export async function getFeaturedProjects(): Promise<Project[]> {
         categories[]->{
           _id,
           title,
-          "slug": slug.current
+          "slug": slug.current,
+          color
         },
         year,
         featured,
