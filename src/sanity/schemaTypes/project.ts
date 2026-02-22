@@ -5,17 +5,25 @@ export const project = defineType({
   name: "project",
   title: "Project",
   type: "document",
+  groups: [
+    { name: "overview", title: "Overview", default: true },
+    { name: "content", title: "Page Content" },
+    { name: "metadata", title: "Metadata" },
+  ],
   fields: [
     defineField({
       name: "title",
       title: "Project Title",
       type: "string",
+      group: "overview",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "slug",
       title: "Slug",
       type: "slug",
+      group: "overview",
+      description: "Used in the URL. Auto-generated from the title.",
       options: {
         source: "title",
         maxLength: 96,
@@ -26,6 +34,8 @@ export const project = defineType({
       name: "coverImage",
       title: "Cover Image",
       type: "image",
+      group: "overview",
+      description: "Main image used in listings and preview cards.",
       options: {
         hotspot: true,
       },
@@ -35,12 +45,14 @@ export const project = defineType({
       name: "content",
       title: "Content",
       type: "pageBuilder",
+      group: "content",
       description: "Build the project page by stacking content blocks.",
     }),
     defineField({
       name: "excerpt",
       title: "Short Description",
       type: "text",
+      group: "overview",
       rows: 3,
       validation: (rule) => rule.max(200),
     }),
@@ -48,6 +60,7 @@ export const project = defineType({
       name: "location",
       title: "Location",
       type: "string",
+      group: "metadata",
       options: {
         list: [
           { title: "Beirut", value: "Beirut" },
@@ -65,6 +78,7 @@ export const project = defineType({
       name: "categories",
       title: "Categories",
       type: "array",
+      group: "metadata",
       of: [
         {
           type: "reference",
@@ -77,6 +91,7 @@ export const project = defineType({
       name: "year",
       title: "Year Completed",
       type: "number",
+      group: "metadata",
       validation: (rule) =>
         rule
           .required()
@@ -89,6 +104,7 @@ export const project = defineType({
       name: "featured",
       title: "Featured Project",
       type: "boolean",
+      group: "metadata",
       description:
         "Mark this project as featured to highlight it on the homepage",
       initialValue: false,
@@ -97,6 +113,7 @@ export const project = defineType({
       name: "overlayTextColor",
       title: "Overlay Text Color",
       type: "string",
+      group: "metadata",
       description: "Choose text color based on image brightness",
       options: {
         list: [
@@ -104,6 +121,7 @@ export const project = defineType({
           { title: "Dark Brown (for light images)", value: "dark" },
         ],
       },
+      hidden: ({ document }) => !document?.featured,
       initialValue: "white",
     }),
   ],
