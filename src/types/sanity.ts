@@ -23,6 +23,7 @@ export interface Project {
   title: string;
   slug: { current: string };
   coverImage: SanityImage;
+  content?: PageBuilderBlock[];
   excerpt: string;
   location: string;
   categories: Category[];
@@ -30,3 +31,11 @@ export interface Project {
   featured?: boolean;
   overlayTextColor?: "white" | "dark";
 }
+
+export interface HeroBlock {
+  _type: "heroBlock";
+  image: SanityImage;
+  alt: string;
+}
+
+export type PageBuilderBlock = HeroBlock;

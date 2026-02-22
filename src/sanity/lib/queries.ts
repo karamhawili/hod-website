@@ -9,6 +9,14 @@ export async function getFeaturedProject(): Promise<Project | null> {
         title,
         slug,
         coverImage,
+        content[]{
+          ...,
+          _type == "heroBlock" => {
+            _type,
+            image,
+            alt
+          }
+        },
         excerpt,
         "location": coalesce(location, category),
         categories[]->{
@@ -35,6 +43,14 @@ export async function getAllProjects(): Promise<Project[]> {
         title,
         slug,
         coverImage,
+        content[]{
+          ...,
+          _type == "heroBlock" => {
+            _type,
+            image,
+            alt
+          }
+        },
         excerpt,
         "location": coalesce(location, category),
         categories[]->{
@@ -61,6 +77,14 @@ export async function getFeaturedProjects(): Promise<Project[]> {
         title,
         slug,
         coverImage,
+        content[]{
+          ...,
+          _type == "heroBlock" => {
+            _type,
+            image,
+            alt
+          }
+        },
         excerpt,
         "location": coalesce(location, category),
         categories[]->{

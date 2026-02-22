@@ -31,6 +31,12 @@ export const project = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: "content",
+      title: "Content",
+      type: "pageBuilder",
+      description: "Build the project page by stacking content blocks.",
+    }),
+    defineField({
       name: "excerpt",
       title: "Short Description",
       type: "text",
