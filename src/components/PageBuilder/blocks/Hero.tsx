@@ -16,7 +16,7 @@ export default function Hero({ image, alt }: HeroProps) {
         alt={alt}
         fill
         priority
-        quality={95}
+        quality={100}
         className={styles.image}
       />
     </section>
