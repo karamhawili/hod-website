@@ -40,4 +40,14 @@ export interface HeroBlock {
   alt: string;
 }
 
-export type PageBuilderBlock = HeroBlock;
+export interface ImageDetailsBlock {
+  _key?: string;
+  _type: "imageDetailsBlock";
+  image: SanityImage;
+  imageAlt: string;
+  title: string;
+  subtitle?: string;
+  description: string;
+}
+
+export type PageBuilderBlock = HeroBlock | ImageDetailsBlock;

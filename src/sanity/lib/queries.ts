@@ -14,6 +14,15 @@ const PROJECT_FIELDS = `
       _type,
       image,
       alt
+    },
+    _type == "imageDetailsBlock" => {
+      _key,
+      _type,
+      image,
+      imageAlt,
+      title,
+      subtitle,
+      description
     }
   },
   excerpt,

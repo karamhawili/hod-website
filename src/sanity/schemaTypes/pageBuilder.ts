@@ -8,5 +8,8 @@ export const pageBuilder = defineType({
     defineArrayMember({
       type: "heroBlock",
     }),
+    defineArrayMember({
+      type: "imageDetailsBlock",
+    }),
   ],
 });

@@ -1,5 +1,6 @@
 import { Project } from "@/types/sanity";
 import Hero from "./blocks/Hero";
+import ImageDetails from "./blocks/ImageDetails";
 
 type PageBuilderProps = {
   content: NonNullable<Project["content"]>;
@@ -18,6 +19,8 @@ export default function PageBuilder({ content }: PageBuilderProps) {
         switch (block._type) {
           case "heroBlock":
             return <Hero key={key} {...block} />;
+          case "imageDetailsBlock":
+            return <ImageDetails key={key} {...block} />;
           default:
             return (
               <div key={key}>
