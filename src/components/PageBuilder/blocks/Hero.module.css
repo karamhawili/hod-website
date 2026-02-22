@@ -1,0 +1,9 @@
+.hero {
+  position: relative;
+  width: 100%;
+  height: clamp(420px, 72vh, 920px);
+}
+
+.image {
+  object-fit: cover;
+}

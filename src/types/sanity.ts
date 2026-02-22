@@ -34,6 +34,7 @@ export interface Project {
 }
 
 export interface HeroBlock {
+  _key?: string;
   _type: "heroBlock";
   image: SanityImage;
   alt: string;
