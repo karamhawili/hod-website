@@ -24,12 +24,11 @@ export const heroBlock = defineType({
   preview: {
     select: {
       media: "image",
-      title: "alt",
     },
-    prepare({ media, title }) {
+    prepare({ media }) {
       return {
         media,
-        title: title || "Hero",
+        title: "Hero",
       };
     },
   },
