@@ -207,8 +207,24 @@ button {
   gap: 4.5rem;
 }
 
+.section-autoheight {
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--container-padding);
+  padding-block: 4.5rem;
+  gap: 4.5rem;
+}
+
 @media (max-width: 768px) {
   .section-fullheight {
+    gap: 2rem;
+    padding-block: 2rem;
+  }
+
+  .section-autoheight {
     gap: 2rem;
     padding-block: 2rem;
   }

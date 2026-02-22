@@ -1,6 +1,14 @@
 .section {
-  composes: animate-on-scroll section-fullheight from global;
+  composes: animate-on-scroll from global;
   background: var(--surface-white);
+}
+
+.fullHeight {
+  composes: section-fullheight from global;
+}
+
+.autoHeight {
+  composes: section-autoheight from global;
 }
 
 .section.shadow {

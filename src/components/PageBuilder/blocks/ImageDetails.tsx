@@ -17,7 +17,7 @@ export default function ImageDetails({
   description,
 }: ImageDetailsProps) {
   return (
-    <Section animate={false}>
+    <Section animate={false} height="auto">
       <Section.Content>
         <div className={styles.wrapper}>
           <div className={styles.imageWrap}>

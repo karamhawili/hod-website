@@ -10,6 +10,7 @@ interface SectionProps {
   className?: string;
   animate?: boolean;
   shadow?: boolean;
+  height?: "full" | "auto";
 }
 
 export default function Section({
@@ -18,6 +19,7 @@ export default function Section({
   className = "",
   animate = true,
   shadow = false,
+  height = "full",
 }: SectionProps) {
   const { ref, isVisible } = useScrollAnimation(0.2);
 
@@ -26,6 +28,7 @@ export default function Section({
       ref={animate ? ref : null}
       className={`
         ${styles.section} 
+        ${height === "full" ? styles.fullHeight : styles.autoHeight}
         ${shadow ? styles.shadow : ""}
         ${background === "gradient" ? styles.gradient : ""} 
         ${animate ? (isVisible ? "visible" : "") : "visible"} 
