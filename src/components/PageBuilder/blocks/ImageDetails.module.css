@@ -3,7 +3,7 @@
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: clamp(1.25rem, 2.5vw, 2.5rem);
+  gap: clamp(2.5rem, 5vw, 5rem);
   align-items: center;
 }
 
@@ -27,6 +27,7 @@
 .title {
   font-family: var(--font-serif);
   font-size: clamp(1.45rem, 2.5vw, 2rem);
+  font-weight: 600;
   line-height: 1.12;
   color: var(--color-brown-dark);
   text-transform: uppercase;
@@ -34,7 +35,7 @@
 
 .subtitle {
   font-family: var(--font-sans);
-  font-size: 0.78rem;
+  font-size: 1rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: rgba(30, 10, 8, 0.72);
@@ -42,7 +43,7 @@
 
 .description {
   font-family: var(--font-sans);
-  font-size: 0.95rem;
+  font-size: 1rem;
   line-height: 1.45;
   color: rgba(30, 10, 8, 0.9);
 }
