@@ -7,6 +7,7 @@ const CATEGORY_COLORS = [
   "#B86D4B", // Terracotta
   "#7A7E58", // Olive
   "#5C6B73", // Slate
+  "#4BA3C7", // Beach Blue
   "#3A3A3A", // Charcoal
   "#E9E3D5", // Ivory
 ];
