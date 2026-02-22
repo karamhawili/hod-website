@@ -23,7 +23,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   return (
     <>
-      <Navigation />
+      <Navigation theme="light" />
       {project.content ? <PageBuilder content={project.content} /> : null}
       <Footer showGradient={false} />
     </>
