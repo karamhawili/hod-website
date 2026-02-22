@@ -128,13 +128,14 @@ export const project = defineType({
   preview: {
     select: {
       title: "title",
-      slug: "slug.current",
+      location: "location",
+      categoryTitle: "categories.0.title",
       media: "coverImage",
     },
-    prepare({ title, slug, media }) {
+    prepare({ title, location, categoryTitle, media }) {
       return {
         title,
-        subtitle: slug ? `/${slug}` : "No slug",
+        subtitle: `${location || "No location"} • ${categoryTitle || "No category"}`,
         media: media || ImageIcon,
       };
     },
