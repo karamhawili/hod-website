@@ -1,8 +1,8 @@
 import { defineField, defineType } from "sanity";
 
-export const compactLandscapeImageBlock = defineType({
-  name: "compactLandscapeImageBlock",
-  title: "Image Compact 16:9",
+export const imageBlock = defineType({
+  name: "imageBlock",
+  title: "Image",
   type: "object",
   fields: [
     defineField({
@@ -20,6 +20,21 @@ export const compactLandscapeImageBlock = defineType({
       type: "string",
       validation: (rule) => rule.required(),
     }),
+    defineField({
+      name: "variant",
+      title: "Variant",
+      type: "string",
+      options: {
+        list: [
+          { title: "Full 3:2", value: "fullLandscape" },
+          { title: "Compact 16:9", value: "compactLandscape" },
+          { title: "Half Square 1:1", value: "halfSquare" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "compactLandscape",
+      validation: (rule) => rule.required(),
+    }),
   ],
   preview: {
     select: {
@@ -28,7 +43,7 @@ export const compactLandscapeImageBlock = defineType({
     prepare({ media }) {
       return {
         media,
-        title: "Image Compact 16:9",
+        title: "Image",
       };
     },
   },

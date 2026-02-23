@@ -37,6 +37,20 @@ export const imageDetailsBlock = defineType({
       rows: 4,
       validation: (rule) => rule.required(),
     }),
+    defineField({
+      name: "layout",
+      title: "Layout",
+      type: "string",
+      options: {
+        list: [
+          { title: "Image Right", value: "imageRight" },
+          { title: "Image Left", value: "imageLeft" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "imageRight",
+      validation: (rule) => rule.required(),
+    }),
   ],
   preview: {
     select: {

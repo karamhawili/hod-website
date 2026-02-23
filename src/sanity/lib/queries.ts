@@ -22,34 +22,15 @@ const PROJECT_FIELDS = `
       imageAlt,
       title,
       subtitle,
-      description
+      description,
+      layout
     },
-    _type == "imageDetailsLeftBlock" => {
+    _type == "imageBlock" => {
       _key,
       _type,
       image,
-      imageAlt,
-      title,
-      subtitle,
-      description
-    },
-    _type == "fullLandscapeImageBlock" => {
-      _key,
-      _type,
-      image,
-      alt
-    },
-    _type == "compactLandscapeImageBlock" => {
-      _key,
-      _type,
-      image,
-      alt
-    },
-    _type == "halfSquareImageBlock" => {
-      _key,
-      _type,
-      image,
-      alt
+      alt,
+      variant
     },
     _type == "centeredTextBlock" => {
       _key,
@@ -57,15 +38,7 @@ const PROJECT_FIELDS = `
       title,
       description
     },
-    _type == "twinImagesBlock" => {
-      _key,
-      _type,
-      leftImage,
-      leftAlt,
-      rightImage,
-      rightAlt
-    },
-    _type == "offsetLandscapeSquareBlock" => {
+    _type == "imagePairBlock" => {
       _key,
       _type,
       leftImage,

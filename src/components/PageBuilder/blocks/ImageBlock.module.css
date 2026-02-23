@@ -1,0 +1,32 @@
+.fullLandscape {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+}
+
+.compactLandscape {
+  position: relative;
+  width: min(100%, 820px);
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.halfSquare {
+  position: relative;
+  width: 50%;
+  margin: 0 auto;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+}
+
+.image {
+  object-fit: cover;
+}
+
+@media (max-width: 900px) {
+  .halfSquare {
+    width: 100%;
+  }
+}

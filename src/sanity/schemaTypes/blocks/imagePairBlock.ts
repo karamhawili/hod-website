@@ -1,13 +1,13 @@
 import { defineField, defineType } from "sanity";
 
-export const offsetLandscapeSquareBlock = defineType({
-  name: "offsetLandscapeSquareBlock",
-  title: "Offset Landscape + Square",
+export const imagePairBlock = defineType({
+  name: "imagePairBlock",
+  title: "Twin Images",
   type: "object",
   fields: [
     defineField({
       name: "leftImage",
-      title: "Left Landscape Image",
+      title: "Left Image",
       type: "image",
       options: {
         hotspot: true,
@@ -22,7 +22,7 @@ export const offsetLandscapeSquareBlock = defineType({
     }),
     defineField({
       name: "rightImage",
-      title: "Right Square Image",
+      title: "Right Image",
       type: "image",
       options: {
         hotspot: true,
@@ -43,7 +43,7 @@ export const offsetLandscapeSquareBlock = defineType({
     prepare({ media }) {
       return {
         media,
-        title: "Offset Landscape + Square",
+        title: "Twin Images",
       };
     },
   },

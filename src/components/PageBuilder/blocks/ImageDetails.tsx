@@ -15,11 +15,16 @@ export default function ImageDetails({
   title,
   subtitle,
   description,
+  layout,
 }: ImageDetailsProps) {
+  const isImageLeft = layout === "imageLeft";
+
   return (
     <Section animate={false} height="auto">
       <Section.Content>
-        <div className={styles.wrapper}>
+        <div
+          className={`${styles.wrapper} ${isImageLeft ? styles.reverse : ""}`.trim()}
+        >
           <div className={styles.text}>
             {title ? <h2 className={styles.title}>{title}</h2> : null}
             {subtitle ? <p className={styles.subtitle}>{subtitle}</p> : null}
@@ -28,10 +33,11 @@ export default function ImageDetails({
 
           <div className={styles.imageWrap}>
             <Image
-              src={urlFor(image).url()}
+              src={urlFor(image).width(1200).auto("format").quality(80).url()}
               alt={imageAlt}
               fill
-              quality={90}
+              sizes="(max-width: 900px) 100vw, 40vw"
+              quality={80}
               className={styles.image}
             />
           </div>
