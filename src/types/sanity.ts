@@ -45,9 +45,74 @@ export interface ImageDetailsBlock {
   _type: "imageDetailsBlock";
   image: SanityImage;
   imageAlt: string;
-  title: string;
+  title?: string;
   subtitle?: string;
   description: string;
 }
 
-export type PageBuilderBlock = HeroBlock | ImageDetailsBlock;
+export interface ImageDetailsLeftBlock {
+  _key?: string;
+  _type: "imageDetailsLeftBlock";
+  image: SanityImage;
+  imageAlt: string;
+  title?: string;
+  subtitle?: string;
+  description: string;
+}
+
+export interface FullLandscapeImageBlock {
+  _key?: string;
+  _type: "fullLandscapeImageBlock";
+  image: SanityImage;
+  alt: string;
+}
+
+export interface CompactLandscapeImageBlock {
+  _key?: string;
+  _type: "compactLandscapeImageBlock";
+  image: SanityImage;
+  alt: string;
+}
+
+export interface HalfSquareImageBlock {
+  _key?: string;
+  _type: "halfSquareImageBlock";
+  image: SanityImage;
+  alt: string;
+}
+
+export interface CenteredTextBlock {
+  _key?: string;
+  _type: "centeredTextBlock";
+  title?: string;
+  description: string;
+}
+
+export interface TwinImagesBlock {
+  _key?: string;
+  _type: "twinImagesBlock";
+  leftImage: SanityImage;
+  leftAlt: string;
+  rightImage: SanityImage;
+  rightAlt: string;
+}
+
+export interface OffsetLandscapeSquareBlock {
+  _key?: string;
+  _type: "offsetLandscapeSquareBlock";
+  leftImage: SanityImage;
+  leftAlt: string;
+  rightImage: SanityImage;
+  rightAlt: string;
+}
+
+export type PageBuilderBlock =
+  | HeroBlock
+  | ImageDetailsBlock
+  | ImageDetailsLeftBlock
+  | FullLandscapeImageBlock
+  | CompactLandscapeImageBlock
+  | HalfSquareImageBlock
+  | CenteredTextBlock
+  | TwinImagesBlock
+  | OffsetLandscapeSquareBlock;

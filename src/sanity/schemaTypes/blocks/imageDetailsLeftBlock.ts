@@ -1,8 +1,8 @@
 import { defineField, defineType } from "sanity";
 
-export const imageDetailsBlock = defineType({
-  name: "imageDetailsBlock",
-  title: "Image Details",
+export const imageDetailsLeftBlock = defineType({
+  name: "imageDetailsLeftBlock",
+  title: "Image Details Left",
   type: "object",
   fields: [
     defineField({
@@ -45,7 +45,7 @@ export const imageDetailsBlock = defineType({
     prepare({ media }) {
       return {
         media,
-        title: "Image Details",
+        title: "Image Details Left",
       };
     },
   },

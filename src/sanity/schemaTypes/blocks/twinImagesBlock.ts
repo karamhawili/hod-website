@@ -1,13 +1,13 @@
 import { defineField, defineType } from "sanity";
 
-export const imageDetailsBlock = defineType({
-  name: "imageDetailsBlock",
-  title: "Image Details",
+export const twinImagesBlock = defineType({
+  name: "twinImagesBlock",
+  title: "Twin Images",
   type: "object",
   fields: [
     defineField({
-      name: "image",
-      title: "Image",
+      name: "leftImage",
+      title: "Left Image",
       type: "image",
       options: {
         hotspot: true,
@@ -15,37 +15,35 @@ export const imageDetailsBlock = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: "imageAlt",
-      title: "Image Alt Text",
+      name: "leftAlt",
+      title: "Left Alt Text",
       type: "string",
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: "title",
-      title: "Title",
-      type: "string",
+      name: "rightImage",
+      title: "Right Image",
+      type: "image",
+      options: {
+        hotspot: true,
+      },
+      validation: (rule) => rule.required(),
     }),
     defineField({
-      name: "subtitle",
-      title: "Subtitle",
+      name: "rightAlt",
+      title: "Right Alt Text",
       type: "string",
-    }),
-    defineField({
-      name: "description",
-      title: "Description",
-      type: "text",
-      rows: 4,
       validation: (rule) => rule.required(),
     }),
   ],
   preview: {
     select: {
-      media: "image",
+      media: "leftImage",
     },
     prepare({ media }) {
       return {
         media,
-        title: "Image Details",
+        title: "Twin Images",
       };
     },
   },
