@@ -12,6 +12,8 @@ interface FeaturedProjectProps {
 }
 
 export default function FeaturedProject({ project }: FeaturedProjectProps) {
+  const projectHref = `/project/${project.slug.current}`;
+
   return (
     <Section shadow background="gradient">
       <Section.Header>
@@ -22,18 +24,20 @@ export default function FeaturedProject({ project }: FeaturedProjectProps) {
       </Section.Header>
 
       <Section.Content>
-        <Image
-          src={urlFor(project.coverImage).url() || ""}
-          alt={project.title}
-          width={1034}
-          height={483}
-          quality={100}
-          className={styles.image}
-        />
+        <Link href={projectHref} aria-label={`View ${project.title} project`}>
+          <Image
+            src={urlFor(project.coverImage).url() || ""}
+            alt={project.title}
+            width={1034}
+            height={483}
+            quality={100}
+            className={styles.image}
+          />
+        </Link>
       </Section.Content>
 
       <Section.Action>
-        <Link href={`#`} className={styles.link}>
+        <Link href={projectHref} className={styles.link}>
           VIEW PROJECT
         </Link>
       </Section.Action>
