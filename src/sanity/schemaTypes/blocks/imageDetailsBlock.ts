@@ -41,14 +41,11 @@ export const imageDetailsBlock = defineType({
   preview: {
     select: {
       media: "image",
-      title: "title",
-      subtitle: "subtitle",
     },
-    prepare({ media, title, subtitle }) {
+    prepare({ media }) {
       return {
         media,
-        title: title || "Image Details",
-        subtitle,
+        title: "Image Details",
       };
     },
   },

@@ -19,14 +19,9 @@ export const centeredTextBlock = defineType({
     }),
   ],
   preview: {
-    select: {
-      title: "title",
-      subtitle: "description",
-    },
-    prepare({ title, subtitle }) {
+    prepare() {
       return {
-        title: title || "Centered Text",
-        subtitle,
+        title: "Centered Text",
       };
     },
   },
