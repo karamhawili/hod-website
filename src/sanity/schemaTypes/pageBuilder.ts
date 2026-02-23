@@ -12,25 +12,13 @@ export const pageBuilder = defineType({
       type: "imageDetailsBlock",
     }),
     defineArrayMember({
-      type: "imageDetailsLeftBlock",
-    }),
-    defineArrayMember({
-      type: "fullLandscapeImageBlock",
-    }),
-    defineArrayMember({
-      type: "compactLandscapeImageBlock",
-    }),
-    defineArrayMember({
-      type: "halfSquareImageBlock",
+      type: "imageBlock",
     }),
     defineArrayMember({
       type: "centeredTextBlock",
     }),
     defineArrayMember({
-      type: "twinImagesBlock",
-    }),
-    defineArrayMember({
-      type: "offsetLandscapeSquareBlock",
+      type: "imagePairBlock",
     }),
   ],
 });

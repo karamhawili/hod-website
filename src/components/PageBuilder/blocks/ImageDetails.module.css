@@ -7,6 +7,14 @@
   align-items: center;
 }
 
+.wrapper.reverse {
+  direction: rtl;
+}
+
+.wrapper.reverse .text {
+  direction: ltr;
+}
+
 .imageWrap {
   position: relative;
   width: 100%;

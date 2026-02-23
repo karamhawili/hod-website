@@ -2,39 +2,41 @@ import Image from "next/image";
 import Section from "@/components/Section";
 import { urlFor } from "@/sanity/lib/image";
 import { Project } from "@/types/sanity";
-import styles from "./TwinImages.module.css";
+import styles from "./ImagePairBlock.module.css";
 
-type TwinImagesProps = Extract<
+type ImagePairBlockProps = Extract<
   NonNullable<Project["content"]>[number],
-  { _type: "twinImagesBlock" }
+  { _type: "imagePairBlock" }
 >;
 
-export default function TwinImages({
+export default function ImagePairBlock({
   leftImage,
   leftAlt,
   rightImage,
   rightAlt,
-}: TwinImagesProps) {
+}: ImagePairBlockProps) {
   return (
     <Section animate={false} height="auto">
       <Section.Content>
-        <div className={styles.wrapper}>
-          <div className={styles.grid}>
-            <div className={styles.imageWrap}>
+        <div className={styles.twinWrapper}>
+          <div className={styles.twinGrid}>
+            <div className={styles.squareWrap}>
               <Image
-                src={urlFor(leftImage).url()}
+                src={urlFor(leftImage).width(900).auto("format").quality(80).url()}
                 alt={leftAlt}
                 fill
-                quality={95}
+                sizes="(max-width: 900px) 100vw, 450px"
+                quality={80}
                 className={styles.image}
               />
             </div>
-            <div className={styles.imageWrap}>
+            <div className={styles.squareWrap}>
               <Image
-                src={urlFor(rightImage).url()}
+                src={urlFor(rightImage).width(900).auto("format").quality(80).url()}
                 alt={rightAlt}
                 fill
-                quality={95}
+                sizes="(max-width: 900px) 100vw, 450px"
+                quality={80}
                 className={styles.image}
               />
             </div>
