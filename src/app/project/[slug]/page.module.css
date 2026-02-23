@@ -1,0 +1,77 @@
+.emptyState {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.emptyContent {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 520px;
+}
+
+.emptyTitle {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 3.4vw, 2.9rem);
+  line-height: 1.08;
+  text-transform: uppercase;
+  color: var(--color-brown-dark);
+}
+
+.emptyText {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.45;
+  color: rgba(30, 10, 8, 0.82);
+}
+
+.studioButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1.2rem;
+  border: 1px solid var(--color-brown-dark);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--color-brown-dark);
+  color: var(--color-white);
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+.studioButton:hover {
+  opacity: 80%;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.backLink {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(30, 10, 8, 0.75);
+  padding-bottom: 0.15rem;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.backLink:hover {
+  color: var(--color-brown-dark);
+  border-color: var(--color-brown-dark);
+}
