@@ -23,6 +23,55 @@ const PROJECT_FIELDS = `
       title,
       subtitle,
       description
+    },
+    _type == "imageDetailsLeftBlock" => {
+      _key,
+      _type,
+      image,
+      imageAlt,
+      title,
+      subtitle,
+      description
+    },
+    _type == "fullLandscapeImageBlock" => {
+      _key,
+      _type,
+      image,
+      alt
+    },
+    _type == "compactLandscapeImageBlock" => {
+      _key,
+      _type,
+      image,
+      alt
+    },
+    _type == "halfSquareImageBlock" => {
+      _key,
+      _type,
+      image,
+      alt
+    },
+    _type == "centeredTextBlock" => {
+      _key,
+      _type,
+      title,
+      description
+    },
+    _type == "twinImagesBlock" => {
+      _key,
+      _type,
+      leftImage,
+      leftAlt,
+      rightImage,
+      rightAlt
+    },
+    _type == "offsetLandscapeSquareBlock" => {
+      _key,
+      _type,
+      leftImage,
+      leftAlt,
+      rightImage,
+      rightAlt
     }
   },
   excerpt,

@@ -11,5 +11,26 @@ export const pageBuilder = defineType({
     defineArrayMember({
       type: "imageDetailsBlock",
     }),
+    defineArrayMember({
+      type: "imageDetailsLeftBlock",
+    }),
+    defineArrayMember({
+      type: "fullLandscapeImageBlock",
+    }),
+    defineArrayMember({
+      type: "compactLandscapeImageBlock",
+    }),
+    defineArrayMember({
+      type: "halfSquareImageBlock",
+    }),
+    defineArrayMember({
+      type: "centeredTextBlock",
+    }),
+    defineArrayMember({
+      type: "twinImagesBlock",
+    }),
+    defineArrayMember({
+      type: "offsetLandscapeSquareBlock",
+    }),
   ],
 });
