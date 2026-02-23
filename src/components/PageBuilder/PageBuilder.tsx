@@ -22,11 +22,7 @@ export default function PageBuilder({ content }: PageBuilderProps) {
           case "imageDetailsBlock":
             return <ImageDetails key={key} {...block} />;
           default:
-            return (
-              <div key={key}>
-                Block not found: {block._type}
-              </div>
-            );
+            return <div key={key}>Block not found.</div>;
         }
       })}
     </main>
