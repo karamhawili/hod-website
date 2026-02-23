@@ -16,6 +16,7 @@ export interface Category {
   _id: string;
   title: string;
   slug: string;
+  color: string;
 }
 
 export interface Project {
@@ -23,6 +24,7 @@ export interface Project {
   title: string;
   slug: { current: string };
   coverImage: SanityImage;
+  content?: PageBuilderBlock[];
   excerpt: string;
   location: string;
   categories: Category[];
@@ -30,3 +32,22 @@ export interface Project {
   featured?: boolean;
   overlayTextColor?: "white" | "dark";
 }
+
+export interface HeroBlock {
+  _key?: string;
+  _type: "heroBlock";
+  image: SanityImage;
+  alt: string;
+}
+
+export interface ImageDetailsBlock {
+  _key?: string;
+  _type: "imageDetailsBlock";
+  image: SanityImage;
+  imageAlt: string;
+  title: string;
+  subtitle?: string;
+  description: string;
+}
+
+export type PageBuilderBlock = HeroBlock | ImageDetailsBlock;

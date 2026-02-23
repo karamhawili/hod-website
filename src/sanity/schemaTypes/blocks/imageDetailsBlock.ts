@@ -1,0 +1,56 @@
+import { defineField, defineType } from "sanity";
+
+export const imageDetailsBlock = defineType({
+  name: "imageDetailsBlock",
+  title: "Image Details",
+  type: "object",
+  fields: [
+    defineField({
+      name: "image",
+      title: "Image",
+      type: "image",
+      options: {
+        hotspot: true,
+      },
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: "imageAlt",
+      title: "Image Alt Text",
+      type: "string",
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: "title",
+      title: "Title",
+      type: "string",
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: "subtitle",
+      title: "Subtitle",
+      type: "string",
+    }),
+    defineField({
+      name: "description",
+      title: "Description",
+      type: "text",
+      rows: 4,
+      validation: (rule) => rule.required(),
+    }),
+  ],
+  preview: {
+    select: {
+      media: "image",
+      title: "title",
+      subtitle: "subtitle",
+    },
+    prepare({ media, title, subtitle }) {
+      return {
+        media,
+        title: title || "Image Details",
+        subtitle,
+      };
+    },
+  },
+});

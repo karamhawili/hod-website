@@ -4,6 +4,7 @@ import {
   Darker_Grotesque,
   Great_Vibes,
 } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -44,6 +45,7 @@ export default function RootLayout({
       className={`${cormorant.variable} ${darkerGrotesque.variable} ${greatVibes.variable}`}
     >
       <body>{children}</body>
+      <Analytics />
     </html>
   );
 }

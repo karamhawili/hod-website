@@ -65,7 +65,7 @@ export default function ProjectsGrid({ projects }: ProjectsGridProps) {
   const sortedProjects = [...filteredProjects].sort((a, b) => b.year - a.year);
 
   return (
-    <Section background="gradient">
+    <Section background="gradient" animate={false}>
       <Section.Header>
         <Section.Title>Portfolio</Section.Title>
       </Section.Header>
@@ -92,7 +92,7 @@ export default function ProjectsGrid({ projects }: ProjectsGridProps) {
         <div className={styles.grid}>
           {sortedProjects.map((project, index) => (
             <Link
-              href={`#`}
+              href={`/project/${project.slug.current}`}
               key={project._id}
               className={`${styles.gridItem} animate-popIn animate-delay-${Math.min(index * 100, 1000)}`}
             >

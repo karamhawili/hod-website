@@ -5,14 +5,19 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import styles from "./Navigation.module.css";
 
-export default function Navigation() {
+interface NavigationProps {
+  theme?: "default" | "light";
+}
+
+export default function Navigation({ theme = "default" }: NavigationProps) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const isLight = theme === "light";
 
   return (
     <>
-      <nav className={styles.nav}>
+      <nav className={`${styles.nav} ${isLight ? styles.light : ""}`.trim()}>
         {/* Hamburger - Left */}
         <button
           className={styles.hamburger}
