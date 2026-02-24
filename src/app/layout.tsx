@@ -6,6 +6,7 @@ import {
 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
+import { SanityLive } from "@/sanity/lib/live";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -46,6 +47,7 @@ export default function RootLayout({
     >
       <body>{children}</body>
       <Analytics />
+      <SanityLive />
     </html>
   );
 }
