@@ -91,6 +91,10 @@
   text-transform: uppercase;
 }
 
+.formattedTitle {
+  text-transform: none;
+}
+
 .link {
   font-family: var(--font-serif);
   font-size: 1.5rem;

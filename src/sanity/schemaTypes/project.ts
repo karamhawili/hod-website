@@ -19,6 +19,28 @@ export const project = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: "formattedTitle",
+      title: "Formatted Project Title",
+      type: "array",
+      group: "overview",
+      description:
+        "Optional styled title for frontend display (supports bold and italic).",
+      of: [
+        {
+          type: "block",
+          styles: [{ title: "Normal", value: "normal" }],
+          lists: [],
+          marks: {
+            decorators: [
+              { title: "Bold", value: "strong" },
+              { title: "Italic", value: "em" },
+            ],
+            annotations: [],
+          },
+        },
+      ],
+    }),
+    defineField({
       name: "slug",
       title: "Slug",
       type: "slug",

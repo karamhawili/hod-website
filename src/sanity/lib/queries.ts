@@ -5,6 +5,7 @@ import { Project } from "@/types/sanity";
 const PROJECT_FIELDS = `
   _id,
   title,
+  formattedTitle,
   slug,
   coverImage,
   content[]{

@@ -6,6 +6,7 @@ import Link from "next/link";
 import Section from "@/components/Section";
 import { urlFor } from "@/sanity/lib/image";
 import { Project } from "@/types/sanity";
+import { renderProjectTitle } from "@/lib/renderProjectTitle";
 import styles from "./LatestProjects.module.css";
 
 interface LatestProjectsProps {
@@ -141,7 +142,18 @@ export default function LatestProjects({
               className={styles.projectImage}
             />
             <div className={styles.projectOverlay}>
-              <h3 className={styles.projectTitle}>{featuredProject.title}</h3>
+              <h3
+                className={`${styles.projectTitle} ${
+                  featuredProject.formattedTitle?.length
+                    ? styles.formattedTitle
+                    : ""
+                }`}
+              >
+                {renderProjectTitle(
+                  featuredProject.title,
+                  featuredProject.formattedTitle,
+                )}
+              </h3>
             </div>
           </div>
         </Section.Content>

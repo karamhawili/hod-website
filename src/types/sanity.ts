@@ -22,6 +22,7 @@ export interface Category {
 export interface Project {
   _id: string;
   title: string;
+  formattedTitle?: PortableTextBlock[];
   slug: { current: string };
   coverImage: SanityImage;
   content?: PageBuilderBlock[];
@@ -73,6 +74,18 @@ export interface ImagePairBlock {
   leftAlt: string;
   rightImage: SanityImage;
   rightAlt: string;
+}
+
+export interface PortableTextSpan {
+  _type: "span";
+  text: string;
+  marks?: string[];
+}
+
+export interface PortableTextBlock {
+  _type: "block";
+  _key?: string;
+  children?: PortableTextSpan[];
 }
 
 export type PageBuilderBlock =

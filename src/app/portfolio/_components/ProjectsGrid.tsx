@@ -6,6 +6,7 @@ import Link from "next/link";
 import Section from "@/components/Section";
 import { urlFor } from "@/sanity/lib/image";
 import { Project } from "@/types/sanity";
+import { renderProjectTitle } from "@/lib/renderProjectTitle";
 import styles from "./ProjectsGrid.module.css";
 
 interface ProjectsGridProps {
@@ -109,7 +110,13 @@ export default function ProjectsGrid({ projects }: ProjectsGridProps) {
                   className={`${styles.overlay} ${project.overlayTextColor === "dark" ? styles.darkText : styles.lightText}`}
                 >
                   <span className={styles.year}>{project.year}</span>
-                  <h3 className={styles.title}>{project.title}</h3>
+                  <h3
+                    className={`${styles.title} ${
+                      project.formattedTitle?.length ? styles.formattedTitle : ""
+                    }`}
+                  >
+                    {renderProjectTitle(project.title, project.formattedTitle)}
+                  </h3>
                   <span className={styles.location}>{project.location}</span>
                 </div>
               </div>
