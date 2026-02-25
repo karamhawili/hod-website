@@ -48,6 +48,16 @@ const PROJECT_FIELDS = `
       leftAlt,
       rightImage,
       rightAlt
+    },
+    _type == "mixedImagePairBlock" => {
+      _key,
+      _type,
+      landscapeImage,
+      landscapeAlt,
+      nonLandscapeImage,
+      nonLandscapeAlt,
+      nonLandscapeFormat,
+      landscapePosition
     }
   },
   excerpt,

@@ -78,6 +78,17 @@ export interface ImagePairBlock {
   rightAlt: string;
 }
 
+export interface MixedImagePairBlock {
+  _key?: string;
+  _type: "mixedImagePairBlock";
+  landscapeImage: SanityImage;
+  landscapeAlt: string;
+  nonLandscapeImage: SanityImage;
+  nonLandscapeAlt: string;
+  nonLandscapeFormat?: "square" | "portrait";
+  landscapePosition?: "left" | "right";
+}
+
 export interface PortableTextSpan {
   _type: "span";
   text: string;
@@ -95,4 +106,5 @@ export type PageBuilderBlock =
   | ImageDetailsBlock
   | ImageBlock
   | CenteredTextBlock
-  | ImagePairBlock;
+  | ImagePairBlock
+  | MixedImagePairBlock;

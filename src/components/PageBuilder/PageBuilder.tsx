@@ -4,6 +4,7 @@ import Hero from "./blocks/Hero";
 import ImageBlock from "./blocks/ImageBlock";
 import ImageDetails from "./blocks/ImageDetails";
 import ImagePairBlock from "./blocks/ImagePairBlock";
+import MixedImagePairBlock from "./blocks/MixedImagePairBlock";
 
 type PageBuilderProps = {
   content: NonNullable<Project["content"]>;
@@ -30,6 +31,8 @@ export default function PageBuilder({ content }: PageBuilderProps) {
             return <CenteredText key={key} {...block} />;
           case "imagePairBlock":
             return <ImagePairBlock key={key} {...block} />;
+          case "mixedImagePairBlock":
+            return <MixedImagePairBlock key={key} {...block} />;
           default:
             return <div key={key}>Block not found.</div>;
         }

@@ -20,5 +20,8 @@ export const pageBuilder = defineType({
     defineArrayMember({
       type: "imagePairBlock",
     }),
+    defineArrayMember({
+      type: "mixedImagePairBlock",
+    }),
   ],
 });
