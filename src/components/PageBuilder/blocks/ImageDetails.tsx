@@ -43,7 +43,7 @@ export default function ImageDetails({
               src={urlFor(image).width(1200).auto("format").quality(80).url()}
               alt={imageAlt}
               fill
-              sizes="(max-width: 900px) 100vw, 45vw"
+              sizes="(max-width: 900px) 100vw, 580px"
               quality={80}
               className={styles.image}
             />

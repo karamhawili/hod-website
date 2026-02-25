@@ -1,9 +1,9 @@
 .wrapper {
-  width: 84%;
+  width: min(100%, var(--content-wide));
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1.1fr;
-  gap: clamp(2.5rem, 5vw, 5rem);
+  gap: clamp(2rem, 4vw, 4rem);
   align-items: center;
 }
 
@@ -50,6 +50,7 @@
   line-height: 1.12;
   color: var(--color-brown-dark);
   text-transform: uppercase;
+  margin-bottom: 0.5rem;
 }
 
 .subtitle {

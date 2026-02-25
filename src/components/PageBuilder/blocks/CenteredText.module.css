@@ -14,15 +14,15 @@
 }
 
 .inner.full {
-  max-width: 900px;
+  max-width: var(--content-base);
 }
 
 .inner.twoThirds {
-  max-width: 760px;
+  max-width: var(--content-narrow);
 }
 
 .inner.half {
-  max-width: 560px;
+  max-width: var(--content-tight);
 }
 
 .title {

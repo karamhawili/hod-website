@@ -23,9 +23,9 @@ export default function ImageBlock({ image, alt, variant }: ImageBlockProps) {
 
   const sizes =
     variant === "compactLandscape"
-      ? "(max-width: 900px) 100vw, 820px"
+      ? "(max-width: 900px) 100vw, 900px"
       : variant === "halfSquare"
-        ? "(max-width: 900px) 100vw, 50vw"
+        ? "(max-width: 900px) 100vw, 560px"
         : "(max-width: 900px) 100vw, 1100px";
 
   return (
