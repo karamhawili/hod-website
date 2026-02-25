@@ -51,6 +51,21 @@ export const imageDetailsBlock = defineType({
       initialValue: "imageRight",
       validation: (rule) => rule.required(),
     }),
+    defineField({
+      name: "imageFormat",
+      title: "Image Format",
+      type: "string",
+      options: {
+        list: [
+          { title: "Square 1:1", value: "square" },
+          { title: "Portrait 3:4", value: "portrait" },
+          { title: "Landscape 4:3", value: "landscape" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "portrait",
+      validation: (rule) => rule.required(),
+    }),
   ],
   preview: {
     select: {

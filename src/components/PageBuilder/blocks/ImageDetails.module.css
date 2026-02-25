@@ -1,8 +1,8 @@
 .wrapper {
-  width: 80%;
+  width: 84%;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1.1fr;
   gap: clamp(2.5rem, 5vw, 5rem);
   align-items: center;
 }
@@ -18,8 +18,19 @@
 .imageWrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1;
   overflow: hidden;
+}
+
+.imageWrap.square {
+  aspect-ratio: 1 / 1;
+}
+
+.imageWrap.portrait {
+  aspect-ratio: 3 / 4;
+}
+
+.imageWrap.landscape {
+  aspect-ratio: 4 / 3;
 }
 
 .image {

@@ -16,8 +16,15 @@ export default function ImageDetails({
   subtitle,
   description,
   layout,
+  imageFormat,
 }: ImageDetailsProps) {
   const isImageLeft = layout === "imageLeft";
+  const imageFormatClass =
+    imageFormat === "square"
+      ? styles.square
+      : imageFormat === "landscape"
+        ? styles.landscape
+        : styles.portrait;
 
   return (
     <Section animate={false} height="auto">
@@ -31,12 +38,12 @@ export default function ImageDetails({
             <p className={styles.description}>{description}</p>
           </div>
 
-          <div className={styles.imageWrap}>
+          <div className={`${styles.imageWrap} ${imageFormatClass}`}>
             <Image
               src={urlFor(image).width(1200).auto("format").quality(80).url()}
               alt={imageAlt}
               fill
-              sizes="(max-width: 900px) 100vw, 40vw"
+              sizes="(max-width: 900px) 100vw, 45vw"
               quality={80}
               className={styles.image}
             />

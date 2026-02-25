@@ -50,6 +50,7 @@ export interface ImageDetailsBlock {
   subtitle?: string;
   description: string;
   layout: "imageRight" | "imageLeft";
+  imageFormat?: "square" | "portrait" | "landscape";
 }
 
 export interface ImageBlock {

@@ -24,7 +24,8 @@ const PROJECT_FIELDS = `
       title,
       subtitle,
       description,
-      layout
+      layout,
+      imageFormat
     },
     _type == "imageBlock" => {
       _key,
