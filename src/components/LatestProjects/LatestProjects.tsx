@@ -27,8 +27,10 @@ export default function LatestProjects({
   );
 
   const locations = useMemo(
-    () =>
-      sortedProjects.reduce<string[]>((acc, project) => {
+    () => {
+      const preferredOrder = ["beirut", "dubai", "abu dhabi", "doha"];
+
+      const uniqueLocations = sortedProjects.reduce<string[]>((acc, project) => {
         const location = project.location?.trim();
 
         if (!location) return acc;
@@ -41,7 +43,21 @@ export default function LatestProjects({
 
         acc.push(location);
         return acc;
-      }, []),
+      }, []);
+
+      return uniqueLocations.sort((a, b) => {
+        const aIndex = preferredOrder.indexOf(a.toLowerCase());
+        const bIndex = preferredOrder.indexOf(b.toLowerCase());
+        const aPreferred = aIndex !== -1;
+        const bPreferred = bIndex !== -1;
+
+        if (aPreferred && bPreferred) return aIndex - bIndex;
+        if (aPreferred) return -1;
+        if (bPreferred) return 1;
+
+        return a.localeCompare(b);
+      });
+    },
     [sortedProjects],
   );
 
