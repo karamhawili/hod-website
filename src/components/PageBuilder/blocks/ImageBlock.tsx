@@ -29,7 +29,7 @@ export default function ImageBlock({ image, alt, variant }: ImageBlockProps) {
         : "(max-width: 900px) 100vw, 1100px";
 
   return (
-    <Section animate={false} height="auto">
+    <Section animate={false} height="auto" className="section-autoheight-tight">
       <Section.Content hasMaxWidth={!usesFullWidth}>
         <div className={className}>
           <Image

@@ -20,7 +20,7 @@ export default function CenteredText({
         : styles.full;
 
   return (
-    <Section animate={false} height="auto">
+    <Section animate={false} height="auto" className="section-autoheight-tight">
       <Section.Content>
         <div className={styles.wrapper}>
           <div className={`${styles.inner} ${widthClass}`}>

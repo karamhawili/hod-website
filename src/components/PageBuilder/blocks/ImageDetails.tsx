@@ -27,7 +27,7 @@ export default function ImageDetails({
         : styles.portrait;
 
   return (
-    <Section animate={false} height="auto">
+    <Section animate={false} height="auto" className="section-autoheight-tight">
       <Section.Content>
         <div
           className={`${styles.wrapper} ${isImageLeft ? styles.reverse : ""}`.trim()}

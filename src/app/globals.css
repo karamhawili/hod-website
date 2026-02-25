@@ -33,13 +33,14 @@
   --content-base: 900px;
   --content-narrow: 760px;
   --content-tight: 560px;
-  --content-gutter: clamp(1rem, 3vw, 2rem);
+  --content-gutter: 2rem;
 }
 
 @media (max-width: 768px) {
   :root {
     --container-padding: 1rem;
     --section-padding: 3rem;
+    --content-gutter: 1.5rem;
   }
 }
 
@@ -225,6 +226,11 @@ button {
   gap: 4.5rem;
 }
 
+.section-autoheight-tight {
+  padding-block: 3.75rem;
+  gap: 3.75rem;
+}
+
 @media (max-width: 768px) {
   .section-fullheight {
     gap: 2rem;
@@ -234,5 +240,10 @@ button {
   .section-autoheight {
     gap: 2rem;
     padding-block: 2rem;
+  }
+
+  .section-autoheight-tight {
+    gap: 1.5rem;
+    padding-block: 1rem;
   }
 }

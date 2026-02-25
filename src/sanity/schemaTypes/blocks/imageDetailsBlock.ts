@@ -59,7 +59,7 @@ export const imageDetailsBlock = defineType({
         list: [
           { title: "Square 1:1", value: "square" },
           { title: "Portrait 3:4", value: "portrait" },
-          { title: "Landscape 4:3", value: "landscape" },
+          { title: "Landscape 16:9", value: "landscape" },
         ],
         layout: "radio",
       },
