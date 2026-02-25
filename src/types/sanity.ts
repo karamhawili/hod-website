@@ -66,6 +66,7 @@ export interface CenteredTextBlock {
   _type: "centeredTextBlock";
   title?: string;
   description: string;
+  width?: "full" | "twoThirds" | "half";
 }
 
 export interface ImagePairBlock {

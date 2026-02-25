@@ -38,7 +38,8 @@ const PROJECT_FIELDS = `
       _key,
       _type,
       title,
-      description
+      description,
+      width
     },
     _type == "imagePairBlock" => {
       _key,
