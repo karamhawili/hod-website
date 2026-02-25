@@ -37,25 +37,28 @@ export const centeredTextBlock = defineType({
   ],
   preview: {
     select: {
+      title: "title",
       description: "description",
       width: "width",
     },
-    prepare({ description, width }) {
+    prepare({ title, description, width }) {
       const snippet =
-        typeof description === "string" && description.length > 0
-          ? description.slice(0, 60) + (description.length > 60 ? "..." : "")
+        typeof title === "string" && title.length > 0
+          ? title.slice(0, 50) + (title.length > 50 ? "..." : "")
+          : typeof description === "string" && description.length > 0
+            ? description.slice(0, 50) + (description.length > 50 ? "..." : "")
           : "No text";
 
       const widthLabel =
         width === "twoThirds"
-          ? "2/3"
+          ? "2/3 Width"
           : width === "half"
-            ? "1/2"
-            : "Full";
+            ? "1/2 Width"
+            : "Full Width";
 
       return {
         title: "Centered Text",
-        subtitle: `${widthLabel} - ${snippet}`,
+        subtitle: `${widthLabel} | ${snippet}`,
         media: TextIcon,
       };
     },

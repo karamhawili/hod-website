@@ -70,11 +70,30 @@ export const imageDetailsBlock = defineType({
   preview: {
     select: {
       media: "image",
+      layout: "layout",
+      imageFormat: "imageFormat",
+      title: "title",
+      description: "description",
     },
-    prepare({ media }) {
+    prepare({ media, layout, imageFormat, title, description }) {
+      const layoutLabel = layout === "imageLeft" ? "Image Left" : "Image Right";
+      const formatLabel =
+        imageFormat === "landscape"
+          ? "Landscape 16:9"
+          : imageFormat === "square"
+            ? "Square 1:1"
+            : "Portrait 3:4";
+      const textSource =
+        typeof title === "string" && title.length > 0 ? title : description;
+      const textSnippet =
+        typeof textSource === "string" && textSource.length > 0
+          ? textSource.slice(0, 42) + (textSource.length > 42 ? "..." : "")
+          : "No text";
+
       return {
         media,
         title: "Image Details",
+        subtitle: `${layoutLabel} | ${formatLabel} | ${textSnippet}`,
       };
     },
   },

@@ -39,11 +39,26 @@ export const imageBlock = defineType({
   preview: {
     select: {
       media: "image",
+      variant: "variant",
+      alt: "alt",
     },
-    prepare({ media }) {
+    prepare({ media, variant, alt }) {
+      const variantLabel =
+        variant === "fullLandscape"
+          ? "Full 3:2"
+          : variant === "halfSquare"
+            ? "Half Square 1:1"
+            : "Compact 16:9";
+
+      const altSnippet =
+        typeof alt === "string" && alt.length > 0
+          ? alt.slice(0, 36) + (alt.length > 36 ? "..." : "")
+          : "No alt text";
+
       return {
         media,
         title: "Image",
+        subtitle: `${variantLabel} | ${altSnippet}`,
       };
     },
   },

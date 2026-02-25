@@ -39,11 +39,23 @@ export const imagePairBlock = defineType({
   preview: {
     select: {
       media: "leftImage",
+      leftAlt: "leftAlt",
+      rightAlt: "rightAlt",
     },
-    prepare({ media }) {
+    prepare({ media, leftAlt, rightAlt }) {
+      const leftSnippet =
+        typeof leftAlt === "string" && leftAlt.length > 0
+          ? leftAlt.slice(0, 24) + (leftAlt.length > 24 ? "..." : "")
+          : "No left alt";
+      const rightSnippet =
+        typeof rightAlt === "string" && rightAlt.length > 0
+          ? rightAlt.slice(0, 24) + (rightAlt.length > 24 ? "..." : "")
+          : "No right alt";
+
       return {
         media,
         title: "Twin Images",
+        subtitle: `2 images | L: ${leftSnippet} | R: ${rightSnippet}`,
       };
     },
   },
