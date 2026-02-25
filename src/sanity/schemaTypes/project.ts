@@ -136,14 +136,13 @@ export const project = defineType({
       title: "Overlay Text Color",
       type: "string",
       group: "metadata",
-      description: "Choose text color based on image brightness",
+      description: "Choose text color based on image brightness.",
       options: {
         list: [
           { title: "White (for dark images)", value: "white" },
           { title: "Dark Brown (for light images)", value: "dark" },
         ],
       },
-      hidden: ({ document }) => !document?.featured,
       initialValue: "white",
     }),
   ],
