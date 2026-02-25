@@ -26,7 +26,7 @@ export default function ImageBlock({ image, alt, variant }: ImageBlockProps) {
       ? "(max-width: 900px) 100vw, 820px"
       : variant === "halfSquare"
         ? "(max-width: 900px) 100vw, 50vw"
-        : "100vw";
+        : "(max-width: 900px) 100vw, 1100px";
 
   return (
     <Section animate={false} height="auto">
