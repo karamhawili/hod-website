@@ -87,6 +87,11 @@ export default function Navigation({ theme = "default" }: NavigationProps) {
                 About
               </Link>
             </li>
+            <li>
+              <Link href="/join-us" onClick={() => setIsOpen(false)}>
+                Join Us
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
