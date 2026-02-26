@@ -24,11 +24,18 @@ export const heroBlock = defineType({
   preview: {
     select: {
       media: "image",
+      alt: "alt",
     },
-    prepare({ media }) {
+    prepare({ media, alt }) {
+      const altSnippet =
+        typeof alt === "string" && alt.length > 0
+          ? alt.slice(0, 40) + (alt.length > 40 ? "..." : "")
+          : "No alt text";
+
       return {
         media,
         title: "Hero",
+        subtitle: `Image block | ${altSnippet}`,
       };
     },
   },

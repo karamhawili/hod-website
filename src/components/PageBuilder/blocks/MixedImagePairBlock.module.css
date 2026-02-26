@@ -1,0 +1,54 @@
+.wrapper {
+  width: min(100%, var(--content-wide));
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1.7fr 0.9fr;
+  gap: var(--content-gutter);
+  align-items: start;
+}
+
+.grid.landscapeRight {
+  grid-template-columns: 0.9fr 1.7fr;
+}
+
+.landscapeWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  margin-top: 4rem;
+}
+
+.nonLandscapeWrap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.nonLandscapeWrap.square {
+  aspect-ratio: 1 / 1;
+}
+
+.nonLandscapeWrap.portrait {
+  aspect-ratio: 3 / 4;
+}
+
+.image {
+  object-fit: cover;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .landscapeWrap {
+    margin-top: 0;
+  }
+}

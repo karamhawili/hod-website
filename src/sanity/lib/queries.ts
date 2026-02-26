@@ -5,6 +5,7 @@ import { Project } from "@/types/sanity";
 const PROJECT_FIELDS = `
   _id,
   title,
+  formattedTitle,
   slug,
   coverImage,
   content[]{
@@ -23,7 +24,8 @@ const PROJECT_FIELDS = `
       title,
       subtitle,
       description,
-      layout
+      layout,
+      imageFormat
     },
     _type == "imageBlock" => {
       _key,
@@ -36,7 +38,8 @@ const PROJECT_FIELDS = `
       _key,
       _type,
       title,
-      description
+      description,
+      width
     },
     _type == "imagePairBlock" => {
       _key,
@@ -45,6 +48,16 @@ const PROJECT_FIELDS = `
       leftAlt,
       rightImage,
       rightAlt
+    },
+    _type == "mixedImagePairBlock" => {
+      _key,
+      _type,
+      landscapeImage,
+      landscapeAlt,
+      nonLandscapeImage,
+      nonLandscapeAlt,
+      nonLandscapeFormat,
+      landscapePosition
     }
   },
   excerpt,

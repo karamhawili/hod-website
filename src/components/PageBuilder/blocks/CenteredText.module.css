@@ -7,16 +7,27 @@
 
 .inner {
   width: 100%;
-  max-width: 760px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
+.inner.full {
+  max-width: var(--content-base);
+}
+
+.inner.twoThirds {
+  max-width: var(--content-narrow);
+}
+
+.inner.half {
+  max-width: var(--content-tight);
+}
+
 .title {
   font-family: var(--font-serif);
-  font-size: clamp(1.45rem, 2.5vw, 2rem);
+  font-size: clamp(1.6rem, 2.8vw, 2.3rem);
   font-weight: 600;
   line-height: 1.12;
   color: var(--color-brown-dark);
@@ -25,7 +36,15 @@
 
 .description {
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: 1.2rem;
   line-height: 1.45;
   color: rgba(30, 10, 8, 0.9);
+}
+
+@media (max-width: 900px) {
+  .inner.full,
+  .inner.twoThirds,
+  .inner.half {
+    max-width: 100%;
+  }
 }

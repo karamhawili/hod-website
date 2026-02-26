@@ -1,13 +1,14 @@
 .fullLandscape {
   position: relative;
-  width: 100%;
-  aspect-ratio: 3 / 2;
+  width: min(100%, var(--content-wide));
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
 }
 
 .compactLandscape {
   position: relative;
-  width: min(100%, 820px);
+  width: min(100%, var(--content-base));
   margin: 0 auto;
   aspect-ratio: 16 / 9;
   overflow: hidden;
@@ -15,7 +16,7 @@
 
 .halfSquare {
   position: relative;
-  width: 50%;
+  width: min(100%, var(--content-tight));
   margin: 0 auto;
   aspect-ratio: 1 / 1;
   overflow: hidden;

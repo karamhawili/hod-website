@@ -23,13 +23,13 @@ export default function ImageBlock({ image, alt, variant }: ImageBlockProps) {
 
   const sizes =
     variant === "compactLandscape"
-      ? "(max-width: 900px) 100vw, 820px"
+      ? "(max-width: 900px) 100vw, 900px"
       : variant === "halfSquare"
-        ? "(max-width: 900px) 100vw, 50vw"
-        : "100vw";
+        ? "(max-width: 900px) 100vw, 560px"
+        : "(max-width: 900px) 100vw, 1100px";
 
   return (
-    <Section animate={false} height="auto">
+    <Section animate={false} height="auto" className="section-autoheight-tight">
       <Section.Content hasMaxWidth={!usesFullWidth}>
         <div className={className}>
           <Image

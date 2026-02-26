@@ -16,7 +16,7 @@ export default function ImagePairBlock({
   rightAlt,
 }: ImagePairBlockProps) {
   return (
-    <Section animate={false} height="auto">
+    <Section animate={false} height="auto" className="section-autoheight-tight">
       <Section.Content>
         <div className={styles.twinWrapper}>
           <div className={styles.twinGrid}>

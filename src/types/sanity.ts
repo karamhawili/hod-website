@@ -22,6 +22,7 @@ export interface Category {
 export interface Project {
   _id: string;
   title: string;
+  formattedTitle?: PortableTextBlock[];
   slug: { current: string };
   coverImage: SanityImage;
   content?: PageBuilderBlock[];
@@ -49,6 +50,7 @@ export interface ImageDetailsBlock {
   subtitle?: string;
   description: string;
   layout: "imageRight" | "imageLeft";
+  imageFormat?: "square" | "portrait" | "landscape";
 }
 
 export interface ImageBlock {
@@ -64,6 +66,7 @@ export interface CenteredTextBlock {
   _type: "centeredTextBlock";
   title?: string;
   description: string;
+  width?: "full" | "twoThirds" | "half";
 }
 
 export interface ImagePairBlock {
@@ -75,9 +78,33 @@ export interface ImagePairBlock {
   rightAlt: string;
 }
 
+export interface MixedImagePairBlock {
+  _key?: string;
+  _type: "mixedImagePairBlock";
+  landscapeImage: SanityImage;
+  landscapeAlt: string;
+  nonLandscapeImage: SanityImage;
+  nonLandscapeAlt: string;
+  nonLandscapeFormat?: "square" | "portrait";
+  landscapePosition?: "left" | "right";
+}
+
+export interface PortableTextSpan {
+  _type: "span";
+  text: string;
+  marks?: string[];
+}
+
+export interface PortableTextBlock {
+  _type: "block";
+  _key?: string;
+  children?: PortableTextSpan[];
+}
+
 export type PageBuilderBlock =
   | HeroBlock
   | ImageDetailsBlock
   | ImageBlock
   | CenteredTextBlock
-  | ImagePairBlock;
+  | ImagePairBlock
+  | MixedImagePairBlock;

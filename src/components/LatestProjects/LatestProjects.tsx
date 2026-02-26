@@ -6,6 +6,7 @@ import Link from "next/link";
 import Section from "@/components/Section";
 import { urlFor } from "@/sanity/lib/image";
 import { Project } from "@/types/sanity";
+import { renderProjectTitle } from "@/lib/renderProjectTitle";
 import styles from "./LatestProjects.module.css";
 
 interface LatestProjectsProps {
@@ -27,8 +28,10 @@ export default function LatestProjects({
   );
 
   const locations = useMemo(
-    () =>
-      sortedProjects.reduce<string[]>((acc, project) => {
+    () => {
+      const preferredOrder = ["beirut", "dubai", "abu dhabi", "doha"];
+
+      const uniqueLocations = sortedProjects.reduce<string[]>((acc, project) => {
         const location = project.location?.trim();
 
         if (!location) return acc;
@@ -41,7 +44,21 @@ export default function LatestProjects({
 
         acc.push(location);
         return acc;
-      }, []),
+      }, []);
+
+      return uniqueLocations.sort((a, b) => {
+        const aIndex = preferredOrder.indexOf(a.toLowerCase());
+        const bIndex = preferredOrder.indexOf(b.toLowerCase());
+        const aPreferred = aIndex !== -1;
+        const bPreferred = bIndex !== -1;
+
+        if (aPreferred && bPreferred) return aIndex - bIndex;
+        if (aPreferred) return -1;
+        if (bPreferred) return 1;
+
+        return a.localeCompare(b);
+      });
+    },
     [sortedProjects],
   );
 
@@ -125,7 +142,18 @@ export default function LatestProjects({
               className={styles.projectImage}
             />
             <div className={styles.projectOverlay}>
-              <h3 className={styles.projectTitle}>{featuredProject.title}</h3>
+              <h3
+                className={`${styles.projectTitle} ${
+                  featuredProject.formattedTitle?.length
+                    ? styles.formattedTitle
+                    : ""
+                }`}
+              >
+                {renderProjectTitle(
+                  featuredProject.title,
+                  featuredProject.formattedTitle,
+                )}
+              </h3>
             </div>
           </div>
         </Section.Content>

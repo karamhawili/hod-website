@@ -1,9 +1,9 @@
 .wrapper {
-  width: 80%;
+  width: min(100%, var(--content-wide));
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: clamp(2.5rem, 5vw, 5rem);
+  gap: 3rem;
   align-items: center;
 }
 
@@ -18,8 +18,19 @@
 .imageWrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1;
   overflow: hidden;
+}
+
+.imageWrap.square {
+  aspect-ratio: 1 / 1;
+}
+
+.imageWrap.portrait {
+  aspect-ratio: 3 / 4;
+}
+
+.imageWrap.landscape {
+  aspect-ratio: 16 / 9;
 }
 
 .image {
@@ -34,16 +45,17 @@
 
 .title {
   font-family: var(--font-serif);
-  font-size: clamp(1.45rem, 2.5vw, 2rem);
+  font-size: clamp(1.6rem, 2.8vw, 2.3rem);
   font-weight: 600;
   line-height: 1.12;
   color: var(--color-brown-dark);
   text-transform: uppercase;
+  margin-bottom: 0.5rem;
 }
 
 .subtitle {
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: 1.2rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: rgba(30, 10, 8, 0.72);
@@ -51,7 +63,7 @@
 
 .description {
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: 1.2rem;
   line-height: 1.45;
   color: rgba(30, 10, 8, 0.9);
 }
@@ -60,5 +72,6 @@
   .wrapper {
     width: 100%;
     grid-template-columns: 1fr;
+    gap: 2rem;
   }
 }

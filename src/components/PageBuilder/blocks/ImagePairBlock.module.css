@@ -6,10 +6,10 @@
 
 .twinGrid {
   width: 100%;
-  max-width: 900px;
+  max-width: var(--content-base);
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: clamp(1rem, 3vw, 2rem);
+  gap: var(--content-gutter);
 }
 
 .squareWrap {
