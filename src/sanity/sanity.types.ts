@@ -376,7 +376,7 @@ export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: src/sanity/lib/queries.ts
 // Variable: FEATURED_PROJECT_QUERY
-// Query: *[_type == "project" && featured == true] | order(_createdAt desc) [0] {      _id,  title,  formattedTitle,  slug,  coverImage,  content[]{    ...,    _type == "heroBlock" => {      _key,      _type,      image,      alt    },    _type == "imageDetailsBlock" => {      _key,      _type,      image,      imageAlt,      title,      subtitle,      description,      layout,      imageFormat    },    _type == "imageBlock" => {      _key,      _type,      image,      alt,      variant    },    _type == "centeredTextBlock" => {      _key,      _type,      title,      description,      width    },    _type == "imagePairBlock" => {      _key,      _type,      leftImage,      leftAlt,      rightImage,      rightAlt    },    _type == "mixedImagePairBlock" => {      _key,      _type,      landscapeImage,      landscapeAlt,      nonLandscapeImage,      nonLandscapeAlt,      nonLandscapeFormat,      landscapePosition    }  },  excerpt,  "location": coalesce(location, category),  categories[]->{    _id,    title,    "slug": slug.current,    "color": color.hex  },  year,  featured,  overlayTextColor  }
+// Query: *[_type == "project" && featured == true] | order(_createdAt desc) [0] {      _id,  title,  formattedTitle,  slug,  coverImage,  excerpt,  "location": coalesce(location, category),  categories[]->{    _id,    title,    "slug": slug.current,    "color": color.hex  },  year,  featured,  overlayTextColor  }
 export type FEATURED_PROJECT_QUERY_RESULT = {
   _id: string;
   title: string;
@@ -402,99 +402,6 @@ export type FEATURED_PROJECT_QUERY_RESULT = {
     crop?: SanityImageCrop;
     _type: "image";
   };
-  content: Array<
-    | {
-        _key: string;
-        _type: "centeredTextBlock";
-        title: string | null;
-        description: string;
-        width: "full" | "half" | "twoThirds";
-      }
-    | {
-        _key: string;
-        _type: "heroBlock";
-        image: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        };
-        alt: string;
-      }
-    | {
-        _key: string;
-        _type: "imageBlock";
-        image: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        };
-        alt: string;
-        variant: "compactLandscape" | "fullLandscape" | "halfSquare";
-      }
-    | {
-        _key: string;
-        _type: "imageDetailsBlock";
-        image: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        };
-        imageAlt: string;
-        title: string | null;
-        subtitle: string | null;
-        description: string;
-        layout: "imageLeft" | "imageRight";
-        imageFormat: "landscape" | "portrait" | "square";
-      }
-    | {
-        _key: string;
-        _type: "imagePairBlock";
-        leftImage: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        };
-        leftAlt: string;
-        rightImage: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        };
-        rightAlt: string;
-      }
-    | {
-        _key: string;
-        _type: "mixedImagePairBlock";
-        landscapeImage: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        };
-        landscapeAlt: string;
-        nonLandscapeImage: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        };
-        nonLandscapeAlt: string;
-        nonLandscapeFormat: "portrait" | "square";
-        landscapePosition: "left" | "right";
-      }
-  > | null;
   excerpt: string | null;
   location: "Abu Dhabi" | "Beirut" | "Cairo" | "Doha" | "Dubai" | "Riyadh";
   categories: Array<{
@@ -510,7 +417,7 @@ export type FEATURED_PROJECT_QUERY_RESULT = {
 
 // Source: src/sanity/lib/queries.ts
 // Variable: ALL_PROJECTS_QUERY
-// Query: *[_type == "project"] | order(_createdAt desc) {      _id,  title,  formattedTitle,  slug,  coverImage,  content[]{    ...,    _type == "heroBlock" => {      _key,      _type,      image,      alt    },    _type == "imageDetailsBlock" => {      _key,      _type,      image,      imageAlt,      title,      subtitle,      description,      layout,      imageFormat    },    _type == "imageBlock" => {      _key,      _type,      image,      alt,      variant    },    _type == "centeredTextBlock" => {      _key,      _type,      title,      description,      width    },    _type == "imagePairBlock" => {      _key,      _type,      leftImage,      leftAlt,      rightImage,      rightAlt    },    _type == "mixedImagePairBlock" => {      _key,      _type,      landscapeImage,      landscapeAlt,      nonLandscapeImage,      nonLandscapeAlt,      nonLandscapeFormat,      landscapePosition    }  },  excerpt,  "location": coalesce(location, category),  categories[]->{    _id,    title,    "slug": slug.current,    "color": color.hex  },  year,  featured,  overlayTextColor  }
+// Query: *[_type == "project"] | order(_createdAt desc) {      _id,  title,  formattedTitle,  slug,  coverImage,  excerpt,  "location": coalesce(location, category),  categories[]->{    _id,    title,    "slug": slug.current,    "color": color.hex  },  year,  featured,  overlayTextColor  }
 export type ALL_PROJECTS_QUERY_RESULT = Array<{
   _id: string;
   title: string;
@@ -536,99 +443,6 @@ export type ALL_PROJECTS_QUERY_RESULT = Array<{
     crop?: SanityImageCrop;
     _type: "image";
   };
-  content: Array<
-    | {
-        _key: string;
-        _type: "centeredTextBlock";
-        title: string | null;
-        description: string;
-        width: "full" | "half" | "twoThirds";
-      }
-    | {
-        _key: string;
-        _type: "heroBlock";
-        image: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        };
-        alt: string;
-      }
-    | {
-        _key: string;
-        _type: "imageBlock";
-        image: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        };
-        alt: string;
-        variant: "compactLandscape" | "fullLandscape" | "halfSquare";
-      }
-    | {
-        _key: string;
-        _type: "imageDetailsBlock";
-        image: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        };
-        imageAlt: string;
-        title: string | null;
-        subtitle: string | null;
-        description: string;
-        layout: "imageLeft" | "imageRight";
-        imageFormat: "landscape" | "portrait" | "square";
-      }
-    | {
-        _key: string;
-        _type: "imagePairBlock";
-        leftImage: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        };
-        leftAlt: string;
-        rightImage: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        };
-        rightAlt: string;
-      }
-    | {
-        _key: string;
-        _type: "mixedImagePairBlock";
-        landscapeImage: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        };
-        landscapeAlt: string;
-        nonLandscapeImage: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        };
-        nonLandscapeAlt: string;
-        nonLandscapeFormat: "portrait" | "square";
-        landscapePosition: "left" | "right";
-      }
-  > | null;
   excerpt: string | null;
   location: "Abu Dhabi" | "Beirut" | "Cairo" | "Doha" | "Dubai" | "Riyadh";
   categories: Array<{
@@ -644,7 +458,7 @@ export type ALL_PROJECTS_QUERY_RESULT = Array<{
 
 // Source: src/sanity/lib/queries.ts
 // Variable: FEATURED_PROJECTS_QUERY
-// Query: *[_type == "project" && featured == true] | order(_createdAt desc) {      _id,  title,  formattedTitle,  slug,  coverImage,  content[]{    ...,    _type == "heroBlock" => {      _key,      _type,      image,      alt    },    _type == "imageDetailsBlock" => {      _key,      _type,      image,      imageAlt,      title,      subtitle,      description,      layout,      imageFormat    },    _type == "imageBlock" => {      _key,      _type,      image,      alt,      variant    },    _type == "centeredTextBlock" => {      _key,      _type,      title,      description,      width    },    _type == "imagePairBlock" => {      _key,      _type,      leftImage,      leftAlt,      rightImage,      rightAlt    },    _type == "mixedImagePairBlock" => {      _key,      _type,      landscapeImage,      landscapeAlt,      nonLandscapeImage,      nonLandscapeAlt,      nonLandscapeFormat,      landscapePosition    }  },  excerpt,  "location": coalesce(location, category),  categories[]->{    _id,    title,    "slug": slug.current,    "color": color.hex  },  year,  featured,  overlayTextColor  }
+// Query: *[_type == "project" && featured == true] | order(_createdAt desc) {      _id,  title,  formattedTitle,  slug,  coverImage,  excerpt,  "location": coalesce(location, category),  categories[]->{    _id,    title,    "slug": slug.current,    "color": color.hex  },  year,  featured,  overlayTextColor  }
 export type FEATURED_PROJECTS_QUERY_RESULT = Array<{
   _id: string;
   title: string;
@@ -670,99 +484,6 @@ export type FEATURED_PROJECTS_QUERY_RESULT = Array<{
     crop?: SanityImageCrop;
     _type: "image";
   };
-  content: Array<
-    | {
-        _key: string;
-        _type: "centeredTextBlock";
-        title: string | null;
-        description: string;
-        width: "full" | "half" | "twoThirds";
-      }
-    | {
-        _key: string;
-        _type: "heroBlock";
-        image: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        };
-        alt: string;
-      }
-    | {
-        _key: string;
-        _type: "imageBlock";
-        image: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        };
-        alt: string;
-        variant: "compactLandscape" | "fullLandscape" | "halfSquare";
-      }
-    | {
-        _key: string;
-        _type: "imageDetailsBlock";
-        image: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        };
-        imageAlt: string;
-        title: string | null;
-        subtitle: string | null;
-        description: string;
-        layout: "imageLeft" | "imageRight";
-        imageFormat: "landscape" | "portrait" | "square";
-      }
-    | {
-        _key: string;
-        _type: "imagePairBlock";
-        leftImage: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        };
-        leftAlt: string;
-        rightImage: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        };
-        rightAlt: string;
-      }
-    | {
-        _key: string;
-        _type: "mixedImagePairBlock";
-        landscapeImage: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        };
-        landscapeAlt: string;
-        nonLandscapeImage: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        };
-        nonLandscapeAlt: string;
-        nonLandscapeFormat: "portrait" | "square";
-        landscapePosition: "left" | "right";
-      }
-  > | null;
   excerpt: string | null;
   location: "Abu Dhabi" | "Beirut" | "Cairo" | "Doha" | "Dubai" | "Riyadh";
   categories: Array<{
@@ -778,7 +499,7 @@ export type FEATURED_PROJECTS_QUERY_RESULT = Array<{
 
 // Source: src/sanity/lib/queries.ts
 // Variable: PROJECT_PAGE_QUERY
-// Query: *[_type == "project" && slug.current == $slug][0]{      _id,  title,  formattedTitle,  slug,  coverImage,  content[]{    ...,    _type == "heroBlock" => {      _key,      _type,      image,      alt    },    _type == "imageDetailsBlock" => {      _key,      _type,      image,      imageAlt,      title,      subtitle,      description,      layout,      imageFormat    },    _type == "imageBlock" => {      _key,      _type,      image,      alt,      variant    },    _type == "centeredTextBlock" => {      _key,      _type,      title,      description,      width    },    _type == "imagePairBlock" => {      _key,      _type,      leftImage,      leftAlt,      rightImage,      rightAlt    },    _type == "mixedImagePairBlock" => {      _key,      _type,      landscapeImage,      landscapeAlt,      nonLandscapeImage,      nonLandscapeAlt,      nonLandscapeFormat,      landscapePosition    }  },  excerpt,  "location": coalesce(location, category),  categories[]->{    _id,    title,    "slug": slug.current,    "color": color.hex  },  year,  featured,  overlayTextColor  }
+// Query: *[_type == "project" && slug.current == $slug][0]{        _id,  title,  formattedTitle,  slug,  coverImage,  excerpt,  "location": coalesce(location, category),  categories[]->{    _id,    title,    "slug": slug.current,    "color": color.hex  },  year,  featured,  overlayTextColor,    content[]{    ...,    _type == "heroBlock" => {      _key,      _type,      image,      alt    },    _type == "imageDetailsBlock" => {      _key,      _type,      image,      imageAlt,      title,      subtitle,      description,      layout,      imageFormat    },    _type == "imageBlock" => {      _key,      _type,      image,      alt,      variant    },    _type == "centeredTextBlock" => {      _key,      _type,      title,      description,      width    },    _type == "imagePairBlock" => {      _key,      _type,      leftImage,      leftAlt,      rightImage,      rightAlt    },    _type == "mixedImagePairBlock" => {      _key,      _type,      landscapeImage,      landscapeAlt,      nonLandscapeImage,      nonLandscapeAlt,      nonLandscapeFormat,      landscapePosition    }  }  }
 export type PROJECT_PAGE_QUERY_RESULT = {
   _id: string;
   title: string;
@@ -804,6 +525,17 @@ export type PROJECT_PAGE_QUERY_RESULT = {
     crop?: SanityImageCrop;
     _type: "image";
   };
+  excerpt: string | null;
+  location: "Abu Dhabi" | "Beirut" | "Cairo" | "Doha" | "Dubai" | "Riyadh";
+  categories: Array<{
+    _id: string;
+    title: string;
+    slug: string;
+    color: string | null;
+  }>;
+  year: number;
+  featured: boolean | null;
+  overlayTextColor: "dark" | "white" | null;
   content: Array<
     | {
         _key: string;
@@ -897,15 +629,4 @@ export type PROJECT_PAGE_QUERY_RESULT = {
         landscapePosition: "left" | "right";
       }
   > | null;
-  excerpt: string | null;
-  location: "Abu Dhabi" | "Beirut" | "Cairo" | "Doha" | "Dubai" | "Riyadh";
-  categories: Array<{
-    _id: string;
-    title: string;
-    slug: string;
-    color: string | null;
-  }>;
-  year: number;
-  featured: boolean | null;
-  overlayTextColor: "dark" | "white" | null;
 } | null;
