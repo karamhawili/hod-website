@@ -2,12 +2,31 @@ import { defineQuery } from "next-sanity";
 import { sanityFetch } from "@/sanity/lib/live";
 import { Project } from "@/types/sanity";
 
-const PROJECT_FIELDS = `
+// Card/listing fields. Used by the landing + portfolio project feeds, which
+// render cover image, title, location, year, categories — NOT the page-builder
+// `content`. Keeping `content` out of these queries avoids fetching the entire
+// project-page payload for every card (see Audit.md S1).
+const LIST_FIELDS = `
   _id,
   title,
   formattedTitle,
   slug,
   coverImage,
+  excerpt,
+  "location": coalesce(location, category),
+  categories[]->{
+    _id,
+    title,
+    "slug": slug.current,
+    "color": color.hex
+  },
+  year,
+  featured,
+  overlayTextColor
+`;
+
+// The page-builder blocks — heavy, and only the project detail page renders them.
+const CONTENT_FIELDS = `
   content[]{
     ...,
     _type == "heroBlock" => {
@@ -59,41 +78,36 @@ const PROJECT_FIELDS = `
       nonLandscapeFormat,
       landscapePosition
     }
-  },
-  excerpt,
-  "location": coalesce(location, category),
-  categories[]->{
-    _id,
-    title,
-    "slug": slug.current,
-    "color": color.hex
-  },
-  year,
-  featured,
-  overlayTextColor
+  }
+`;
+
+// Full project payload for the detail page: listing fields + page-builder content.
+const DETAIL_FIELDS = `
+  ${LIST_FIELDS},
+  ${CONTENT_FIELDS}
 `;
 
 export const FEATURED_PROJECT_QUERY = defineQuery(`
   *[_type == "project" && featured == true] | order(_createdAt desc) [0] {
-    ${PROJECT_FIELDS}
+    ${LIST_FIELDS}
   }
 `);
 
 export const ALL_PROJECTS_QUERY = defineQuery(`
   *[_type == "project"] | order(_createdAt desc) {
-    ${PROJECT_FIELDS}
+    ${LIST_FIELDS}
   }
 `);
 
 export const FEATURED_PROJECTS_QUERY = defineQuery(`
   *[_type == "project" && featured == true] | order(_createdAt desc) {
-    ${PROJECT_FIELDS}
+    ${LIST_FIELDS}
   }
 `);
 
 export const PROJECT_PAGE_QUERY = defineQuery(`
   *[_type == "project" && slug.current == $slug][0]{
-    ${PROJECT_FIELDS}
+    ${DETAIL_FIELDS}
   }
 `);
 

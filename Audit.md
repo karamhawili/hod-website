@@ -33,10 +33,10 @@ Living record of audit findings and their remediation status. Companion to the P
 
 | # | Status | Item |
 |---|--------|------|
-| S1 | ⬜ TODO | `PROJECT_FIELDS` over-fetches full `content[]` in list queries (home/portfolio never render it). Split LIST vs DETAIL projections; keep `PROJECT_PAGE_QUERY` intact. |
-| S2 | ⬜ TODO | Home awaits `getFeaturedProject` then `getAllProjects` sequentially (waterfall) → `Promise.all`; heavy objects serialized to client children. |
-| S3 | ⬜ TODO | Unnecessary `"use client"` on `FeaturedProject` and `Recognition` (no interactivity). |
-| S4 | ⬜ TODO | `urlFor().url()` returns full-res originals + `quality={100}`; add `.width()/.auto('format')`, drop quality. |
+| S1 | ✅ DONE | Split `queries.ts` into `LIST_FIELDS` (no page-builder `content`) for the three list queries + `DETAIL_FIELDS` (listing + content) for `PROJECT_PAGE_QUERY`. Cards no longer fetch the full project-page payload. Verified: no `content` consumer among list callers, `tsc` clean, detail query unchanged in shape. **Follow-up:** re-run `npm run typegen` to refresh the generated `*_QUERY_RESULT` shapes (harmless while stale — nothing consumes them with `overloadClientMethods: false`). |
+| S2 | ⏳ DEFERRED → Phase 4 (confirmed) | Waterfall in home `page.tsx`. `page.tsx` is wiped in Phase 4 → build with `Promise.all`/parallel fetch from the start. See carry-forward. |
+| S3 | ⏳ DEFERRED → Phase 4 (confirmed) | Unnecessary `"use client"` on wiped components → new landing components default to server components. See carry-forward. |
+| S4 | ⏳ DEFERRED → Phase 4 (confirmed) | Image opt. In-scope targets wiped → build optimized from the start. Out-of-scope `LatestProjects`/`ProjectsGrid` left untouched (flag only). See carry-forward. |
 | S5 | ✅ DONE | ~~`typegen` npm script is misconfigured~~ Fixed by adding the `typegen` block to `sanity.cli.ts` (done as part of C4). Config loads; full run pending creds (see C4). |
 | S6 | ✅ DONE | **New (surfaced in Phase 1.5):** `npm install`/`npm ci` fail without `--legacy-peer-deps` (`@sanity/color-input@4` peer-conflicts with `sanity@5`). Fixed by adding `.npmrc` (`legacy-peer-deps=true`); verified a plain `npm install` now succeeds. Follow-up (not blocking): upgrade `@sanity/color-input` to a Sanity-5-compatible release and drop the flag. |
 
@@ -55,11 +55,26 @@ Living record of audit findings and their remediation status. Companion to the P
 
 ---
 
+## Phase 4 carry-forward (build it right, don't fix-then-delete)
+
+The new landing/about components must be built to satisfy these — they replace the deferred should-fixes:
+
+- **[S2]** Fetch project data in the server page with `Promise.all` (no sequential `await` waterfall). With `LIST_FIELDS` (S1 ✅) the payload is already trimmed.
+- **[S3]** New components are **server components by default**; add `"use client"` only where there's real interactivity (state, effects, handlers).
+- **[S4]** Standardize a Sanity image helper (`.width(...).auto('format')`, sane `quality`, proper `sizes`) and use it everywhere instead of raw `urlFor().url()` + `quality={100}`.
+- **Also revisit (nice-to-have):** N2 (`url() || ""` empty-src), N3 (`sizes`, redundant client-side re-sort), N6 (`Section` client-only animation hook — CLAUDE.md flags re-evaluating `useScrollAnimation`).
+
+**Also carried by out-of-scope coupling (from Criticals):** rebuilt Navigation must keep the `theme` prop (C2); rebuilt Footer must keep accepting `showGradient` (C1) until `/project/[slug]` migrates; layout hoist (C3) must account for the project route's data-derived nav theme.
+
+**Out-of-scope, flagged only (not for this redesign):** S4 image opt on `LatestProjects`/`ProjectsGrid`; N5 (Footer LinkedIn URL); N1 (dead `category` coalesce).
+
 ## Changelog
 
 - **2026-07-05** — Tracker created. Criticals triaged: C1–C3 deferred to Phase 3 as rebuild constraints; C4 blocked pending typegen decision.
 - **2026-07-05** — Decision: adopt TypeGen. Wired the pipeline: `typegen` block added to `sanity.cli.ts`, `src/sanity/extract.json` gitignored (S5 ✅). Installed deps (needed `--legacy-peer-deps` → logged as S6). Type generation blocked in-sandbox: Sanity v5 `schema extract` calls the project API and fails on a placeholder ID — needs an authenticated run of `npm run typegen`. No consuming code changed; out-of-scope pages untouched.
 - **2026-07-05** — User generated `sanity.types.ts` locally. Caught that `overloadClientMethods: true` broke `next build` at the out-of-scope project page; set it to `false`, regenerated-equivalent output, verified `tsc --noEmit` clean. **C4 done.** All four criticals resolved (C4 fixed; C1–C3 documented as Phase-3 constraints).
 - **2026-07-05** — Folded S6 into this pass: added `.npmrc` (`legacy-peer-deps=true`); verified a flagless `npm install` now succeeds. Left unstaged for user to commit. Awaiting green light before starting the remaining should-fix items (S1–S5).
+- **2026-07-05** — Should-fix batch. **S1 done** (`queries.ts` LIST/DETAIL split; `tsc` clean). Flagged that **S2/S3/S4-in-scope target Phase-4-wiped files** → recommended deferring into the rebuild rather than fix-then-delete; S4's durable targets are out-of-scope portfolio and left untouched.
+- **2026-07-05** — User chose to defer S2–S4 to Phase 4. Recorded as confirmed deferrals + added a "Phase 4 carry-forward" section so the rebuild implements them by construction. **Phase 1.5 audit remediation complete:** actioned C1–C4, S1, S5, S6; remainder deferred to Phase 2–4 with tracked rationale.
 </content>
 </invoke>
