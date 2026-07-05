@@ -8,6 +8,7 @@
 
   /* Surfaces */
   --surface-white: #ffffff;
+  /* @deprecated no gradients in redesign — kept for out-of-scope Section/portfolio */
   --surface-gradient:
     linear-gradient(
       90deg,
@@ -21,6 +22,7 @@
   /* Typography */
   --font-serif: var(--font-cormorant);
   --font-sans: var(--font-darker-grotesque);
+  /* @deprecated no script fonts — kept for out-of-scope + About until Phase 5 */
   --font-script: var(--font-great-vibes);
 
   /* Spacing */
@@ -34,6 +36,20 @@
   --content-narrow: 760px;
   --content-tight: 560px;
   --content-gutter: 2rem;
+
+  /* ===== Redesign tokens (warm neutral + brown) =====
+     Consumed by NEW components only. Old element defaults (body, h1-h6)
+     stay on the legacy tokens above so out-of-scope pages are untouched. */
+  --font-heading: var(--font-fraunces);
+  --font-body: var(--font-inter);
+
+  --color-bg: #faf7f3; /* warm off-white */
+  --color-fg: #211c19; /* warm near-black text */
+  --color-accent: #735a50; /* brown — links, labels, hairlines (same brown as --color-brown-dark) */
+  --color-fg-muted: #7a6e64; /* warm muted / secondary */
+  --color-line: #e7dfd7; /* warm hairline rules */
+
+  --tracking-label: 0.08em; /* all-caps label letter-spacing */
 }
 
 @media (max-width: 768px) {

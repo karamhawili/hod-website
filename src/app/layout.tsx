@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import {
   Cormorant_Garamond,
   Darker_Grotesque,
+  Fraunces,
   Great_Vibes,
+  Inter,
 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
@@ -29,6 +31,22 @@ const greatVibes = Great_Vibes({
   display: "swap",
 });
 
+// Redesign fonts (warm neutral + brown, k-studio-style editorial).
+// The three fonts above are kept for now because out-of-scope pages
+// (/portfolio, /project) + the not-yet-rebuilt About still resolve
+// --font-serif/--font-sans/--font-script through them.
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "House of Design",
   description:
@@ -43,7 +61,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${darkerGrotesque.variable} ${greatVibes.variable}`}
+      className={`${cormorant.variable} ${darkerGrotesque.variable} ${greatVibes.variable} ${fraunces.variable} ${inter.variable}`}
     >
       <body>{children}</body>
       <Analytics />

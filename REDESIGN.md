@@ -34,11 +34,14 @@ they belong to the old design language.
   aesthetic). Reference screenshots live in `/design-refs/` when provided —
   always look at them before building a section.
 - We take the _structure and rhythm_ from the reference — full-bleed sections,
-  editorial feed layout, all-caps labels, monochrome palette, photography-first —
+  editorial feed layout, all-caps labels, warm-neutral palette, photography-first —
   but we do NOT copy it 1:1. Everything is expressed through OUR tokens.
-- Aesthetic rules: white background, near-black text, no accent colors,
-  **no gradients, no script fonts** (both exist in the old tokens and are being
-  removed). Photography and video carry the visual weight.
+- Aesthetic rules: **warm neutral palette** — warm off-white background
+  (`--color-bg`), warm near-black text (`--color-fg`), and HOD's **brown as the
+  single brand accent** (`--color-accent`, for links, all-caps labels, hairline
+  rules). No other accent colors, **no gradients, no script fonts** (gradient +
+  script still exist in the old tokens, kept only for out-of-scope pages).
+  Photography and video carry the visual weight.
 - Animation rules: subtle only — fade/translate on scroll-into-view (a
   `useScrollAnimation` hook already exists in `src/hooks`, evaluate whether to
   reuse or replace), navbar scroll transition, hover zoom on images.
@@ -53,10 +56,11 @@ they belong to the old design language.
 - Sanity v5 via `next-sanity`. Studio embedded at `/studio`.
   Data fetching uses the **Live Content API** (`defineLive` / `sanityFetch` in
   `src/sanity/lib/live.ts`, `<SanityLive />` in root layout) — not plain ISR.
-- Fonts loaded via `next/font/google` in `src/app/layout.tsx`:
-  currently Cormorant Garamond (serif), Darker Grotesque (sans),
-  Great Vibes (script — to be removed in redesign). Font choices for the new
-  design are a Phase 2 decision.
+- Fonts loaded via `next/font/google` in `src/app/layout.tsx`. The redesign uses
+  **Fraunces** (headings, `--font-heading`) + **Inter** (body, `--font-body`).
+  The old families — Cormorant Garamond (`--font-serif`), Darker Grotesque
+  (`--font-sans`), Great Vibes (`--font-script`, script — being removed) — stay
+  loaded only while out-of-scope pages + the not-yet-rebuilt About still use them.
 - Types: currently **hand-written** in `src/types/sanity.ts`. A typegen script
   exists in package.json but is not in use (no extract.json / generated types).
   Whether to adopt typegen properly is an audit-phase decision — until then,
@@ -113,11 +117,13 @@ they belong to the old design language.
 
 ## Phases (current status: Phase 1)
 
-- [ ] Phase 1 — Audit of existing code (report only, no changes). Include:
+- [x] Phase 1 — Audit of existing code (report only, no changes). Include:
       Live API setup correctness, hand-written types vs typegen decision,
-      GROQ query hygiene, image pipeline usage.
-- [ ] Phase 1.5 — Approved fixes from audit (isolated commits)
-- [ ] Phase 2 — Token replacement in globals.css + font decision
+      GROQ query hygiene, image pipeline usage. → see Audit.md
+- [x] Phase 1.5 — Approved fixes from audit (isolated commits). Done: TypeGen
+      adoption, GROQ over-fetch split, `.npmrc`. Rest deferred to Phase 3/4 (Audit.md).
+- [x] Phase 2 — Token replacement in globals.css + font decision
+      (Fraunces + Inter; warm neutral + brown palette)
 - [ ] Phase 3 — Navigation + Footer redesign
 - [ ] Phase 4 — Landing page (schema → components → GROQ → polish)
 - [ ] Phase 5 — About page (+ join-us decision)
