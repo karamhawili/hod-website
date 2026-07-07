@@ -14,7 +14,7 @@ export default async function Home() {
 
   return (
     <>
-      <Navigation />
+      <Navigation theme="light" />
       <main>
         <Hero />
         {featuredProject && <FeaturedProject project={featuredProject} />}

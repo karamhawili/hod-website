@@ -101,6 +101,31 @@ export interface PortableTextBlock {
   children?: PortableTextSpan[];
 }
 
+export interface NavLink {
+  label: string;
+  href: string;
+}
+
+export interface SiteLocation {
+  label: string;
+  address?: string;
+}
+
+export interface SocialLink {
+  platform: "instagram" | "linkedin";
+  url: string;
+}
+
+export interface SiteSettings {
+  brandLine?: string;
+  nav?: NavLink[];
+  locations?: SiteLocation[];
+  phone?: string;
+  email?: string;
+  mapUrl?: string;
+  socials?: SocialLink[];
+}
+
 export type PageBuilderBlock =
   | HeroBlock
   | ImageDetailsBlock

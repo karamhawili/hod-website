@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import {
+  Archivo,
   Cormorant_Garamond,
   Darker_Grotesque,
-  Fraunces,
   Great_Vibes,
   Inter,
 } from "next/font/google";
@@ -35,9 +35,9 @@ const greatVibes = Great_Vibes({
 // The three fonts above are kept for now because out-of-scope pages
 // (/portfolio, /project) + the not-yet-rebuilt About still resolve
 // --font-serif/--font-sans/--font-script through them.
-const fraunces = Fraunces({
+const archivo = Archivo({
   subsets: ["latin"],
-  variable: "--font-fraunces",
+  variable: "--font-archivo",
   display: "swap",
 });
 
@@ -61,7 +61,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${darkerGrotesque.variable} ${greatVibes.variable} ${fraunces.variable} ${inter.variable}`}
+      className={`${cormorant.variable} ${darkerGrotesque.variable} ${greatVibes.variable} ${archivo.variable} ${inter.variable}`}
     >
       <body>{children}</body>
       <Analytics />

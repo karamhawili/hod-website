@@ -8,6 +8,7 @@ import { imagePairBlock } from "./blocks/imagePairBlock";
 import { mixedImagePairBlock } from "./blocks/mixedImagePairBlock";
 import { pageBuilder } from "./pageBuilder";
 import { project } from "./project";
+import { siteSettings } from "./siteSettings";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -20,5 +21,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     centeredTextBlock,
     pageBuilder,
     project,
+    siteSettings,
   ],
 };

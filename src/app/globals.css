@@ -40,7 +40,7 @@
   /* ===== Redesign tokens (warm neutral + brown) =====
      Consumed by NEW components only. Old element defaults (body, h1-h6)
      stay on the legacy tokens above so out-of-scope pages are untouched. */
-  --font-heading: var(--font-fraunces);
+  --font-heading: var(--font-archivo);
   --font-body: var(--font-inter);
 
   --color-bg: #faf7f3; /* warm off-white */

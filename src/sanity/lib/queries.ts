@@ -1,6 +1,6 @@
 import { defineQuery } from "next-sanity";
 import { sanityFetch } from "@/sanity/lib/live";
-import { Project } from "@/types/sanity";
+import { Project, SiteSettings } from "@/types/sanity";
 
 // Card/listing fields. Used by the landing + portfolio project feeds, which
 // render cover image, title, location, year, categories — NOT the page-builder
@@ -136,4 +136,25 @@ export async function getFeaturedProjects(): Promise<Project[]> {
   });
 
   return result.data as Project[];
+}
+
+export const SITE_SETTINGS_QUERY = defineQuery(`
+  *[_id == "siteSettings"][0]{
+    brandLine,
+    nav[]{ label, href },
+    locations[]{ label, address },
+    phone,
+    email,
+    mapUrl,
+    socials[]{ platform, url }
+  }
+`);
+
+export async function getSiteSettings(): Promise<SiteSettings | null> {
+  const result = await sanityFetch({
+    query: SITE_SETTINGS_QUERY,
+    tags: ["siteSettings"],
+  });
+
+  return result.data as SiteSettings | null;
 }

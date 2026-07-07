@@ -68,12 +68,23 @@ The new landing/about components must be built to satisfy these — they replace
 
 **Out-of-scope, flagged only (not for this redesign):** S4 image opt on `LatestProjects`/`ProjectsGrid`; N5 (Footer LinkedIn URL); N1 (dead `category` coalesce).
 
+## Phase 3 follow-ups (Nav/Footer + siteSettings)
+
+- **Run `npm run typegen`** — the new `SITE_SETTINGS_QUERY` isn't in the generated types yet; `SiteSettings` is hand-written in `types/sanity.ts` for now (consistent with the transitional pattern).
+- **Populate the `siteSettings` singleton** in Studio (`/studio` → Site Settings). Until then, Nav/Footer render hardcoded fallbacks matching the old content.
+- **Client fixes via CMS:** placeholder phone `+961 1 234 567` and the LinkedIn URL (`company/addmindhospitality`, audit N5) — both still in the footer *fallback*; correct them by filling siteSettings.
+- **"Join Us" nav link is provisional** pending the open `/join-us` decision (it's in `DEFAULT_NAV`).
+- **Visual tune:** the inline `Logo` uses a cropped viewBox (`90 395 860 275`); verify in-browser it isn't clipped and looks right at header/footer sizes.
+- **Out-of-scope note:** `/portfolio` + `/project/[slug]` now show the new global Nav/Footer (intended). The new fixed header is slightly taller — eyeball their top spacing.
+
 ## Changelog
 
 - **2026-07-05** — Tracker created. Criticals triaged: C1–C3 deferred to Phase 3 as rebuild constraints; C4 blocked pending typegen decision.
 - **2026-07-05** — Decision: adopt TypeGen. Wired the pipeline: `typegen` block added to `sanity.cli.ts`, `src/sanity/extract.json` gitignored (S5 ✅). Installed deps (needed `--legacy-peer-deps` → logged as S6). Type generation blocked in-sandbox: Sanity v5 `schema extract` calls the project API and fails on a placeholder ID — needs an authenticated run of `npm run typegen`. No consuming code changed; out-of-scope pages untouched.
 - **2026-07-05** — User generated `sanity.types.ts` locally. Caught that `overloadClientMethods: true` broke `next build` at the out-of-scope project page; set it to `false`, regenerated-equivalent output, verified `tsc --noEmit` clean. **C4 done.** All four criticals resolved (C4 fixed; C1–C3 documented as Phase-3 constraints).
 - **2026-07-05** — Folded S6 into this pass: added `.npmrc` (`legacy-peer-deps=true`); verified a flagless `npm install` now succeeds. Left unstaged for user to commit. Awaiting green light before starting the remaining should-fix items (S1–S5).
+- **2026-07-06** — Phase 3 design iteration 2: footer rebuilt against user refs (`design-refs/footer/`, primary: eleven.png) — inverted warm-dark ground (tokens flipped via color-mix, no new hex), two-zone layout with full-height vertical hairline, Menu/Studios/Connect index, hairline + meta row. Footer now also renders nav links (from siteSettings). Header: no border, more solid frosted bar + faint shadow, logo 34px→28px compress on scroll. Fonts switched Fraunces→Archivo earlier same day.
+- **2026-07-06** — **Phase 3 built** (Nav + Footer + siteSettings singleton). Schema-first siteSettings (nav/contact/locations/socials) as a Studio singleton; Nav/Footer self-fetch it (so out-of-scope routes need no prop changes) with hardcoded fallbacks. New header = logo-left / all-caps links-right, sticky, transparent→frosted "mirror" on scroll, theme-aware color (keeps `theme` prop, C2). New editorial footer, warm tokens, no gradient (keeps `showGradient`, C1). Reusable inline `Logo` (currentColor). tsc + eslint clean; zero out-of-scope files touched. See Phase 3 follow-ups above.
 - **2026-07-05** — Should-fix batch. **S1 done** (`queries.ts` LIST/DETAIL split; `tsc` clean). Flagged that **S2/S3/S4-in-scope target Phase-4-wiped files** → recommended deferring into the rebuild rather than fix-then-delete; S4's durable targets are out-of-scope portfolio and left untouched.
 - **2026-07-05** — User chose to defer S2–S4 to Phase 4. Recorded as confirmed deferrals + added a "Phase 4 carry-forward" section so the rebuild implements them by construction. **Phase 1.5 audit remediation complete:** actioned C1–C4, S1, S5, S6; remainder deferred to Phase 2–4 with tracked rationale.
 - **2026-07-05** — **Phase 2 done** (tokens + fonts). Added warm-neutral + brown token set + Fraunces/Inter to `globals.css`/`layout.tsx`; deprecated (kept) `--surface-gradient`/`--font-script`; corrected REDESIGN.md aesthetic rules (user kept brown, not monochrome). Old element defaults left on legacy tokens so out-of-scope pages are untouched. `tsc` clean; diff isolated to 3 files. **Runtime/visual verify (needs Sanity env) is the user's step.** Phase 3/4 carry-forward: add `.theme-redesign` base class; post-redesign cleanup deletes deprecated tokens + drops the 3 old font loads.

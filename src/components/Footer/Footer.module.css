@@ -1,111 +1,191 @@
+/* Inverted footer: warm near-black (--color-fg) ground, cream (--color-bg)
+   content — all shades derived from the global tokens. */
 .footer {
-  background-color: #fff;
-  padding: 4rem 2rem;
-  text-align: center;
+  --f-bg: var(--color-fg);
+  --f-fg: var(--color-bg);
+  --f-muted: color-mix(in srgb, var(--color-bg) 52%, var(--color-fg));
+  --f-line: color-mix(in srgb, var(--color-bg) 14%, var(--color-fg));
+
+  background: var(--f-bg);
+  color: var(--f-fg);
+  font-family: var(--font-body);
+  padding-inline: var(--container-padding);
 }
 
-.footer.gradient {
-  background:
-    linear-gradient(
-      180deg,
-      rgba(147, 84, 47, 0.01) 0%,
-      rgba(147, 83, 47, 0.2) 100%
-    ),
-    #fff;
+.inner {
+  position: relative;
+  max-width: var(--container-max);
+  margin-inline: auto;
 }
 
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
+/* Vertical hairline splitting the footer into two halves (runs full height,
+   through the meta row — the structural move from the reference). */
+.divider {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--f-line);
+}
+
+/* Upper zone: brand left, link index right */
+.masthead {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
-  gap: 2.5rem;
+  padding-block: 5.5rem;
+  min-height: 320px;
+}
+
+.logoLink {
+  display: inline-flex;
+  transition: opacity 0.25s ease;
+}
+
+.logoLink:hover {
+  opacity: 0.65;
 }
 
 .logo {
-  height: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  height: 58px;
+  width: auto;
+  display: block;
 }
 
-.title {
-  font-size: 1.75rem;
-  font-weight: 400;
-  letter-spacing: 0.1em;
-  color: #333;
+/* Link columns */
+.cols {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: space-between;
+  gap: 2.5rem;
+  padding-left: 4rem;
+}
+
+.colLabel {
+  font-family: var(--font-heading);
+  font-size: 0.66rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--f-muted);
+  margin-bottom: 1.4rem;
+}
+
+.colList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.colList a {
+  color: var(--f-fg);
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.colList a:hover {
+  opacity: 0.6;
+}
+
+/* Studios */
+.studioList {
+  gap: 1.4rem;
+}
+
+.studio {
+  font-style: normal;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.studioLabel {
+  color: var(--f-fg);
+  margin-bottom: 0.2rem;
+}
+
+.studioLine {
+  color: var(--f-muted);
+  font-size: 0.85rem;
+}
+
+/* External-link affordance */
+.arrow {
+  display: inline-block;
+  margin-left: 0.15rem;
+  transition: transform 0.25s ease;
+}
+
+.colList a:hover .arrow,
+.mapLink:hover .arrow {
+  transform: translate(2px, -2px);
+}
+
+/* Hairline + meta row */
+.rule {
+  border: none;
+  height: 1px;
+  background: var(--f-line);
   margin: 0;
 }
 
-.address,
-.contact {
-  font-style: normal;
-  font-size: 1.2rem;
-  font-weight: 400;
-  color: #666;
-  line-height: 1.2;
+.meta {
   display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.phone,
-.email {
-  color: #666;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.phone:hover,
-.email:hover {
-  color: #333;
-}
-
-.mapButton {
-  display: inline-block;
-  padding: 0.5rem 2rem;
-  border: 2px solid #333;
-  color: #333;
-  text-decoration: none;
-  font-size: 0.875rem;
-  font-weight: 500;
-  letter-spacing: 0.15em;
-  transition: all 0.3s ease;
-  margin-top: 1rem;
-}
-
-.mapButton:hover {
-  background-color: #333;
-  color: #fff;
-}
-
-.social {
-  display: flex;
+  justify-content: space-between;
+  align-items: center;
   gap: 1.5rem;
-  margin-top: 1rem;
+  padding-block: 1.6rem;
+  font-size: 0.78rem;
+  color: var(--f-muted);
 }
 
-.social a {
-  opacity: 0.7;
-  transition: opacity 0.3s ease;
+.mapLink {
+  color: var(--f-muted);
+  transition: color 0.2s ease;
+  white-space: nowrap;
 }
 
-.social a:hover {
-  opacity: 1;
+.mapLink:hover {
+  color: var(--f-fg);
+}
+
+@media (max-width: 968px) {
+  .cols {
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem 2rem;
+  }
 }
 
 @media (max-width: 768px) {
-  .footer {
-    padding: 3rem 1.5rem;
+  .divider {
+    display: none;
   }
 
-  .title {
-    font-size: 1.25rem;
+  .masthead {
+    grid-template-columns: 1fr;
+    row-gap: 3.5rem;
+    padding-block: 3.5rem;
+    min-height: 0;
+    align-items: start;
   }
 
-  .mapButton {
-    padding: 0.75rem 2rem;
-    font-size: 0.8rem;
+  .logo {
+    height: 44px;
+  }
+
+  .cols {
+    padding-left: 0;
+    grid-template-columns: 1fr 1fr;
+    justify-content: start;
+  }
+
+  .meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding-block: 1.4rem;
   }
 }
