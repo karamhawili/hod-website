@@ -7,6 +7,7 @@ import { imageDetailsBlock } from "./blocks/imageDetailsBlock";
 import { imagePairBlock } from "./blocks/imagePairBlock";
 import { mixedImagePairBlock } from "./blocks/mixedImagePairBlock";
 import { homePage } from "./homePage";
+import { joinUsPage } from "./joinUsPage";
 import { pageBuilder } from "./pageBuilder";
 import { project } from "./project";
 import { siteSettings } from "./siteSettings";
@@ -25,6 +26,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     project,
     homePage,
     studioPage,
+    joinUsPage,
     siteSettings,
   ],
 };

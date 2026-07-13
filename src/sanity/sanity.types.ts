@@ -40,11 +40,57 @@ export type SiteSettings = {
   }>;
 };
 
+export type SanityFileAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.fileAsset";
+};
+
 export type SanityImageAssetReference = {
   _ref: string;
   _type: "reference";
   _weak?: boolean;
   [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+};
+
+export type JoinUsPage = {
+  _id: string;
+  _type: "joinUsPage";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  video?: {
+    asset?: SanityFileAssetReference;
+    media?: unknown;
+    _type: "file";
+  };
+  image?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  heading?: string;
+  body?: string;
+  email?: string;
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x: number;
+  y: number;
+  height: number;
+  width: number;
 };
 
 export type StudioPage = {
@@ -132,29 +178,6 @@ export type StudioPage = {
       _key: string;
     }>;
   };
-};
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top: number;
-  bottom: number;
-  left: number;
-  right: number;
-};
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x: number;
-  y: number;
-  height: number;
-  width: number;
-};
-
-export type SanityFileAssetReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "sanity.fileAsset";
 };
 
 export type ProjectReference = {
@@ -557,11 +580,12 @@ export type Geopoint = {
 
 export type AllSanitySchemaTypes =
   | SiteSettings
+  | SanityFileAssetReference
   | SanityImageAssetReference
-  | StudioPage
+  | JoinUsPage
   | SanityImageCrop
   | SanityImageHotspot
-  | SanityFileAssetReference
+  | StudioPage
   | ProjectReference
   | HomePage
   | CategoryReference
@@ -857,6 +881,15 @@ export type SITE_SETTINGS_QUERY_RESULT =
       locations: null;
       phone: null;
       email: null;
+      mapUrl: null;
+      socials: null;
+    }
+  | {
+      brandLine: null;
+      nav: null;
+      locations: null;
+      phone: null;
+      email: string | null;
       mapUrl: null;
       socials: null;
     }
