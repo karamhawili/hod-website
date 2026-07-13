@@ -115,7 +115,10 @@
 /* External-link affordance */
 .arrow {
   display: inline-block;
-  margin-left: 0.15rem;
+  width: 0.8em;
+  height: 0.8em;
+  margin-left: 0.3rem;
+  vertical-align: -0.05em;
   transition: transform 0.25s ease;
 }
 

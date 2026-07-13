@@ -57,7 +57,7 @@ they belong to the old design language.
   Data fetching uses the **Live Content API** (`defineLive` / `sanityFetch` in
   `src/sanity/lib/live.ts`, `<SanityLive />` in root layout) — not plain ISR.
 - Fonts loaded via `next/font/google` in `src/app/layout.tsx`. The redesign uses
-  **Archivo** (headings, `--font-heading`) + **Inter** (body, `--font-body`).
+  **Manrope** (headings, `--font-heading`) + **Inter** (body, `--font-body`).
   The old families — Cormorant Garamond (`--font-serif`), Darker Grotesque
   (`--font-sans`), Great Vibes (`--font-script`, script — being removed) — stay
   loaded only while out-of-scope pages + the not-yet-rebuilt About still use them.
@@ -123,11 +123,13 @@ they belong to the old design language.
 - [x] Phase 1.5 — Approved fixes from audit (isolated commits). Done: TypeGen
       adoption, GROQ over-fetch split, `.npmrc`. Rest deferred to Phase 3/4 (Audit.md).
 - [x] Phase 2 — Token replacement in globals.css + font decision
-      (Archivo + Inter; warm neutral + brown palette)
+      (Manrope + Inter; warm neutral + brown palette)
 - [x] Phase 3 — Navigation + Footer redesign (+ siteSettings singleton).
       Built & typechecks/lints clean; visual pass + `npm run typegen` + populating
       siteSettings are the user's runtime steps.
-- [ ] Phase 4 — Landing page (schema → components → GROQ → polish)
+- [x] Phase 4 — Landing page (schema → components → GROQ → polish).
+      Built & typechecks/lints/typegen clean; visual pass + populating the
+      homePage singleton are the user's runtime steps. Polish iterations open.
 - [ ] Phase 5 — About page (+ join-us decision)
 - [ ] Phase 6 — Responsive + QA pass
 

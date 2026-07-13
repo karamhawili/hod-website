@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import {
-  Archivo,
   Cormorant_Garamond,
   Darker_Grotesque,
   Great_Vibes,
   Inter,
+  Manrope,
 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
@@ -35,9 +35,9 @@ const greatVibes = Great_Vibes({
 // The three fonts above are kept for now because out-of-scope pages
 // (/portfolio, /project) + the not-yet-rebuilt About still resolve
 // --font-serif/--font-sans/--font-script through them.
-const archivo = Archivo({
+const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-archivo",
+  variable: "--font-manrope",
   display: "swap",
 });
 
@@ -61,7 +61,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${darkerGrotesque.variable} ${greatVibes.variable} ${archivo.variable} ${inter.variable}`}
+      className={`${cormorant.variable} ${darkerGrotesque.variable} ${greatVibes.variable} ${manrope.variable} ${inter.variable}`}
     >
       <body>{children}</body>
       <Analytics />

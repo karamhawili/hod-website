@@ -1,0 +1,99 @@
+.section {
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding: var(--section-padding) var(--container-padding)
+    calc(var(--section-padding) * 1.25);
+}
+
+/* The whole card — image + caption — is one centered block; the caption
+   below stays left-aligned to the image's own left edge. */
+.frame {
+  width: 78%;
+  margin-inline: auto;
+}
+
+.mediaLink {
+  display: block;
+}
+
+.media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  max-height: 68vh;
+  overflow: hidden;
+  background: var(--color-line);
+}
+
+.img {
+  object-fit: cover;
+  transition: transform 0.7s ease;
+}
+
+.mediaLink:hover .img {
+  transform: scale(1.03);
+}
+
+.caption {
+  margin-top: 2.25rem;
+  max-width: var(--content-narrow);
+  text-align: left;
+}
+
+.label {
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--color-accent);
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: clamp(1.5rem, 2.4vw, 2.25rem);
+  font-weight: 500;
+  line-height: 1.15;
+  margin-bottom: 0.5rem;
+}
+
+.meta {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--color-fg-muted);
+  margin-bottom: 1.75rem;
+}
+
+/* Sharp filled rectangle, same ink as the footer ground. */
+.cta {
+  display: inline-block;
+  padding: 0.85rem 2rem;
+  background: var(--color-fg);
+  color: var(--color-bg);
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  transition: background-color 0.25s ease;
+}
+
+.cta:hover {
+  background: var(--color-accent);
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .frame {
+    width: 100%;
+  }
+
+  .media {
+    aspect-ratio: 4 / 3;
+    max-height: none;
+  }
+
+  .caption {
+    margin-top: 1.5rem;
+  }
+}

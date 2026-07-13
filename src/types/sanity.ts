@@ -126,6 +126,57 @@ export interface SiteSettings {
   socials?: SocialLink[];
 }
 
+// Minimal project projection used by homepage cards (flattened slug).
+export interface ProjectCard {
+  _id: string;
+  title: string;
+  formattedTitle?: PortableTextBlock[];
+  slug: string;
+  coverImage: SanityImage;
+  excerpt?: string;
+  location: string;
+  year: number;
+}
+
+export interface StudioCard {
+  image?: SanityImage & { alt?: string };
+  label?: string;
+  title?: string;
+  description?: string;
+  url?: string;
+}
+
+export interface Mention {
+  publication?: string;
+  title?: string;
+  url?: string;
+}
+
+export interface HomePage {
+  heroImage?: SanityImage;
+  heroVideoUrl?: string;
+  introStatement?: string;
+  projectsSection?: {
+    label?: string;
+    heading?: string;
+    body?: string;
+    image?: SanityImage;
+    projects?: ProjectCard[];
+  };
+  studioSection?: {
+    label?: string;
+    heading?: string;
+    body?: string;
+    image?: SanityImage;
+    cards?: StudioCard[];
+    mentions?: Mention[];
+  };
+  showcase?: {
+    project?: ProjectCard | null;
+    image?: SanityImage;
+  };
+}
+
 export type PageBuilderBlock =
   | HeroBlock
   | ImageDetailsBlock

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Logo from "@/components/Logo/Logo";
+import OutwardIcon from "@/components/icons/OutwardIcon";
 import { getSiteSettings } from "@/sanity/lib/queries";
 import type { SiteSettings } from "@/types/sanity";
 import styles from "./Footer.module.css";
@@ -133,9 +134,7 @@ export default async function Footer({ showGradient }: FooterProps) {
                       rel="noopener noreferrer"
                     >
                       {SOCIAL_LABELS[social.platform] ?? social.platform}
-                      <span className={styles.arrow} aria-hidden="true">
-                        ↗
-                      </span>
+                      <OutwardIcon className={styles.arrow} />
                     </a>
                   </li>
                 ))}
@@ -158,9 +157,7 @@ export default async function Footer({ showGradient }: FooterProps) {
               className={styles.mapLink}
             >
               View Map
-              <span className={styles.arrow} aria-hidden="true">
-                ↗
-              </span>
+              <OutwardIcon className={styles.arrow} />
             </Link>
           )}
         </div>

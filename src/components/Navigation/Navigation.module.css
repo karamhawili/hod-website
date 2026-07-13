@@ -21,11 +21,11 @@
   color: var(--color-bg);
 }
 
-/* Scrolled: solid white bar, dark content. Deliberately plain — no blur,
-   transparency, border or shadow. */
+/* Scrolled: solid warm bar in the page ground color — the bar disappears
+   into the page and only the content reads. No border, no shadow. */
 .header.scrolled {
   color: var(--color-fg);
-  background: var(--surface-white);
+  background: var(--color-bg);
   padding-top: 0.9rem;
   padding-bottom: 0.9rem;
 }
@@ -44,12 +44,6 @@
   height: 34px;
   width: auto;
   display: block;
-  transition: height 0.3s ease;
-}
-
-/* Compress the mark slightly on the scrolled bar. */
-.header.scrolled .logo {
-  height: 28px;
 }
 
 /* Desktop inline nav */
@@ -177,8 +171,7 @@
     padding-bottom: 0.9rem;
   }
 
-  .logo,
-  .header.scrolled .logo {
+  .logo {
     height: 26px;
   }
 

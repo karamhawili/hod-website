@@ -1,0 +1,16 @@
+.section {
+  display: flex;
+  justify-content: center;
+  padding: clamp(5rem, 12vh, 9rem) var(--container-padding);
+}
+
+.statement {
+  max-width: var(--content-tight);
+  text-align: center;
+  font-family: var(--font-heading);
+  font-size: clamp(0.9rem, 1.3vw, 1.1rem);
+  font-weight: 500;
+  line-height: 1.9;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}

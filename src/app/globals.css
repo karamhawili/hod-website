@@ -40,7 +40,7 @@
   /* ===== Redesign tokens (warm neutral + brown) =====
      Consumed by NEW components only. Old element defaults (body, h1-h6)
      stay on the legacy tokens above so out-of-scope pages are untouched. */
-  --font-heading: var(--font-archivo);
+  --font-heading: var(--font-manrope);
   --font-body: var(--font-inter);
 
   --color-bg: #faf7f3; /* warm off-white */
@@ -64,6 +64,18 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+/* Base for REDESIGNED pages only (landing/about roots). Old element defaults
+   below stay on legacy tokens so out-of-scope pages are untouched. */
+.theme-redesign {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-body);
+}
+
+.theme-redesign :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-heading);
 }
 
 body {

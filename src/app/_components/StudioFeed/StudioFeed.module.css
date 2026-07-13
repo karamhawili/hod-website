@@ -1,0 +1,217 @@
+/* Mirror of ProjectsFeed: feed left, sticky column right. */
+.section {
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  gap: calc(var(--content-gutter) * 2);
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding: var(--section-padding) var(--container-padding);
+}
+
+/* Sticky editorial column (right) */
+.stickyInner {
+  position: sticky;
+  top: 7.5rem;
+  padding-left: 2rem;
+}
+
+.label {
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--color-accent);
+  margin-bottom: 1.4rem;
+}
+
+.heading {
+  font-size: clamp(1.4rem, 2.1vw, 2rem);
+  font-weight: 500;
+  line-height: 1.2;
+  margin-bottom: 1.4rem;
+  max-width: 16ch;
+}
+
+.body {
+  color: var(--color-fg-muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: 36ch;
+  margin-bottom: 2.25rem;
+}
+
+/* Sharp filled rectangle, same ink as the footer ground. */
+.cta {
+  display: inline-block;
+  padding: 0.85rem 2rem;
+  background: var(--color-fg);
+  color: var(--color-bg);
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  transition: background-color 0.25s ease;
+}
+
+.cta:hover {
+  background: var(--color-accent);
+  opacity: 1;
+}
+
+/* Image at the top of the sticky column, above the text */
+.stickyMedia {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--color-line);
+  margin-bottom: 2.75rem;
+  max-width: 26rem;
+}
+
+.stickyImg {
+  object-fit: cover;
+}
+
+/* Scrolling feed (left). Same row structure as ProjectsFeed, mirrored:
+   wide card spanning both columns (anchored right), then a pair sharing a
+   row with the first dropped down. */
+.feed {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: calc(var(--content-gutter) * 1.5);
+  row-gap: clamp(6rem, 14vh, 10rem);
+  align-items: start;
+}
+
+.card {
+  grid-column: 1 / -1;
+  width: 76%;
+  justify-self: end;
+}
+
+.card:nth-child(3n + 2) {
+  grid-column: 1;
+  width: 92%;
+  justify-self: start;
+  margin-top: clamp(4rem, 11vh, 7.5rem);
+}
+
+.card:nth-child(3n) {
+  grid-column: 2;
+  width: 84%;
+  justify-self: start;
+}
+
+/* Text-only press index under the cards */
+.mentions {
+  grid-column: 1 / -1;
+  margin-top: 1.5rem;
+}
+
+.mentionsLabel {
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--color-accent);
+  margin-bottom: 1.4rem;
+}
+
+.mentionsList {
+  list-style: none;
+}
+
+.mentionsList li:last-child .mentionRow {
+  border-bottom: 1px solid var(--color-line);
+}
+
+.mentionRow {
+  display: flex;
+  align-items: baseline;
+  gap: 1.25rem;
+  padding-block: 1.05rem;
+  border-top: 1px solid var(--color-line);
+  color: var(--color-fg);
+}
+
+.mentionPub {
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.mentionTitle {
+  font-size: 0.88rem;
+  color: var(--color-fg-muted);
+  flex: 1;
+}
+
+.mentionArrow {
+  width: 0.8rem;
+  height: 0.8rem;
+  flex-shrink: 0;
+  align-self: center;
+  color: var(--color-fg-muted);
+  transition:
+    transform 0.25s ease,
+    color 0.2s ease;
+}
+
+a.mentionRow:hover {
+  opacity: 1;
+}
+
+a.mentionRow:hover .mentionPub {
+  color: var(--color-accent);
+}
+
+a.mentionRow:hover .mentionArrow {
+  color: var(--color-accent);
+  transform: translate(2px, -2px);
+}
+
+@media (max-width: 768px) {
+  .section {
+    grid-template-columns: 1fr;
+    gap: 3.5rem;
+  }
+
+  /* Text first on mobile, then the cards. */
+  .stickyCol {
+    order: -1;
+  }
+
+  .stickyInner {
+    position: static;
+    padding-left: 0;
+  }
+
+  .stickyMedia {
+    max-width: none;
+  }
+
+  .feed {
+    grid-template-columns: 1fr;
+    row-gap: 3.5rem;
+  }
+
+  .card,
+  .card:nth-child(3n + 2),
+  .card:nth-child(3n) {
+    grid-column: 1 / -1;
+    width: 100%;
+    margin-top: 0;
+    justify-self: stretch;
+  }
+
+  .mentions {
+    margin-top: 0.5rem;
+  }
+}

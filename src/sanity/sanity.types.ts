@@ -13,11 +13,151 @@
  */
 
 // Source: src/sanity/extract.json
+export type SiteSettings = {
+  _id: string;
+  _type: "siteSettings";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  brandLine?: string;
+  nav?: Array<{
+    label: string;
+    href: string;
+    _key: string;
+  }>;
+  locations?: Array<{
+    label: string;
+    address?: string;
+    _key: string;
+  }>;
+  phone?: string;
+  email?: string;
+  mapUrl?: string;
+  socials?: Array<{
+    platform: "instagram" | "linkedin";
+    url: string;
+    _key: string;
+  }>;
+};
+
 export type SanityImageAssetReference = {
   _ref: string;
   _type: "reference";
   _weak?: boolean;
   [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+};
+
+export type SanityFileAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.fileAsset";
+};
+
+export type ProjectReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "project";
+};
+
+export type HomePage = {
+  _id: string;
+  _type: "homePage";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  hero?: {
+    image: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    };
+    video?: {
+      asset?: SanityFileAssetReference;
+      media?: unknown;
+      _type: "file";
+    };
+  };
+  introStatement?: string;
+  projectsSection?: {
+    label?: string;
+    heading?: string;
+    body?: string;
+    image?: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    };
+    projects?: Array<
+      {
+        _key: string;
+      } & ProjectReference
+    >;
+  };
+  studioSection?: {
+    label?: string;
+    heading?: string;
+    body?: string;
+    image?: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    };
+    cards?: Array<{
+      image?: {
+        asset?: SanityImageAssetReference;
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        alt?: string;
+        _type: "image";
+      };
+      label?: string;
+      title: string;
+      description?: string;
+      url?: string;
+      _key: string;
+    }>;
+    mentions?: Array<{
+      publication: string;
+      title?: string;
+      url?: string;
+      _key: string;
+    }>;
+  };
+  showcase?: {
+    project?: ProjectReference;
+    image?: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    };
+  };
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x: number;
+  y: number;
+  height: number;
+  width: number;
 };
 
 export type CategoryReference = {
@@ -89,22 +229,6 @@ export type PageBuilder = Array<
       _key: string;
     } & MixedImagePairBlock)
 >;
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top: number;
-  bottom: number;
-  left: number;
-  right: number;
-};
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x: number;
-  y: number;
-  height: number;
-  width: number;
-};
 
 export type Slug = {
   _type: "slug";
@@ -345,12 +469,16 @@ export type Geopoint = {
 };
 
 export type AllSanitySchemaTypes =
+  | SiteSettings
   | SanityImageAssetReference
+  | SanityFileAssetReference
+  | ProjectReference
+  | HomePage
+  | SanityImageCrop
+  | SanityImageHotspot
   | CategoryReference
   | Project
   | PageBuilder
-  | SanityImageCrop
-  | SanityImageHotspot
   | Slug
   | CenteredTextBlock
   | MixedImagePairBlock
@@ -630,3 +758,259 @@ export type PROJECT_PAGE_QUERY_RESULT = {
       }
   > | null;
 } | null;
+
+// Source: src/sanity/lib/queries.ts
+// Variable: SITE_SETTINGS_QUERY
+// Query: *[_id == "siteSettings"][0]{    brandLine,    nav[]{ label, href },    locations[]{ label, address },    phone,    email,    mapUrl,    socials[]{ platform, url }  }
+export type SITE_SETTINGS_QUERY_RESULT =
+  | {
+      brandLine: null;
+      nav: null;
+      locations: null;
+      phone: null;
+      email: null;
+      mapUrl: null;
+      socials: null;
+    }
+  | {
+      brandLine: string | null;
+      nav: Array<{
+        label: string;
+        href: string;
+      }> | null;
+      locations: Array<{
+        label: string;
+        address: string | null;
+      }> | null;
+      phone: string | null;
+      email: string | null;
+      mapUrl: string | null;
+      socials: Array<{
+        platform: "instagram" | "linkedin";
+        url: string;
+      }> | null;
+    }
+  | null;
+
+// Source: src/sanity/lib/queries.ts
+// Variable: HOME_PAGE_QUERY
+// Query: *[_id == "homePage"][0]{    "heroImage": hero.image,    "heroVideoUrl": hero.video.asset->url,    introStatement,    "projectsSection": {      "label": projectsSection.label,      "heading": projectsSection.heading,      "body": projectsSection.body,      "image": projectsSection.image,      "projects": select(        count(projectsSection.projects) > 0 => projectsSection.projects[]->{   _id,  title,  formattedTitle,  "slug": slug.current,  coverImage,  excerpt,  location,  year },        *[_type == "project"] | order(year desc)[0...4]{   _id,  title,  formattedTitle,  "slug": slug.current,  coverImage,  excerpt,  location,  year }      )    },    "studioSection": studioSection{      label,      heading,      body,      image,      cards[]{ image, label, title, description, url },      mentions[]{ publication, title, url }    },    "showcase": {      "project": showcase.project->{   _id,  title,  formattedTitle,  "slug": slug.current,  coverImage,  excerpt,  location,  year },      "image": showcase.image    }  }
+export type HOME_PAGE_QUERY_RESULT =
+  | {
+      heroImage: null;
+      heroVideoUrl: null;
+      introStatement: null;
+      projectsSection: {
+        label: null;
+        heading: null;
+        body: null;
+        image: null;
+        projects: Array<{
+          _id: string;
+          title: string;
+          formattedTitle: Array<{
+            children?: Array<{
+              marks?: Array<string>;
+              text?: string;
+              _type: "span";
+              _key: string;
+            }>;
+            style?: "normal";
+            listItem?: never;
+            markDefs?: null;
+            level?: number;
+            _type: "block";
+            _key: string;
+          }> | null;
+          slug: string;
+          coverImage: {
+            asset?: SanityImageAssetReference;
+            media?: unknown;
+            hotspot?: SanityImageHotspot;
+            crop?: SanityImageCrop;
+            _type: "image";
+          };
+          excerpt: string | null;
+          location:
+            | "Abu Dhabi"
+            | "Beirut"
+            | "Cairo"
+            | "Doha"
+            | "Dubai"
+            | "Riyadh";
+          year: number;
+        }>;
+      };
+      studioSection: null;
+      showcase: {
+        project: null;
+        image: null;
+      };
+    }
+  | {
+      heroImage: {
+        asset?: SanityImageAssetReference;
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        _type: "image";
+      } | null;
+      heroVideoUrl: string | null;
+      introStatement: string | null;
+      projectsSection: {
+        label: string | null;
+        heading: string | null;
+        body: string | null;
+        image: {
+          asset?: SanityImageAssetReference;
+          media?: unknown;
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          _type: "image";
+        } | null;
+        projects: Array<{
+          _id: string;
+          title: string;
+          formattedTitle: Array<{
+            children?: Array<{
+              marks?: Array<string>;
+              text?: string;
+              _type: "span";
+              _key: string;
+            }>;
+            style?: "normal";
+            listItem?: never;
+            markDefs?: null;
+            level?: number;
+            _type: "block";
+            _key: string;
+          }> | null;
+          slug: string;
+          coverImage: {
+            asset?: SanityImageAssetReference;
+            media?: unknown;
+            hotspot?: SanityImageHotspot;
+            crop?: SanityImageCrop;
+            _type: "image";
+          };
+          excerpt: string | null;
+          location:
+            | "Abu Dhabi"
+            | "Beirut"
+            | "Cairo"
+            | "Doha"
+            | "Dubai"
+            | "Riyadh";
+          year: number;
+        }> | null;
+      };
+      studioSection: {
+        label: string | null;
+        heading: string | null;
+        body: string | null;
+        image: {
+          asset?: SanityImageAssetReference;
+          media?: unknown;
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          _type: "image";
+        } | null;
+        cards: Array<{
+          image: {
+            asset?: SanityImageAssetReference;
+            media?: unknown;
+            hotspot?: SanityImageHotspot;
+            crop?: SanityImageCrop;
+            alt?: string;
+            _type: "image";
+          } | null;
+          label: string | null;
+          title: string;
+          description: string | null;
+          url: string | null;
+        }> | null;
+        mentions: Array<{
+          publication: string;
+          title: string | null;
+          url: string | null;
+        }> | null;
+      } | null;
+      showcase: {
+        project: {
+          _id: string;
+          title: string;
+          formattedTitle: Array<{
+            children?: Array<{
+              marks?: Array<string>;
+              text?: string;
+              _type: "span";
+              _key: string;
+            }>;
+            style?: "normal";
+            listItem?: never;
+            markDefs?: null;
+            level?: number;
+            _type: "block";
+            _key: string;
+          }> | null;
+          slug: string;
+          coverImage: {
+            asset?: SanityImageAssetReference;
+            media?: unknown;
+            hotspot?: SanityImageHotspot;
+            crop?: SanityImageCrop;
+            _type: "image";
+          };
+          excerpt: string | null;
+          location:
+            | "Abu Dhabi"
+            | "Beirut"
+            | "Cairo"
+            | "Doha"
+            | "Dubai"
+            | "Riyadh";
+          year: number;
+        } | null;
+        image: {
+          asset?: SanityImageAssetReference;
+          media?: unknown;
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          _type: "image";
+        } | null;
+      };
+    }
+  | null;
+
+// Source: src/sanity/lib/queries.ts
+// Variable: LATEST_PROJECT_CARDS_QUERY
+// Query: *[_type == "project"] | order(year desc)[0...4]{   _id,  title,  formattedTitle,  "slug": slug.current,  coverImage,  excerpt,  location,  year }
+export type LATEST_PROJECT_CARDS_QUERY_RESULT = Array<{
+  _id: string;
+  title: string;
+  formattedTitle: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "normal";
+    listItem?: never;
+    markDefs?: null;
+    level?: number;
+    _type: "block";
+    _key: string;
+  }> | null;
+  slug: string;
+  coverImage: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  excerpt: string | null;
+  location: "Abu Dhabi" | "Beirut" | "Cairo" | "Doha" | "Dubai" | "Riyadh";
+  year: number;
+}>;

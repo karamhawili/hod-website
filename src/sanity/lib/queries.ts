@@ -1,6 +1,6 @@
 import { defineQuery } from "next-sanity";
 import { sanityFetch } from "@/sanity/lib/live";
-import { Project, SiteSettings } from "@/types/sanity";
+import { HomePage, Project, ProjectCard, SiteSettings } from "@/types/sanity";
 
 // Card/listing fields. Used by the landing + portfolio project feeds, which
 // render cover image, title, location, year, categories — NOT the page-builder
@@ -157,4 +157,70 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
   });
 
   return result.data as SiteSettings | null;
+}
+
+// Minimal card projection for homepage feeds (flattened slug).
+const PROJECT_CARD_FIELDS = `
+  _id,
+  title,
+  formattedTitle,
+  "slug": slug.current,
+  coverImage,
+  excerpt,
+  location,
+  year
+`;
+
+export const HOME_PAGE_QUERY = defineQuery(`
+  *[_id == "homePage"][0]{
+    "heroImage": hero.image,
+    "heroVideoUrl": hero.video.asset->url,
+    introStatement,
+    "projectsSection": {
+      "label": projectsSection.label,
+      "heading": projectsSection.heading,
+      "body": projectsSection.body,
+      "image": projectsSection.image,
+      "projects": select(
+        count(projectsSection.projects) > 0 => projectsSection.projects[]->{ ${PROJECT_CARD_FIELDS} },
+        *[_type == "project"] | order(year desc)[0...4]{ ${PROJECT_CARD_FIELDS} }
+      )
+    },
+    "studioSection": studioSection{
+      label,
+      heading,
+      body,
+      image,
+      cards[]{ image, label, title, description, url },
+      mentions[]{ publication, title, url }
+    },
+    "showcase": {
+      "project": showcase.project->{ ${PROJECT_CARD_FIELDS} },
+      "image": showcase.image
+    }
+  }
+`);
+
+// Fallback for when the homePage singleton hasn't been created yet.
+export const LATEST_PROJECT_CARDS_QUERY = defineQuery(`
+  *[_type == "project"] | order(year desc)[0...4]{ ${PROJECT_CARD_FIELDS} }
+`);
+
+export async function getHomePage(): Promise<HomePage | null> {
+  const result = await sanityFetch({
+    query: HOME_PAGE_QUERY,
+    // "project" tag included because the query dereferences projects.
+    tags: ["homePage", "project"],
+  });
+
+  return result.data as HomePage | null;
+}
+
+export async function getLatestProjectCards(): Promise<ProjectCard[]> {
+  const result = await sanityFetch({
+    query: LATEST_PROJECT_CARDS_QUERY,
+    tags: ["project"],
+  });
+
+  return (result.data ?? []) as ProjectCard[];
 }
