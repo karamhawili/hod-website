@@ -19,10 +19,13 @@
   object-fit: cover;
 }
 
+/* Same width as the photo, inset with padding so the text block reads
+   narrower than its image. */
 .text {
-  max-width: var(--content-narrow);
+  max-width: var(--content-wide);
   margin-inline: auto;
-  padding-top: clamp(3rem, 7vh, 5rem);
+  padding-top: clamp(2rem, 4.5vh, 3rem);
+  padding-inline: clamp(2rem, 8vw, 7rem);
 }
 
 .heading {
@@ -30,24 +33,23 @@
   font-weight: 700;
   line-height: 1.45;
   text-transform: uppercase;
-  margin-bottom: 1.75rem;
+  margin-bottom: 1.25rem;
 }
 
 .body {
   color: var(--color-fg-muted);
   font-size: 0.95rem;
   line-height: 1.8;
-  max-width: 62ch;
 }
 
 .body + .body {
-  margin-top: 1.4rem;
+  margin-top: 1.25rem;
 }
 
 /* Sharp filled rectangle, same ink as the landing CTAs. */
 .cta {
   display: inline-block;
-  margin-top: 2.25rem;
+  margin-top: 1.75rem;
   padding: 0.85rem 2rem;
   background: var(--color-fg);
   color: var(--color-bg);
@@ -70,6 +72,7 @@
   }
 
   .text {
-    padding-top: 2.5rem;
+    padding-top: 2rem;
+    padding-inline: 0;
   }
 }
