@@ -1,11 +1,14 @@
+import Image from "next/image";
 import Reveal from "@/components/Reveal/Reveal";
+import { urlForSized } from "@/sanity/lib/image";
 import type { StudioPage } from "@/types/sanity";
 import styles from "./StudioDisciplines.module.css";
 
-// Placeholder lists until the client fills the studioPage singleton — from
-// the old about page's Sectors/Services section.
+// Placeholder content until the client fills the studioPage singleton — lists
+// from the old about page's Sectors/Services section.
 const DEFAULTS = {
-  heading: "What we do",
+  image: "/about/grid-03.jpg",
+  secondaryImage: "/about/wwu-left.png",
   body: "Experts in high-end F&B spaces, we apply our sophisticated interior design skills to restaurants, beaches, lounges, and other exclusive venues, tailoring our expertise to craft exceptional environments throughout the sector.",
   sectors: ["Private Residential", "Restaurants", "Lounges", "Beaches"],
   services: [
@@ -20,11 +23,19 @@ interface StudioDisciplinesProps {
   disciplines?: StudioPage["disciplines"];
 }
 
-// Sectors and services as two hairline-ruled lists — the text-only index
-// language from the landing's press list.
+// Intentionally contained interlude: a wide image with a small offset portrait
+// beside it, then a short text and the sectors/services lists — all left
+// aligned within the narrower container.
 export default function StudioDisciplines({
   disciplines,
 }: StudioDisciplinesProps) {
+  const imageUrl = disciplines?.image
+    ? urlForSized(disciplines.image, 1400)
+    : DEFAULTS.image;
+  const secondaryImageUrl = disciplines?.secondaryImage
+    ? urlForSized(disciplines.secondaryImage, 800)
+    : DEFAULTS.secondaryImage;
+
   const sectors = disciplines?.sectors?.length
     ? disciplines.sectors
     : DEFAULTS.sectors;
@@ -34,10 +45,30 @@ export default function StudioDisciplines({
 
   return (
     <section className={styles.section}>
+      <div className={styles.media}>
+        <Reveal className={styles.mainMedia}>
+          <Image
+            src={imageUrl}
+            alt=""
+            fill
+            sizes="(max-width: 768px) 100vw, 40vw"
+            quality={90}
+            className={styles.img}
+          />
+        </Reveal>
+        <Reveal className={styles.portraitMedia}>
+          <Image
+            src={secondaryImageUrl}
+            alt=""
+            fill
+            sizes="(max-width: 768px) 50vw, 20vw"
+            quality={90}
+            className={styles.img}
+          />
+        </Reveal>
+      </div>
+
       <Reveal>
-        <h2 className={styles.heading}>
-          {disciplines?.heading || DEFAULTS.heading}
-        </h2>
         <p className={styles.body}>{disciplines?.body || DEFAULTS.body}</p>
       </Reveal>
 

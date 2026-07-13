@@ -1,18 +1,37 @@
-/* Sectors + services as a fully centered, symmetric interlude — the one
-   section that breaks the page's two-column rhythm. */
+/* Intentionally contained interlude — narrower than the hero, left aligned:
+   wide image + small offset portrait on top, then text and the two lists. */
 .section {
   max-width: var(--content-base);
   margin-inline: auto;
   padding: var(--section-padding) var(--container-padding);
-  text-align: center;
 }
 
-.heading {
-  font-size: clamp(1.15rem, 1.7vw, 1.5rem);
-  font-weight: 700;
-  line-height: 1.45;
-  text-transform: uppercase;
-  margin-bottom: 1.25rem;
+.media {
+  display: grid;
+  grid-template-columns: 8fr 4fr;
+  gap: calc(var(--content-gutter) * 1.5);
+  align-items: start;
+  margin-bottom: clamp(3rem, 7vh, 4.5rem);
+}
+
+.mainMedia {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--color-line);
+}
+
+.portraitMedia {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--color-line);
+  /* Dropped slightly for the staggered editorial rhythm. */
+  margin-top: clamp(2rem, 5vh, 3.5rem);
+}
+
+.img {
+  object-fit: cover;
 }
 
 .body {
@@ -20,14 +39,13 @@
   font-size: 0.95rem;
   line-height: 1.8;
   max-width: 52ch;
-  margin-inline: auto;
-  margin-bottom: clamp(3.5rem, 8vh, 5.5rem);
+  margin-bottom: clamp(3rem, 6vh, 4rem);
 }
 
 .columns {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: calc(var(--content-gutter) * 2.5);
+  gap: calc(var(--content-gutter) * 2);
   align-items: start;
 }
 
@@ -58,6 +76,16 @@
 }
 
 @media (max-width: 768px) {
+  .media {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .portraitMedia {
+    margin-top: 0;
+    max-width: 60%;
+  }
+
   .columns {
     grid-template-columns: 1fr;
     gap: 2.5rem;

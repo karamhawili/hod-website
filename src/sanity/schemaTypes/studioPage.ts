@@ -98,13 +98,22 @@ export const studioPage = defineType({
       title: "Sectors & Services",
       type: "object",
       group: "disciplines",
-      description: "Two simple lists: the sectors we work in and the services we offer.",
+      description:
+        "A contained section: a wide image with a small upright image beside it, then a short text and the two lists — the sectors we work in and the services we offer.",
       fields: [
         defineField({
-          name: "heading",
-          title: "Statement",
-          type: "string",
-          description: "The centered statement above the lists, e.g. “What we do”.",
+          name: "image",
+          title: "Wide Image",
+          type: "image",
+          options: { hotspot: true },
+          description: "The wide image at the top of the section.",
+        }),
+        defineField({
+          name: "secondaryImage",
+          title: "Small Upright Image",
+          type: "image",
+          options: { hotspot: true },
+          description: "The smaller upright image to the right of the wide one.",
         }),
         defineField({
           name: "body",
