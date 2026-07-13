@@ -39,7 +39,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               Edit this project in Sanity Studio to add page content.
             </p>
             <div className={styles.actions}>
-              <Link href="/studio" className={styles.studioButton}>
+              <Link href="/admin" className={styles.studioButton}>
                 Go to Studio
               </Link>
               <Link href="/portfolio" className={styles.backLink}>
