@@ -10,6 +10,7 @@ import { homePage } from "./homePage";
 import { pageBuilder } from "./pageBuilder";
 import { project } from "./project";
 import { siteSettings } from "./siteSettings";
+import { studioPage } from "./studioPage";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -23,6 +24,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     pageBuilder,
     project,
     homePage,
+    studioPage,
     siteSettings,
   ],
 };

@@ -47,6 +47,95 @@ export type SanityImageAssetReference = {
   [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
 };
 
+export type StudioPage = {
+  _id: string;
+  _type: "studioPage";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  intro?: {
+    heading?: string;
+    body?: string;
+    image?: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    };
+    secondaryImage?: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    };
+    secondaryBody?: string;
+  };
+  team?: {
+    image?: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    };
+    heading?: string;
+    body?: string;
+  };
+  disciplines?: {
+    body?: string;
+    sectors?: Array<string>;
+    services?: Array<string>;
+  };
+  founder?: {
+    name?: string;
+    role?: string;
+    image?: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    };
+    bio?: string;
+    linkLabel?: string;
+    linkUrl?: string;
+  };
+  publications?: {
+    label?: string;
+    image?: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    };
+    items?: Array<{
+      publication: string;
+      title?: string;
+      url?: string;
+      _key: string;
+    }>;
+  };
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x: number;
+  y: number;
+  height: number;
+  width: number;
+};
+
 export type SanityFileAssetReference = {
   _ref: string;
   _type: "reference";
@@ -142,22 +231,6 @@ export type HomePage = {
       _type: "image";
     };
   };
-};
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top: number;
-  bottom: number;
-  left: number;
-  right: number;
-};
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x: number;
-  y: number;
-  height: number;
-  width: number;
 };
 
 export type CategoryReference = {
@@ -471,11 +544,12 @@ export type Geopoint = {
 export type AllSanitySchemaTypes =
   | SiteSettings
   | SanityImageAssetReference
+  | StudioPage
+  | SanityImageCrop
+  | SanityImageHotspot
   | SanityFileAssetReference
   | ProjectReference
   | HomePage
-  | SanityImageCrop
-  | SanityImageHotspot
   | CategoryReference
   | Project
   | PageBuilder
