@@ -5,6 +5,7 @@ import { getStudioPage } from "@/sanity/lib/queries";
 import StudioDisciplines from "./_components/StudioDisciplines/StudioDisciplines";
 import StudioFounder from "./_components/StudioFounder/StudioFounder";
 import StudioIntro from "./_components/StudioIntro/StudioIntro";
+import StudioPublications from "./_components/StudioPublications/StudioPublications";
 import StudioTeam from "./_components/StudioTeam/StudioTeam";
 
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export default async function StudioPage() {
         <StudioTeam team={studio?.team} />
         <StudioDisciplines disciplines={studio?.disciplines} />
         <StudioFounder founder={studio?.founder} />
+        <StudioPublications publications={studio?.publications} />
       </main>
       <Footer />
     </>
