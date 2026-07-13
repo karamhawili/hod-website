@@ -216,6 +216,14 @@ export interface StudioPage {
   };
 }
 
+export interface JoinUsPage {
+  videoUrl?: string;
+  image?: SanityImage;
+  heading?: string;
+  body?: string;
+  email?: string;
+}
+
 export type PageBuilderBlock =
   | HeroBlock
   | ImageDetailsBlock

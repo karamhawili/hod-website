@@ -21,8 +21,8 @@ Redesign of the following, and ONLY the following:
    The `showGradient` prop and gradient styling die with the redesign.
 
 **Decided (Phase 5):** `/join-us` stays its own route — the Studio page's team
-section links to it. Its own redesign is not yet scheduled; do not touch it
-otherwise.
+section links to it. Redesigned after Phase 5: split hero (looping video left,
+careers pitch + resume email right), content via the `joinUsPage` singleton.
 
 **Out of scope — do not modify:** `/portfolio`, `/project/[slug]`, the
 PageBuilder system (`src/components/PageBuilder`, `src/sanity/schemaTypes/blocks/*`,

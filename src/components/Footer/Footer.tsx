@@ -39,7 +39,7 @@ const SOCIAL_LABELS: Record<string, string> = {
 };
 
 interface FooterProps {
-  // Kept for out-of-scope /project/[slug] + /join-us, which still pass it.
+  // Kept for out-of-scope /project/[slug] + /portfolio, which still pass it.
   // The redesign has no gradient, so it no longer affects rendering.
   showGradient?: boolean;
 }

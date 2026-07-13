@@ -2,6 +2,7 @@ import { defineQuery } from "next-sanity";
 import { sanityFetch } from "@/sanity/lib/live";
 import {
   HomePage,
+  JoinUsPage,
   Project,
   ProjectCard,
   SiteSettings,
@@ -239,6 +240,25 @@ export async function getStudioPage(): Promise<StudioPage | null> {
   });
 
   return result.data as StudioPage | null;
+}
+
+export const JOIN_US_PAGE_QUERY = defineQuery(`
+  *[_id == "joinUsPage"][0]{
+    "videoUrl": video.asset->url,
+    image,
+    heading,
+    body,
+    email
+  }
+`);
+
+export async function getJoinUsPage(): Promise<JoinUsPage | null> {
+  const result = await sanityFetch({
+    query: JOIN_US_PAGE_QUERY,
+    tags: ["joinUsPage"],
+  });
+
+  return result.data as JoinUsPage | null;
 }
 
 export async function getLatestProjectCards(): Promise<ProjectCard[]> {

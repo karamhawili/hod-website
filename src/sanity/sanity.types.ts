@@ -1229,3 +1229,36 @@ export type STUDIO_PAGE_QUERY_RESULT =
       } | null;
     }
   | null;
+
+// Source: src/sanity/lib/queries.ts
+// Variable: JOIN_US_PAGE_QUERY
+// Query: *[_id == "joinUsPage"][0]{    "videoUrl": video.asset->url,    image,    heading,    body,    email  }
+export type JOIN_US_PAGE_QUERY_RESULT =
+  | {
+      videoUrl: null;
+      image: null;
+      heading: null;
+      body: null;
+      email: null;
+    }
+  | {
+      videoUrl: null;
+      image: null;
+      heading: null;
+      body: null;
+      email: string | null;
+    }
+  | {
+      videoUrl: string | null;
+      image: {
+        asset?: SanityImageAssetReference;
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        _type: "image";
+      } | null;
+      heading: string | null;
+      body: string | null;
+      email: string | null;
+    }
+  | null;
