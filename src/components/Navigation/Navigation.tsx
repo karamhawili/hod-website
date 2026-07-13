@@ -7,7 +7,7 @@ import NavigationClient from "./NavigationClient";
 // pending the open /join-us decision.
 const DEFAULT_NAV: NavLink[] = [
   { label: "Portfolio", href: "/portfolio" },
-  { label: "About", href: "/about" },
+  { label: "Studio", href: "/studio" },
   { label: "Join Us", href: "/join-us" },
 ];
 

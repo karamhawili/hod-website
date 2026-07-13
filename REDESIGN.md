@@ -11,15 +11,18 @@ Redesign of the following, and ONLY the following:
 
 1. **Landing page** (`/`) — currently: Hero, FeaturedProject, LatestProjects,
    AboutSection, InstagramGrid, Recognition. All of this gets wiped and rebuilt.
-2. **About page** (`/about`) — currently AboutHero, AboutWorkWithUs,
-   AboutFounder, AboutServices. Wiped and rebuilt.
+2. **Studio page** (`/studio`; formerly `/about`, which now 308-redirects) —
+   the old AboutHero/AboutWorkWithUs/AboutFounder/AboutServices were wiped and
+   rebuilt as StudioIntro/StudioTeam/StudioDisciplines/StudioFounder/
+   StudioPublications. NOTE: the embedded Sanity Studio moved from `/studio`
+   to `/admin` to free the route — the client's CMS URL changed.
 3. **Navigation** (`src/components/Navigation`) — global, rebuilt from scratch.
 4. **Footer** (`src/components/Footer`) — global, rebuilt from scratch.
    The `showGradient` prop and gradient styling die with the redesign.
 
-**Open decision (ask before assuming):** `/join-us` currently exists as its own
-route. It may fold into the new about page or stay separate. Do not touch it
-until this is decided.
+**Decided (Phase 5):** `/join-us` stays its own route — the Studio page's team
+section links to it. Its own redesign is not yet scheduled; do not touch it
+otherwise.
 
 **Out of scope — do not modify:** `/portfolio`, `/project/[slug]`, the
 PageBuilder system (`src/components/PageBuilder`, `src/sanity/schemaTypes/blocks/*`,
@@ -53,7 +56,8 @@ they belong to the old design language.
 - **Styling: CSS Modules + CSS custom properties in `src/app/globals.css`.**
   styled-components appears in package.json ONLY as a Sanity Studio dependency —
   never write app UI with it.
-- Sanity v5 via `next-sanity`. Studio embedded at `/studio`.
+- Sanity v5 via `next-sanity`. Studio embedded at `/admin` (moved from
+  `/studio` in Phase 5 to free the route for the public Studio page).
   Data fetching uses the **Live Content API** (`defineLive` / `sanityFetch` in
   `src/sanity/lib/live.ts`, `<SanityLive />` in root layout) — not plain ISR.
 - Fonts loaded via `next/font/google` in `src/app/layout.tsx`. The redesign uses
@@ -130,7 +134,12 @@ they belong to the old design language.
 - [x] Phase 4 — Landing page (schema → components → GROQ → polish).
       Built & typechecks/lints/typegen clean; visual pass + populating the
       homePage singleton are the user's runtime steps. Polish iterations open.
-- [ ] Phase 5 — About page (+ join-us decision)
+- [x] Phase 5 — Studio page (schema → components → GROQ). Decisions: `/about`
+      renamed to `/studio` (old URL 308-redirects), Sanity Studio moved to
+      `/admin`, join-us stays separate, founder section kept (children
+      content dropped). Built & typechecks/lints/typegen clean; visual pass +
+      populating the studioPage singleton + updating the siteSettings nav
+      entry (label/href) in the CMS are the user's runtime steps.
 - [ ] Phase 6 — Responsive + QA pass
 
 Update the checkboxes as phases complete.

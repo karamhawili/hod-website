@@ -11,7 +11,7 @@ const FALLBACK: SiteSettings = {
   brandLine: "House of Design by Suzy Habre",
   nav: [
     { label: "Portfolio", href: "/portfolio" },
-    { label: "About", href: "/about" },
+    { label: "Studio", href: "/studio" },
     { label: "Join Us", href: "/join-us" },
   ],
   locations: [

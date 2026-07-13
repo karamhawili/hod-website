@@ -28,7 +28,7 @@ const DEFAULT_CARDS: {
     title: "About House of Design",
     description:
       "The studio, the founder, and the way we shape spaces — from first sketch to final detail.",
-    url: "/about",
+    url: "/studio",
   },
   {
     src: "/about/wwu-bottom.jpg",
@@ -186,8 +186,8 @@ export default function StudioFeed({
           <p className={styles.label}>{label || DEFAULTS.label}</p>
           <h2 className={styles.heading}>{heading || DEFAULTS.heading}</h2>
           <p className={styles.body}>{body || DEFAULTS.body}</p>
-          <Link href="/about" className={styles.cta}>
-            About Us
+          <Link href="/studio" className={styles.cta}>
+            The Studio
           </Link>
         </div>
       </div>
