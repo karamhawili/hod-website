@@ -57,7 +57,7 @@ export default function StudioPublications({
     : DEFAULT_ITEMS;
 
   const imageUrl = publications?.image
-    ? urlForSized(publications.image, 1400)
+    ? urlForSized(publications.image, 1600)
     : DEFAULTS.image;
 
   return (

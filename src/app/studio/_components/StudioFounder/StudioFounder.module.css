@@ -1,10 +1,11 @@
-/* Founder: portrait left, text right. */
+/* Founder: portrait left, text right — the pair sits as one centered block
+   with even whitespace on both sides. */
 .section {
   display: grid;
   grid-template-columns: 5fr 7fr;
   gap: calc(var(--content-gutter) * 2);
   align-items: center;
-  max-width: var(--container-max);
+  max-width: var(--content-wide);
   margin-inline: auto;
   padding: var(--section-padding) var(--container-padding);
 }
@@ -14,7 +15,6 @@
   aspect-ratio: 3 / 4;
   overflow: hidden;
   background: var(--color-line);
-  max-width: 30rem;
 }
 
 .img {

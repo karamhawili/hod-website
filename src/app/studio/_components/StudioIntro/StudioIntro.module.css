@@ -1,10 +1,10 @@
-/* Two-column editorial opening: text | tall image, then image | short line,
-   staggered like the k-studio studio hero. */
+/* Two-column editorial opening, each column its own vertical flow — text with
+   a wide image beneath on the left, tall image with a short line beneath on
+   the right — like the k-studio studio hero. */
 .section {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   column-gap: calc(var(--content-gutter) * 2);
-  row-gap: clamp(5rem, 10vh, 8rem);
   align-items: start;
   max-width: var(--container-max);
   margin-inline: auto;
@@ -13,8 +13,14 @@
     var(--section-padding);
 }
 
-.textCol {
-  grid-column: 1;
+.colLeft,
+.colRight {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4.5rem, 9vh, 7rem);
+}
+
+.textBlock {
   max-width: 34rem;
   /* Optically align the statement with the top third of the tall image. */
   padding-top: clamp(2rem, 6vh, 5rem);
@@ -40,28 +46,19 @@
 }
 
 .mainMedia {
-  grid-column: 2;
-  grid-row: 1;
   position: relative;
   aspect-ratio: 4 / 5;
   overflow: hidden;
   background: var(--color-line);
+  width: 100%;
+  max-width: 30rem;
 }
 
 .secondaryMedia {
-  grid-column: 1;
-  grid-row: 2;
   position: relative;
   aspect-ratio: 16 / 11;
   overflow: hidden;
   background: var(--color-line);
-}
-
-.secondaryText {
-  grid-column: 2;
-  grid-row: 2;
-  align-self: end;
-  padding-bottom: clamp(1rem, 4vh, 3rem);
 }
 
 .secondaryBody {
@@ -82,19 +79,16 @@
     padding-top: 7rem;
   }
 
-  .textCol,
-  .mainMedia,
-  .secondaryMedia,
-  .secondaryText {
-    grid-column: 1;
-    grid-row: auto;
+  .colLeft,
+  .colRight {
+    gap: 3rem;
   }
 
-  .textCol {
+  .textBlock {
     padding-top: 0;
   }
 
-  .secondaryText {
-    padding-bottom: 0;
+  .mainMedia {
+    max-width: none;
   }
 }

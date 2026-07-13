@@ -88,7 +88,6 @@ a.row:hover .arrow {
   aspect-ratio: 4 / 5;
   overflow: hidden;
   background: var(--color-line);
-  max-width: 26rem;
 }
 
 .img {

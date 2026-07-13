@@ -1,22 +1,25 @@
-/* Sectors + services as two hairline-ruled text lists. */
+/* Sectors + services as a fully centered, symmetric interlude — the one
+   section that breaks the page's two-column rhythm. */
 .section {
-  max-width: var(--content-wide);
+  max-width: var(--content-base);
   margin-inline: auto;
   padding: var(--section-padding) var(--container-padding);
+  text-align: center;
 }
 
 .body {
   color: var(--color-fg-muted);
   font-size: 0.95rem;
   line-height: 1.8;
-  max-width: 58ch;
-  margin-bottom: clamp(3rem, 7vh, 4.5rem);
+  max-width: 52ch;
+  margin-inline: auto;
+  margin-bottom: clamp(3.5rem, 8vh, 5.5rem);
 }
 
 .columns {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: calc(var(--content-gutter) * 2);
+  gap: calc(var(--content-gutter) * 2.5);
   align-items: start;
 }
 

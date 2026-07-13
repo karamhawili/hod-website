@@ -35,43 +35,51 @@ export default function StudioIntro({ intro }: StudioIntroProps) {
 
   return (
     <section className={styles.section}>
-      <Reveal className={styles.textCol}>
-        <h1 className={styles.heading}>{intro?.heading || DEFAULTS.heading}</h1>
-        {paragraphs.map((paragraph, index) => (
-          <p key={index} className={styles.body}>
-            {paragraph}
+      {/* Left column: statement + paragraphs, wide image beneath. */}
+      <div className={styles.colLeft}>
+        <Reveal className={styles.textBlock}>
+          <h1 className={styles.heading}>
+            {intro?.heading || DEFAULTS.heading}
+          </h1>
+          {paragraphs.map((paragraph, index) => (
+            <p key={index} className={styles.body}>
+              {paragraph}
+            </p>
+          ))}
+        </Reveal>
+
+        <Reveal className={styles.secondaryMedia}>
+          <Image
+            src={secondaryImageUrl}
+            alt=""
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            quality={90}
+            className={styles.img}
+          />
+        </Reveal>
+      </div>
+
+      {/* Right column: tall image, short line beneath. */}
+      <div className={styles.colRight}>
+        <Reveal className={styles.mainMedia}>
+          <Image
+            src={mainImageUrl}
+            alt=""
+            fill
+            sizes="(max-width: 768px) 100vw, 40vw"
+            quality={90}
+            className={styles.img}
+            priority
+          />
+        </Reveal>
+
+        <Reveal>
+          <p className={styles.secondaryBody}>
+            {intro?.secondaryBody || DEFAULTS.secondaryBody}
           </p>
-        ))}
-      </Reveal>
-
-      <Reveal className={styles.mainMedia}>
-        <Image
-          src={mainImageUrl}
-          alt=""
-          fill
-          sizes="(max-width: 768px) 100vw, 50vw"
-          quality={90}
-          className={styles.img}
-          priority
-        />
-      </Reveal>
-
-      <Reveal className={styles.secondaryMedia}>
-        <Image
-          src={secondaryImageUrl}
-          alt=""
-          fill
-          sizes="(max-width: 768px) 100vw, 50vw"
-          quality={90}
-          className={styles.img}
-        />
-      </Reveal>
-
-      <Reveal className={styles.secondaryText}>
-        <p className={styles.secondaryBody}>
-          {intro?.secondaryBody || DEFAULTS.secondaryBody}
-        </p>
-      </Reveal>
+        </Reveal>
+      </div>
     </section>
   );
 }
