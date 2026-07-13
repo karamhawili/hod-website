@@ -12,6 +12,9 @@
   gap: calc(var(--content-gutter) * 1.5);
   align-items: start;
   margin-bottom: clamp(3rem, 7vh, 4.5rem);
+  /* Break the image pair out of the container symmetrically so the images
+     read bigger while the text below keeps the contained width. */
+  margin-inline: clamp(-5rem, -4vw, -1.5rem);
 }
 
 .mainMedia {
@@ -79,6 +82,7 @@
   .media {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+    margin-inline: 0;
   }
 
   .portraitMedia {
