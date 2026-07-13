@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import Reveal from "@/components/Reveal/Reveal";
 import { urlForSized } from "@/sanity/lib/image";
-import { renderProjectTitle } from "@/lib/renderProjectTitle";
 import type { ProjectCard, SanityImage } from "@/types/sanity";
 import FeedCard from "../FeedCard/FeedCard";
 import styles from "./ProjectsFeed.module.css";
@@ -68,7 +67,7 @@ export default function ProjectsFeed({
               src={urlForSized(project.coverImage, 2000)}
               alt={project.title}
               meta={`${project.location} — ${project.year}`}
-              title={renderProjectTitle(project.title, project.formattedTitle)}
+              title={project.title}
               description={project.excerpt}
               href={`/project/${project.slug}`}
               aspect={ASPECTS[index % 3]}
