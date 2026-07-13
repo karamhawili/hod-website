@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Footer from "@/components/Footer/Footer";
 import Navigation from "@/components/Navigation/Navigation";
 import { getStudioPage } from "@/sanity/lib/queries";
+import StudioDisciplines from "./_components/StudioDisciplines/StudioDisciplines";
 import StudioIntro from "./_components/StudioIntro/StudioIntro";
 import StudioTeam from "./_components/StudioTeam/StudioTeam";
 
@@ -18,6 +19,7 @@ export default async function StudioPage() {
       <main className="theme-redesign">
         <StudioIntro intro={studio?.intro} />
         <StudioTeam team={studio?.team} />
+        <StudioDisciplines disciplines={studio?.disciplines} />
       </main>
       <Footer />
     </>
