@@ -21,9 +21,12 @@
   gap: clamp(4.5rem, 9vh, 7rem);
 }
 
+/* Text areas sit above/below an image in their column — inset them so the
+   content reads narrower than the related image. */
 .textBlock {
   /* Optically align the statement with the top third of the tall image. */
   padding-top: clamp(2rem, 6vh, 5rem);
+  padding-inline: clamp(1.5rem, 3.5vw, 3.5rem);
 }
 
 .heading {
@@ -38,7 +41,6 @@
   color: var(--color-fg-muted);
   font-size: 0.95rem;
   line-height: 1.8;
-  max-width: 52ch;
 }
 
 .body + .body {
@@ -64,7 +66,7 @@
   color: var(--color-fg-muted);
   font-size: 0.95rem;
   line-height: 1.8;
-  max-width: 44ch;
+  padding-inline: clamp(1.5rem, 3.5vw, 3.5rem);
 }
 
 .img {
@@ -85,5 +87,10 @@
 
   .textBlock {
     padding-top: 0;
+  }
+
+  .textBlock,
+  .secondaryBody {
+    padding-inline: 0;
   }
 }

@@ -19,13 +19,10 @@
   object-fit: cover;
 }
 
-/* Same width as the photo, inset with padding so the text block reads
-   narrower than its image. */
 .text {
-  max-width: var(--content-wide);
+  max-width: var(--content-narrow);
   margin-inline: auto;
   padding-top: clamp(2rem, 4.5vh, 3rem);
-  padding-inline: clamp(2rem, 8vw, 7rem);
 }
 
 .heading {
@@ -40,10 +37,11 @@
   color: var(--color-fg-muted);
   font-size: 0.95rem;
   line-height: 1.8;
+  max-width: 62ch;
 }
 
 .body + .body {
-  margin-top: 1.25rem;
+  margin-top: 1.4rem;
 }
 
 /* Sharp filled rectangle, same ink as the landing CTAs. */
@@ -73,6 +71,5 @@
 
   .text {
     padding-top: 2rem;
-    padding-inline: 0;
   }
 }
