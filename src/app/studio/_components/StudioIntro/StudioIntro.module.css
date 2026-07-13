@@ -3,7 +3,8 @@
    the right — like the k-studio studio hero. */
 .section {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  /* Fill the full hero width, left column slightly dominant. */
+  grid-template-columns: 6fr 5fr;
   column-gap: calc(var(--content-gutter) * 2);
   align-items: start;
   max-width: var(--container-max);
@@ -21,7 +22,6 @@
 }
 
 .textBlock {
-  max-width: 34rem;
   /* Optically align the statement with the top third of the tall image. */
   padding-top: clamp(2rem, 6vh, 5rem);
 }
@@ -51,7 +51,6 @@
   overflow: hidden;
   background: var(--color-line);
   width: 100%;
-  max-width: 30rem;
 }
 
 .secondaryMedia {
@@ -86,9 +85,5 @@
 
   .textBlock {
     padding-top: 0;
-  }
-
-  .mainMedia {
-    max-width: none;
   }
 }
