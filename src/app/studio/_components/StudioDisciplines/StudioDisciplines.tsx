@@ -5,6 +5,7 @@ import styles from "./StudioDisciplines.module.css";
 // Placeholder lists until the client fills the studioPage singleton — from
 // the old about page's Sectors/Services section.
 const DEFAULTS = {
+  heading: "What we do",
   body: "Experts in high-end F&B spaces, we apply our sophisticated interior design skills to restaurants, beaches, lounges, and other exclusive venues, tailoring our expertise to craft exceptional environments throughout the sector.",
   sectors: ["Private Residential", "Restaurants", "Lounges", "Beaches"],
   services: [
@@ -34,6 +35,9 @@ export default function StudioDisciplines({
   return (
     <section className={styles.section}>
       <Reveal>
+        <h2 className={styles.heading}>
+          {disciplines?.heading || DEFAULTS.heading}
+        </h2>
         <p className={styles.body}>{disciplines?.body || DEFAULTS.body}</p>
       </Reveal>
 

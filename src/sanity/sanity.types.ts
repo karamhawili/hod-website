@@ -84,6 +84,7 @@ export type StudioPage = {
     body?: string;
   };
   disciplines?: {
+    heading?: string;
     body?: string;
     sectors?: Array<string>;
     services?: Array<string>;
@@ -1091,7 +1092,7 @@ export type LATEST_PROJECT_CARDS_QUERY_RESULT = Array<{
 
 // Source: src/sanity/lib/queries.ts
 // Variable: STUDIO_PAGE_QUERY
-// Query: *[_id == "studioPage"][0]{    intro{ heading, body, image, secondaryImage, secondaryBody },    team{ image, heading, body },    disciplines{ body, sectors, services },    founder{ name, role, image, bio, linkLabel, linkUrl },    publications{ label, image, items[]{ _key, publication, title, url } }  }
+// Query: *[_id == "studioPage"][0]{    intro{ heading, body, image, secondaryImage, secondaryBody },    team{ image, heading, body },    disciplines{ heading, body, sectors, services },    founder{ name, role, image, bio, linkLabel, linkUrl },    publications{ label, image, items[]{ _key, publication, title, url } }  }
 export type STUDIO_PAGE_QUERY_RESULT =
   | {
       intro: null;
@@ -1132,6 +1133,7 @@ export type STUDIO_PAGE_QUERY_RESULT =
         body: string | null;
       } | null;
       disciplines: {
+        heading: string | null;
         body: string | null;
         sectors: Array<string> | null;
         services: Array<string> | null;

@@ -195,6 +195,7 @@ export interface StudioPage {
     body?: string;
   };
   disciplines?: {
+    heading?: string;
     body?: string;
     sectors?: string[];
     services?: string[];

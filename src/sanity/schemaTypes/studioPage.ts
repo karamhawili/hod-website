@@ -101,6 +101,12 @@ export const studioPage = defineType({
       description: "Two simple lists: the sectors we work in and the services we offer.",
       fields: [
         defineField({
+          name: "heading",
+          title: "Statement",
+          type: "string",
+          description: "The centered statement above the lists, e.g. “What we do”.",
+        }),
+        defineField({
           name: "body",
           title: "Text",
           type: "text",

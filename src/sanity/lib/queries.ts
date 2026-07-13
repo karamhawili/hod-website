@@ -226,7 +226,7 @@ export const STUDIO_PAGE_QUERY = defineQuery(`
   *[_id == "studioPage"][0]{
     intro{ heading, body, image, secondaryImage, secondaryBody },
     team{ image, heading, body },
-    disciplines{ body, sectors, services },
+    disciplines{ heading, body, sectors, services },
     founder{ name, role, image, bio, linkLabel, linkUrl },
     publications{ label, image, items[]{ _key, publication, title, url } }
   }
