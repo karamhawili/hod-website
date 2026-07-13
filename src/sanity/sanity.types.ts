@@ -1088,3 +1088,83 @@ export type LATEST_PROJECT_CARDS_QUERY_RESULT = Array<{
   location: "Abu Dhabi" | "Beirut" | "Cairo" | "Doha" | "Dubai" | "Riyadh";
   year: number;
 }>;
+
+// Source: src/sanity/lib/queries.ts
+// Variable: STUDIO_PAGE_QUERY
+// Query: *[_id == "studioPage"][0]{    intro{ heading, body, image, secondaryImage, secondaryBody },    team{ image, heading, body },    disciplines{ body, sectors, services },    founder{ name, role, image, bio, linkLabel, linkUrl },    publications{ label, image, items[]{ _key, publication, title, url } }  }
+export type STUDIO_PAGE_QUERY_RESULT =
+  | {
+      intro: null;
+      team: null;
+      disciplines: null;
+      founder: null;
+      publications: null;
+    }
+  | {
+      intro: {
+        heading: string | null;
+        body: string | null;
+        image: {
+          asset?: SanityImageAssetReference;
+          media?: unknown;
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          _type: "image";
+        } | null;
+        secondaryImage: {
+          asset?: SanityImageAssetReference;
+          media?: unknown;
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          _type: "image";
+        } | null;
+        secondaryBody: string | null;
+      } | null;
+      team: {
+        image: {
+          asset?: SanityImageAssetReference;
+          media?: unknown;
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          _type: "image";
+        } | null;
+        heading: string | null;
+        body: string | null;
+      } | null;
+      disciplines: {
+        body: string | null;
+        sectors: Array<string> | null;
+        services: Array<string> | null;
+      } | null;
+      founder: {
+        name: string | null;
+        role: string | null;
+        image: {
+          asset?: SanityImageAssetReference;
+          media?: unknown;
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          _type: "image";
+        } | null;
+        bio: string | null;
+        linkLabel: string | null;
+        linkUrl: string | null;
+      } | null;
+      publications: {
+        label: string | null;
+        image: {
+          asset?: SanityImageAssetReference;
+          media?: unknown;
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          _type: "image";
+        } | null;
+        items: Array<{
+          _key: string;
+          publication: string;
+          title: string | null;
+          url: string | null;
+        }> | null;
+      } | null;
+    }
+  | null;

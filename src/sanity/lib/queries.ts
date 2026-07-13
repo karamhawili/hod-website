@@ -1,6 +1,12 @@
 import { defineQuery } from "next-sanity";
 import { sanityFetch } from "@/sanity/lib/live";
-import { HomePage, Project, ProjectCard, SiteSettings } from "@/types/sanity";
+import {
+  HomePage,
+  Project,
+  ProjectCard,
+  SiteSettings,
+  StudioPage,
+} from "@/types/sanity";
 
 // Card/listing fields. Used by the landing + portfolio project feeds, which
 // render cover image, title, location, year, categories — NOT the page-builder
@@ -214,6 +220,25 @@ export async function getHomePage(): Promise<HomePage | null> {
   });
 
   return result.data as HomePage | null;
+}
+
+export const STUDIO_PAGE_QUERY = defineQuery(`
+  *[_id == "studioPage"][0]{
+    intro{ heading, body, image, secondaryImage, secondaryBody },
+    team{ image, heading, body },
+    disciplines{ body, sectors, services },
+    founder{ name, role, image, bio, linkLabel, linkUrl },
+    publications{ label, image, items[]{ _key, publication, title, url } }
+  }
+`);
+
+export async function getStudioPage(): Promise<StudioPage | null> {
+  const result = await sanityFetch({
+    query: STUDIO_PAGE_QUERY,
+    tags: ["studioPage"],
+  });
+
+  return result.data as StudioPage | null;
 }
 
 export async function getLatestProjectCards(): Promise<ProjectCard[]> {

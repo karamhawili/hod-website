@@ -177,6 +177,43 @@ export interface HomePage {
   };
 }
 
+export interface PublicationItem extends Mention {
+  _key?: string;
+}
+
+export interface StudioPage {
+  intro?: {
+    heading?: string;
+    body?: string;
+    image?: SanityImage;
+    secondaryImage?: SanityImage;
+    secondaryBody?: string;
+  };
+  team?: {
+    image?: SanityImage;
+    heading?: string;
+    body?: string;
+  };
+  disciplines?: {
+    body?: string;
+    sectors?: string[];
+    services?: string[];
+  };
+  founder?: {
+    name?: string;
+    role?: string;
+    image?: SanityImage;
+    bio?: string;
+    linkLabel?: string;
+    linkUrl?: string;
+  };
+  publications?: {
+    label?: string;
+    image?: SanityImage;
+    items?: PublicationItem[];
+  };
+}
+
 export type PageBuilderBlock =
   | HeroBlock
   | ImageDetailsBlock

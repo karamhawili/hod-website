@@ -1,0 +1,100 @@
+/* Two-column editorial opening: text | tall image, then image | short line,
+   staggered like the k-studio studio hero. */
+.section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: calc(var(--content-gutter) * 2);
+  row-gap: clamp(5rem, 10vh, 8rem);
+  align-items: start;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  /* First section on the page — clear the fixed navigation. */
+  padding: clamp(8rem, 16vh, 11rem) var(--container-padding)
+    var(--section-padding);
+}
+
+.textCol {
+  grid-column: 1;
+  max-width: 34rem;
+  /* Optically align the statement with the top third of the tall image. */
+  padding-top: clamp(2rem, 6vh, 5rem);
+}
+
+.heading {
+  font-size: clamp(1.15rem, 1.7vw, 1.5rem);
+  font-weight: 700;
+  line-height: 1.45;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+}
+
+.body {
+  color: var(--color-fg-muted);
+  font-size: 0.95rem;
+  line-height: 1.8;
+  max-width: 52ch;
+}
+
+.body + .body {
+  margin-top: 1.4rem;
+}
+
+.mainMedia {
+  grid-column: 2;
+  grid-row: 1;
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--color-line);
+}
+
+.secondaryMedia {
+  grid-column: 1;
+  grid-row: 2;
+  position: relative;
+  aspect-ratio: 16 / 11;
+  overflow: hidden;
+  background: var(--color-line);
+}
+
+.secondaryText {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: end;
+  padding-bottom: clamp(1rem, 4vh, 3rem);
+}
+
+.secondaryBody {
+  color: var(--color-fg-muted);
+  font-size: 0.95rem;
+  line-height: 1.8;
+  max-width: 44ch;
+}
+
+.img {
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .section {
+    grid-template-columns: 1fr;
+    row-gap: 3rem;
+    padding-top: 7rem;
+  }
+
+  .textCol,
+  .mainMedia,
+  .secondaryMedia,
+  .secondaryText {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .textCol {
+    padding-top: 0;
+  }
+
+  .secondaryText {
+    padding-bottom: 0;
+  }
+}
