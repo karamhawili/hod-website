@@ -24,12 +24,14 @@ Redesign of the following, and ONLY the following:
 section links to it. Redesigned after Phase 5: split hero (looping video left,
 careers pitch + resume email right), content via the `joinUsPage` singleton.
 
-**Out of scope — do not modify:** `/portfolio`, `/project/[slug]`, the
-PageBuilder system (`src/components/PageBuilder`, `src/sanity/schemaTypes/blocks/*`,
+**Out of scope — do not modify:** `/project/[slug]`, the PageBuilder system
+(`src/components/PageBuilder`, `src/sanity/schemaTypes/blocks/*`,
 `pageBuilder.ts`), and the `project` + `category` schemas. These serve the
 project detail pages and must keep working exactly as they do now.
 Do NOT reuse the existing PageBuilder blocks for the new landing/about pages —
 they belong to the old design language.
+(`/portfolio` was originally out of scope; it graduates into scope with
+Phase 7 — do not touch it before that phase starts.)
 
 ### Design direction
 
@@ -141,5 +143,12 @@ they belong to the old design language.
       populating the studioPage singleton + updating the siteSettings nav
       entry (label/href) in the CMS are the user's runtime steps.
 - [ ] Phase 6 — Responsive + QA pass
+- [ ] Phase 7 — Portfolio refresh: rebuild `/portfolio` in the new design
+      language (requirements to be dictated — do not start unprompted).
+      Retires `LatestProjects` (portfolio is its last consumer). NOTE: the
+      old tokens/fonts (`--color-brown-*`, `--font-serif/sans/script`,
+      `--surface-gradient`, `Section`) can NOT be fully deleted in this phase —
+      the PageBuilder blocks on `/project/[slug]` still consume them; full
+      design-system retirement needs a later project-detail phase.
 
 Update the checkboxes as phases complete.
