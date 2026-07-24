@@ -1,154 +1,221 @@
-# CLAUDE.md — HOD Website (House of Design)
+# REDESIGN.md — HOD Website Visual + Structural Overhaul
 
-## What this project is
+Companion to CLAUDE.md (which imports this file). Covers everything specific
+to the redesign mission. Delete the import + this file once all phases below
+ship. Detailed build history lives in Audit.md's changelog — this file is
+intent + current-state, Audit.md is the dated record of what happened.
 
-Marketing website for House of Design (HOD), an interior design studio in Beirut.
-Built ~4 months ago, deployed on Vercel. We are now doing a **partial redesign**.
+## Reference history (context — don't rebuild toward superseded entries)
 
-## Current mission (READ THIS FIRST)
+1. k-studio.gr — initial reference. Shipped as the old Phases 2–5 (tokens,
+   nav/footer, landing, studio page) — see Audit.md changelog for the dated
+   record. **Superseded.**
+2. **vincentvanduysen.com — current and final reference.** Everything below
+   describes this direction. Supersedes the k-studio-era brown/warm-neutral
+   palette, Manrope/Inter fonts, and the editorial-feed landing layout.
+   Client approved extra scope/cost for this pivot — no sign-off gate before
+   building.
 
-Redesign of the following, and ONLY the following:
+Screenshots: `/design-refs/vvd/` (landing carousel, cursor guidelines,
+project detail hero + scroll, archive grid, about, contact, publications).
 
-1. **Landing page** (`/`) — currently: Hero, FeaturedProject, LatestProjects,
-   AboutSection, InstagramGrid, Recognition. All of this gets wiped and rebuilt.
-2. **Studio page** (`/studio`; formerly `/about`, which now 308-redirects) —
-   the old AboutHero/AboutWorkWithUs/AboutFounder/AboutServices were wiped and
-   rebuilt as StudioIntro/StudioTeam/StudioDisciplines/StudioFounder/
-   StudioPublications. NOTE: the embedded Sanity Studio moved from `/studio`
-   to `/admin` to free the route — the client's CMS URL changed.
-3. **Navigation** (`src/components/Navigation`) — global, rebuilt from scratch.
-4. **Footer** (`src/components/Footer`) — global, rebuilt from scratch.
-   The `showGradient` prop and gradient styling die with the redesign.
+## Current-state facts about the codebase (still true post-pivot)
 
-**Decided (Phase 5):** `/join-us` stays its own route — the Studio page's team
-section links to it. Redesigned after Phase 5: split hero (looping video left,
-careers pitch + resume email right), content via the `joinUsPage` singleton.
+These survive from the earlier build and are easy to miss from a code skim:
 
-**Out of scope — do not modify:** `/project/[slug]`, the PageBuilder system
-(`src/components/PageBuilder`, `src/sanity/schemaTypes/blocks/*`,
-`pageBuilder.ts`), and the `project` + `category` schemas. These serve the
-project detail pages and must keep working exactly as they do now.
-Do NOT reuse the existing PageBuilder blocks for the new landing/about pages —
-they belong to the old design language.
-(`/portfolio` was originally out of scope; it graduates into scope with
-Phase 7 — do not touch it before that phase starts.)
+- **The embedded Sanity Studio lives at `/admin`** (moved from `/studio` in the
+  earlier build to free that route for the public Studio page). The client's
+  CMS URL is `/admin`. Do not move it back.
+- **`useScrollAnimation` hook exists in `src/hooks`** — relevant to Phase 5's
+  scroll work; evaluate reuse vs replace, don't assume it's absent.
+- **Hardcoded hex anti-pattern:** old `*.module.css` files contain literal
+  `#333`/`#666`/`#fff`. Don't repeat this in new code; don't "fix" it in
+  out-of-scope files either.
+- **Schema registration is manual:** register new schemas in
+  `src/sanity/schemaTypes/index.ts`; add singletons to the desk structure in
+  `src/sanity/structure.ts`. GROQ goes through the existing `sanityFetch`
+  pattern in `src/sanity/lib/queries.ts`.
+- **Nav `theme` prop + Footer `showGradient` prop** were kept alive only
+  because the OLD `/project/[slug]` consumed them (Audit.md C1/C2). Phase 6
+  rebuilds that page — once it no longer needs them, both props can finally
+  be removed. Until then, don't break them.
 
-### Design direction
+## What VVD actually is (read before building anything)
 
-- Primary reference: **k-studio.gr** (minimal editorial architecture-studio
-  aesthetic). Reference screenshots live in `/design-refs/` when provided —
-  always look at them before building a section.
-- We take the _structure and rhythm_ from the reference — full-bleed sections,
-  editorial feed layout, all-caps labels, warm-neutral palette, photography-first —
-  but we do NOT copy it 1:1. Everything is expressed through OUR tokens.
-- Aesthetic rules: **warm neutral palette** — warm off-white background
-  (`--color-bg`), warm near-black text (`--color-fg`), and HOD's **brown as the
-  single brand accent** (`--color-accent`, for links, all-caps labels, hairline
-  rules). No other accent colors, **no gradients, no script fonts** (gradient +
-  script still exist in the old tokens, kept only for out-of-scope pages).
-  Photography and video carry the visual weight.
-- Animation rules: subtle only — fade/translate on scroll-into-view (a
-  `useScrollAnimation` hook already exists in `src/hooks`, evaluate whether to
-  reuse or replace), navbar scroll transition, hover zoom on images.
-  NO parallax, NO cursor followers, NO loading screens, NO scroll-jacking.
+Not a scrolling marketing site. Three distinct interaction modes:
+
+### 1. Landing — project viewer (the hard part)
+
+- One project fills the viewport at a time, showing one image from its gallery.
+- **Horizontal input** (click/hover left or right screen edge, cursor becomes
+  a chevron) → cycles through _that project's_ images.
+- **Vertical input** (scroll, or hover top/bottom band → chevron up/down
+  appears) → moves to the _next/previous project_ entirely.
+- No click-to-open on the image itself — the whole surface is claimed by the
+  directional hover zones. Instead: an explicit **"Go to project →"** CTA,
+  confident and visible on desktop (deliberately clearer than VVD's own quiet
+  "More info" — we're improving on that specifically).
+- **This is our one deliberate exception to "no scroll-jacking."** Scroll
+  input on the landing is intentionally intercepted and mapped to
+  project-to-project navigation. Nowhere else does this — every other page
+  (Archive, Studio, project detail, Contact, Join Us) is normal, unmodified
+  document scroll.
+
+### 2. Project detail page
+
+- Opens with project info at top: title, location, year (see
+  `Project_details_page_hero.png`), then description copy, then credits line.
+- Below: the **same ordered image list** from the landing carousel, now a
+  normal vertical scroll, one image after another.
+- Images respect **native aspect ratio**, width-capped by the page
+  max-width/margins (not full-bleed, not cropped to a fixed ratio).
+- **Mobile:** images go full viewport width, height auto (ratio preserved,
+  width fixed instead of capped by margin).
+
+### 3. Archive page (replaces `/portfolio` — rebuild, then rename)
+
+- Grid of all projects — the "see everything" page, since the landing viewer
+  only shows one project at a time and isn't built for browsing the catalog.
+- Reference: `Screenshot_2026-07-23_at_1_54_02_AM.png` — simple grid,
+  thumbnail + name/location/status line underneath, no card chrome.
+- **Category filter** as an indented sub-list under "Archive" in the left nav
+  (`All` + categories), mirroring VVD's own Archive sub-nav — NOT a mega-menu,
+  just a flat filter list. Categories: **Residential / Retail / Hospitality /
+  Office / Other** (HOD-specific — confirm/adjust before building).
+- Search bar (top-right on VVD's version): **deferred, not in this build**
+  unless the catalog grows enough to need it.
+
+### 4. Every other page (Studio/About, Contact, Publications, Join Us)
+
+- Plain vertical scroll, no carousel behavior.
+- Images float free at native aspect ratio — multiple ratios on one page is
+  intentional and organic, not a bug to normalize into a grid.
+
+### Mobile interaction (landing viewer)
+
+- Horizontal swipe = image-to-image (mirrors desktop left/right).
+- Vertical swipe = project-to-project (mirrors desktop up/down).
+- Tap anywhere on the image = open project detail (no hover-zone ambiguity on
+  touch, so tap safely means "open" — unlike desktop click).
+
+### Nav taxonomy
+
+- No mega-menu. Visual quietness over category depth.
+- Only exception: **Archive's category filter**, shown as a simple indented
+  sub-list under "Archive" when that section is active — same pattern VVD uses
+  for Info/Press sub-items, not a hover-triggered mega-menu.
+
+## Design direction (supersedes k-studio-era rules)
+
+- Palette: near-monochrome — warm off-white background, near-black text,
+  very restrained brown-black title treatment (à la VVD), not k-studio-era
+  brown-as-accent. Exact values set in Phase 2 token pass.
+- Typography: serif display (project + page titles) + clean sans body,
+  mirroring VVD's serif/sans pairing. Exact fonts are a Phase 2 decision —
+  the earlier Manrope/Inter pairing is superseded, re-choose for VVD.
+- No gradients, no script fonts (still true from earlier direction).
+- Whitespace is extreme. Nav is a slim, quiet, left-aligned text stack — not a
+  bar, not centered, not boxed.
 
 ## Stack (verified against actual code)
 
-- Next.js 16 (App Router), React 19, TypeScript
+- Next.js 16 (App Router), React 19, TypeScript.
 - **Styling: CSS Modules + CSS custom properties in `src/app/globals.css`.**
-  styled-components appears in package.json ONLY as a Sanity Studio dependency —
+  styled-components is in package.json ONLY as a Sanity Studio dependency —
   never write app UI with it.
-- Sanity v5 via `next-sanity`. Studio embedded at `/admin` (moved from
-  `/studio` in Phase 5 to free the route for the public Studio page).
-  Data fetching uses the **Live Content API** (`defineLive` / `sanityFetch` in
-  `src/sanity/lib/live.ts`, `<SanityLive />` in root layout) — not plain ISR.
-- Fonts loaded via `next/font/google` in `src/app/layout.tsx`. The redesign uses
-  **Manrope** (headings, `--font-heading`) + **Inter** (body, `--font-body`).
-  The old families — Cormorant Garamond (`--font-serif`), Darker Grotesque
-  (`--font-sans`), Great Vibes (`--font-script`, script — being removed) — stay
-  loaded only while out-of-scope pages + the not-yet-rebuilt About still use them.
-- Types: currently **hand-written** in `src/types/sanity.ts`. A typegen script
-  exists in package.json but is not in use (no extract.json / generated types).
-  Whether to adopt typegen properly is an audit-phase decision — until then,
-  follow the existing hand-written pattern consistently.
+- Sanity v5 via `next-sanity`, Live Content API (`defineLive` / `sanityFetch`
+  in `src/sanity/lib/live.ts`, `<SanityLive />` in root layout) — not plain ISR.
+- TypeGen is adopted (`overloadClientMethods: false`; generated
+  `src/sanity/sanity.types.ts` committed) — see Audit.md C4. In-scope rebuilds
+  should adopt generated `*_QUERY_RESULT` types; hand-written `src/types/sanity.ts`
+  survives only for not-yet-migrated consumers.
 - Deployed on Vercel, `@vercel/analytics`.
 
-## Design system
+## CMS — project schema (full rebuild, not incremental)
 
-- `globals.css` already has a token layer, but it encodes the OLD aesthetic
-  (brown palette `--color-brown-*`, `--surface-gradient`, `--font-script`).
-  Phase 2 = **replace/prune these tokens**, not create from zero. Keep the
-  structural tokens that still make sense (`--container-*`, `--content-*` width
-  scale, `--section-padding`) and re-value them as needed.
-- All NEW components MUST consume tokens. No hardcoded hex values, no magic px
-  spacing, no one-off font sizes. (Old module.css files contain hardcoded
-  `#333`/`#666`/`#fff` — do not repeat that pattern; do not "fix" it in
-  out-of-scope files either.)
-- Out-of-scope pages are NOT migrated to new tokens. If removing an old token
-  would break an out-of-scope page, keep the old token alive (possibly marked
-  deprecated) and flag it.
+The existing PageBuilder-based `project` schema is **dropped entirely**. This
+reverses the earlier "PageBuilder is out of scope, do not touch" rule — that
+rule applied to the k-studio-era mission and no longer holds. New schema is
+intentionally minimal:
 
-## CMS rules
+```ts
+{
+  name: 'project',
+  fields: [
+    { name: 'title', type: 'string' },
+    { name: 'slug', type: 'slug' },
+    { name: 'location', type: 'string' },     // "Lisbon, Portugal"
+    { name: 'year', type: 'string' },          // "2025" / "2024–2025"
+    { name: 'status', type: 'string' },        // "In progress"/"On hold"/"Completed" — archive captions
+    { name: 'category', type: 'reference', to: [{ type: 'category' }] },
+    { name: 'description', type: 'array', of: [{ type: 'block' }] },
+    { name: 'credits', type: 'string' },       // "Photos by X"
+    { name: 'images', type: 'array', of: [{
+        type: 'image', fields: [{ name: 'alt', type: 'string' }]
+      }] },                                    // ordered — drives BOTH landing
+                                                 // carousel AND detail scroll
+    { name: 'featured', type: 'boolean' },     // included in landing rotation
+  ]
+}
+```
 
-- The current landing/about pages are mostly **hardcoded JSX** — only
-  FeaturedProject/LatestProjects pull from Sanity. Making the new pages
-  CMS-configurable means NEW schema work:
-  - `homePage` singleton (hero media, intro text, feed/section content, ordering)
-  - `aboutPage` singleton
-  - `siteSettings` singleton (contact info, socials, footer content, nav labels)
-- New pages are **content-editable, not layout-builder**: layouts are fixed in
-  code; the client edits text, images, media, and the order of feed items.
-  Do NOT build a drag-and-drop section builder for these pages.
-- Schema comes FIRST for any new page: propose schema → get approval → build
-  components → wire GROQ via the existing `sanityFetch` pattern in
-  `src/sanity/lib/queries.ts`.
-- Register new schemas in `src/sanity/schemaTypes/index.ts` and add singletons
-  to the desk structure in `src/sanity/structure.ts`.
-- Every new schema field needs a sensible `title` and, where non-obvious, a
-  `description` — the client is non-technical.
+`category` schema: simple `{ title, slug }` — Residential/Retail/Hospitality/
+Office/Other (pending confirmation).
+
+**Dropped entirely:** `pageBuilder.ts`, all `blocks/*` schemas (`heroBlock`,
+`imageDetailsBlock`, `imageBlock`, `imagePairBlock`, `mixedImagePairBlock`,
+`centeredTextBlock`), the `PageBuilder` component tree, and every
+`PageBuilderBlock[]` consumer in `src/types/sanity.ts`. Once these are gone,
+the old tokens/fonts they depended on (`--color-brown-*`,
+`--font-serif/sans/script`, `--surface-gradient`, the `Section` component) can
+finally be retired — the earlier build couldn't delete them because the
+project page still consumed them.
+
+**CMS re-evaluation needed for:** `homePage` singleton (landing is now a
+project-viewer, not editorial feed blocks — the k-studio-era homePage schema
+is void), `siteSettings` (nav labels may need the Archive category list),
+`studioPage` (content model likely survives; revisit visual treatment only).
 
 ## Working rules
 
 - **Plan mode first** for anything non-trivial. Propose, wait for approval, build.
-- Small commits, one logical unit each (one section = one commit).
-- Never modify: Sanity project ID/dataset/env (`src/sanity/env.ts`), deployment
-  config, `next.config.ts`, or any route outside the mission scope, without asking.
-- Never commit secrets. `.env.local` stays untouched and unread unless asked.
-- If a fix outside scope seems needed (e.g., a broken query in an old page),
-  FLAG it, don't fix it silently.
-- When uncertain between two implementations, ask — don't pick silently.
-- Match existing conventions: CSS Modules co-located with components,
-  component-per-folder structure, `_components` folders for route-private
-  components, path alias `@/`.
+- Small commits, one logical unit each.
+- The Phase 5 scroll-jack is the ONLY place allowed to intercept native scroll.
+  If scroll interception is proposed anywhere else, flag it — don't build it.
+- Never modify Sanity env (`src/sanity/env.ts`), deployment config, or
+  `next.config.ts` without asking.
+- Never commit secrets; `.env.local` untouched/unread unless asked.
+- Out-of-scope fix needed → FLAG, don't silently fix.
+- Uncertain between two implementations → ask, don't pick silently.
+- Match conventions: CSS Modules co-located with components,
+  component-per-folder, `_components` for route-private components, `@/` alias.
 
-## Phases (current status: Phase 1)
+## Phases (renumbered — this list supersedes the old one in Audit.md/history)
 
-- [x] Phase 1 — Audit of existing code (report only, no changes). Include:
-      Live API setup correctness, hand-written types vs typegen decision,
-      GROQ query hygiene, image pipeline usage. → see Audit.md
-- [x] Phase 1.5 — Approved fixes from audit (isolated commits). Done: TypeGen
-      adoption, GROQ over-fetch split, `.npmrc`. Rest deferred to Phase 3/4 (Audit.md).
-- [x] Phase 2 — Token replacement in globals.css + font decision
-      (Manrope + Inter; warm neutral + brown palette)
-- [x] Phase 3 — Navigation + Footer redesign (+ siteSettings singleton).
-      Built & typechecks/lints clean; visual pass + `npm run typegen` + populating
-      siteSettings are the user's runtime steps.
-- [x] Phase 4 — Landing page (schema → components → GROQ → polish).
-      Built & typechecks/lints/typegen clean; visual pass + populating the
-      homePage singleton are the user's runtime steps. Polish iterations open.
-- [x] Phase 5 — Studio page (schema → components → GROQ). Decisions: `/about`
-      renamed to `/studio` (old URL 308-redirects), Sanity Studio moved to
-      `/admin`, join-us stays separate, founder section kept (children
-      content dropped). Built & typechecks/lints/typegen clean; visual pass +
-      populating the studioPage singleton + updating the siteSettings nav
-      entry (label/href) in the CMS are the user's runtime steps.
-- [ ] Phase 6 — Responsive + QA pass
-- [ ] Phase 7 — Portfolio refresh: rebuild `/portfolio` in the new design
-      language (requirements to be dictated — do not start unprompted).
-      Retires `LatestProjects` (portfolio is its last consumer). NOTE: the
-      old tokens/fonts (`--color-brown-*`, `--font-serif/sans/script`,
-      `--surface-gradient`, `Section`) can NOT be fully deleted in this phase —
-      the PageBuilder blocks on `/project/[slug]` still consume them; full
-      design-system retirement needs a later project-detail phase.
+- [x] Phase 1 — Audit (infra findings still valid post-pivot; see Audit.md)
+- [x] Phase 1.5 — Approved fixes (typegen, GROQ split, `.npmrc`)
+- [x] Phase 2 — VVD token pass: palette, type scale, spacing, font re-choice
+      (supersedes shipped k-studio-era tokens)
+- [ ] Phase 3 — Nav + Footer restyle for VVD quietness (structure from earlier
+      build likely survives; visual treatment does not)
+- [ ] Phase 4 — Project schema rebuild (drop PageBuilder) + category taxonomy
+- [ ] Phase 5 — Landing project-viewer (hard build: two-axis nav, hover-zone
+      cursor states, scroll-jack, touch gestures, "Go to project" CTA)
+- [ ] Phase 6 — Project detail page (info header + native-ratio scroll body).
+      Retires the Nav `theme` / Footer `showGradient` props if nothing else
+      needs them.
+- [ ] Phase 7 — Archive page (grid + category filter; replaces `/portfolio`,
+      retires `LatestProjects`)
+- [ ] Phase 8 — Studio/About + Join Us visual pass (content model mostly
+      survives; restyle only)
+- [ ] Phase 9 — Responsive + QA pass; retire now-orphaned old tokens/fonts/
+      `Section` once PageBuilder is fully gone
 
-Update the checkboxes as phases complete.
+## Open items to confirm before the relevant phase
+
+- **Category list** (Phase 4): confirm Residential/Retail/Hospitality/Office/
+  Other or supply HOD's real taxonomy.
+- **Content migration** (Phase 4): the new `project` schema won't match old
+  Sanity documents. Earlier decision was there's no content worth preserving —
+  if still true, ship the schema and re-enter manually; otherwise a one-off
+  migration script. Confirm before building.

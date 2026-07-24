@@ -10,12 +10,12 @@ Living record of audit findings and their remediation status. Companion to the P
 
 > Reality-check: none of the four criticals is a present-tense bug. C1–C3 are **constraints for the Phase 3 Nav/Footer rebuild** — there is no safe code change to land today without starting that rebuild (which also skips Phase 2 token work). C4 is the only Phase-1.5-actionable item, and it is gated on the typegen go/no-go decision.
 
-| # | Status | Item | Notes / plan |
-|---|--------|------|--------------|
-| C1 | ⏳ DEFERRED → Phase 3 | Footer `showGradient` consumed by out-of-scope `/project/[slug]` & `/join-us` | Not a bug now. Constraint: the rebuilt Footer must keep accepting `showGradient` (may ignore it visually) until project pages are migrated. Encoded here so it isn't dropped. |
-| C2 | ⏳ DEFERRED → Phase 3 | Navigation `theme` consumed by out-of-scope `/project/[slug]` | Constraint: rebuilt Navigation must preserve the `theme="light"` API. |
-| C3 | ⏳ DEFERRED → Phase 3 | Nav/Footer rendered per-route (5 files), not in layout | Verified a clean hoist into a shared layout is **blocked**: `/project/[slug]` computes `theme={hasContent ? …}` from data it fetches itself, so its Nav can't move to a layout without a refetch. Resolve as part of the Phase 3 rebuild, not now. |
-| C4 | ✅ DONE | `@/types/sanity` imported by 10 out-of-scope files → type change ripples | **Adopted TypeGen without rippling into out-of-scope files.** Pipeline configured, `src/sanity/sanity.types.ts` generated & committed, `tsc --noEmit` clean. Consumer migration deferred by design (see below). |
+| #   | Status                | Item                                                                          | Notes / plan                                                                                                                                                                                                                                       |
+| --- | --------------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| C1  | ⏳ DEFERRED → Phase 3 | Footer `showGradient` consumed by out-of-scope `/project/[slug]` & `/join-us` | Not a bug now. Constraint: the rebuilt Footer must keep accepting `showGradient` (may ignore it visually) until project pages are migrated. Encoded here so it isn't dropped.                                                                      |
+| C2  | ⏳ DEFERRED → Phase 3 | Navigation `theme` consumed by out-of-scope `/project/[slug]`                 | Constraint: rebuilt Navigation must preserve the `theme="light"` API.                                                                                                                                                                              |
+| C3  | ⏳ DEFERRED → Phase 3 | Nav/Footer rendered per-route (5 files), not in layout                        | Verified a clean hoist into a shared layout is **blocked**: `/project/[slug]` computes `theme={hasContent ? …}` from data it fetches itself, so its Nav can't move to a layout without a refetch. Resolve as part of the Phase 3 rebuild, not now. |
+| C4  | ✅ DONE               | `@/types/sanity` imported by 10 out-of-scope files → type change ripples      | **Adopted TypeGen without rippling into out-of-scope files.** Pipeline configured, `src/sanity/sanity.types.ts` generated & committed, `tsc --noEmit` clean. Consumer migration deferred by design (see below).                                    |
 
 **C4 — ADOPTED TYPEGEN. What shipped:**
 
@@ -31,27 +31,27 @@ Living record of audit findings and their remediation status. Companion to the P
 
 ## 🟠 Should-fix (awaiting green light after critical review)
 
-| # | Status | Item |
-|---|--------|------|
-| S1 | ✅ DONE | Split `queries.ts` into `LIST_FIELDS` (no page-builder `content`) for the three list queries + `DETAIL_FIELDS` (listing + content) for `PROJECT_PAGE_QUERY`. Cards no longer fetch the full project-page payload. Verified: no `content` consumer among list callers, `tsc` clean, detail query unchanged in shape. **Follow-up:** re-run `npm run typegen` to refresh the generated `*_QUERY_RESULT` shapes (harmless while stale — nothing consumes them with `overloadClientMethods: false`). |
-| S2 | ⏳ DEFERRED → Phase 4 (confirmed) | Waterfall in home `page.tsx`. `page.tsx` is wiped in Phase 4 → build with `Promise.all`/parallel fetch from the start. See carry-forward. |
-| S3 | ⏳ DEFERRED → Phase 4 (confirmed) | Unnecessary `"use client"` on wiped components → new landing components default to server components. See carry-forward. |
-| S4 | ⏳ DEFERRED → Phase 4 (confirmed) | Image opt. In-scope targets wiped → build optimized from the start. Out-of-scope `LatestProjects`/`ProjectsGrid` left untouched (flag only). See carry-forward. |
-| S5 | ✅ DONE | ~~`typegen` npm script is misconfigured~~ Fixed by adding the `typegen` block to `sanity.cli.ts` (done as part of C4). Config loads; full run pending creds (see C4). |
-| S6 | ✅ DONE | **New (surfaced in Phase 1.5):** `npm install`/`npm ci` fail without `--legacy-peer-deps` (`@sanity/color-input@4` peer-conflicts with `sanity@5`). Fixed by adding `.npmrc` (`legacy-peer-deps=true`); verified a plain `npm install` now succeeds. Follow-up (not blocking): upgrade `@sanity/color-input` to a Sanity-5-compatible release and drop the flag. |
+| #   | Status                            | Item                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| --- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| S1  | ✅ DONE                           | Split `queries.ts` into `LIST_FIELDS` (no page-builder `content`) for the three list queries + `DETAIL_FIELDS` (listing + content) for `PROJECT_PAGE_QUERY`. Cards no longer fetch the full project-page payload. Verified: no `content` consumer among list callers, `tsc` clean, detail query unchanged in shape. **Follow-up:** re-run `npm run typegen` to refresh the generated `*_QUERY_RESULT` shapes (harmless while stale — nothing consumes them with `overloadClientMethods: false`). |
+| S2  | ⏳ DEFERRED → Phase 4 (confirmed) | Waterfall in home `page.tsx`. `page.tsx` is wiped in Phase 4 → build with `Promise.all`/parallel fetch from the start. See carry-forward.                                                                                                                                                                                                                                                                                                                                                        |
+| S3  | ⏳ DEFERRED → Phase 4 (confirmed) | Unnecessary `"use client"` on wiped components → new landing components default to server components. See carry-forward.                                                                                                                                                                                                                                                                                                                                                                         |
+| S4  | ⏳ DEFERRED → Phase 4 (confirmed) | Image opt. In-scope targets wiped → build optimized from the start. Out-of-scope `LatestProjects`/`ProjectsGrid` left untouched (flag only). See carry-forward.                                                                                                                                                                                                                                                                                                                                  |
+| S5  | ✅ DONE                           | ~~`typegen` npm script is misconfigured~~ Fixed by adding the `typegen` block to `sanity.cli.ts` (done as part of C4). Config loads; full run pending creds (see C4).                                                                                                                                                                                                                                                                                                                            |
+| S6  | ✅ DONE                           | **New (surfaced in Phase 1.5):** `npm install`/`npm ci` fail without `--legacy-peer-deps` (`@sanity/color-input@4` peer-conflicts with `sanity@5`). Fixed by adding `.npmrc` (`legacy-peer-deps=true`); verified a plain `npm install` now succeeds. Follow-up (not blocking): upgrade `@sanity/color-input` to a Sanity-5-compatible release and drop the flag.                                                                                                                                 |
 
 ---
 
 ## 🟡 Nice-to-have (backlog)
 
-| # | Status | Item |
-|---|--------|------|
-| N1 | ⬜ TODO | `coalesce(location, category)` references a non-existent `category` field — dead fallback. |
-| N2 | ⬜ TODO | `urlFor(...).url() \|\| ""` empty-string `src` → broken `<Image>` if image missing. |
-| N3 | ⬜ TODO | GROQ orders by `_createdAt` but components re-sort by `year`; missing `sizes` on scaled images. |
-| N4 | ⬜ TODO | Live API has no tokens / no `<VisualEditing/>` → no in-Studio preview. Fine for published-only; revisit if editors want live preview. |
-| N5 | ⬜ TODO | Footer LinkedIn points to `company/addmindhospitality` — verify correct company. |
-| N6 | ⬜ TODO | `useScrollAnimation` makes `Section` a client component site-wide; re-evaluate for the rebuild. |
+| #   | Status  | Item                                                                                                                                  |
+| --- | ------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| N1  | ⬜ TODO | `coalesce(location, category)` references a non-existent `category` field — dead fallback.                                            |
+| N2  | ⬜ TODO | `urlFor(...).url() \|\| ""` empty-string `src` → broken `<Image>` if image missing.                                                   |
+| N3  | ⬜ TODO | GROQ orders by `_createdAt` but components re-sort by `year`; missing `sizes` on scaled images.                                       |
+| N4  | ⬜ TODO | Live API has no tokens / no `<VisualEditing/>` → no in-Studio preview. Fine for published-only; revisit if editors want live preview. |
+| N5  | ⬜ TODO | Footer LinkedIn points to `company/addmindhospitality` — verify correct company.                                                      |
+| N6  | ⬜ TODO | `useScrollAnimation` makes `Section` a client component site-wide; re-evaluate for the rebuild.                                       |
 
 ---
 
@@ -72,7 +72,7 @@ The new landing/about components must be built to satisfy these — they replace
 
 - **Run `npm run typegen`** — the new `SITE_SETTINGS_QUERY` isn't in the generated types yet; `SiteSettings` is hand-written in `types/sanity.ts` for now (consistent with the transitional pattern).
 - **Populate the `siteSettings` singleton** in Studio (`/studio` → Site Settings). Until then, Nav/Footer render hardcoded fallbacks matching the old content.
-- **Client fixes via CMS:** placeholder phone `+961 1 234 567` and the LinkedIn URL (`company/addmindhospitality`, audit N5) — both still in the footer *fallback*; correct them by filling siteSettings.
+- **Client fixes via CMS:** placeholder phone `+961 1 234 567` and the LinkedIn URL (`company/addmindhospitality`, audit N5) — both still in the footer _fallback_; correct them by filling siteSettings.
 - **"Join Us" nav link is provisional** pending the open `/join-us` decision (it's in `DEFAULT_NAV`).
 - **Visual tune:** the inline `Logo` uses a cropped viewBox (`90 395 860 275`); verify in-browser it isn't clipped and looks right at header/footer sizes.
 - **Out-of-scope note:** `/portfolio` + `/project/[slug]` now show the new global Nav/Footer (intended). The new fixed header is slightly taller — eyeball their top spacing.
@@ -98,5 +98,5 @@ The new landing/about components must be built to satisfy these — they replace
 - **2026-07-05** — Should-fix batch. **S1 done** (`queries.ts` LIST/DETAIL split; `tsc` clean). Flagged that **S2/S3/S4-in-scope target Phase-4-wiped files** → recommended deferring into the rebuild rather than fix-then-delete; S4's durable targets are out-of-scope portfolio and left untouched.
 - **2026-07-05** — User chose to defer S2–S4 to Phase 4. Recorded as confirmed deferrals + added a "Phase 4 carry-forward" section so the rebuild implements them by construction. **Phase 1.5 audit remediation complete:** actioned C1–C4, S1, S5, S6; remainder deferred to Phase 2–4 with tracked rationale.
 - **2026-07-05** — **Phase 2 done** (tokens + fonts). Added warm-neutral + brown token set + Fraunces/Inter to `globals.css`/`layout.tsx`; deprecated (kept) `--surface-gradient`/`--font-script`; corrected REDESIGN.md aesthetic rules (user kept brown, not monochrome). Old element defaults left on legacy tokens so out-of-scope pages are untouched. `tsc` clean; diff isolated to 3 files. **Runtime/visual verify (needs Sanity env) is the user's step.** Phase 3/4 carry-forward: add `.theme-redesign` base class; post-redesign cleanup deletes deprecated tokens + drops the 3 old font loads.
-</content>
-</invoke>
+- **2026-07-23** — Reference changed: k-studio.gr → vincentvanduysen.com. Scope also expanded (project schema rebuild, portfolio→archive, landing becomes project-viewer). REDESIGN.md rewritten to reflect this; phases renumbered there. Everything above this line describes the superseded k-studio-era build.
+- **2026-07-24** — **Phase 2 (VVD token pass) built.** Palette taken from evidence, not eyeballing: pixel-sampled `/design-refs/vvd/` screenshots and cross-checked against vincentvanduysen.com's live CSS (values matched). Revalued the redesign tokens in place: `--color-bg` → `#fffffa`, `--color-fg` → `#000`, `--color-fg-muted` → `#a99b9b`, new `--color-title: #391812` (VVD's brown-black), `--color-line` now derived via color-mix, `--tracking-heading` → 0. `--color-accent` aliased to the title brown + marked `@deprecated` (with `--tracking-label`); removal in Phase 9. Added measured type-scale tokens (`--text-*`, `--leading-body`, `--tracking-body`). Fonts: VVD uses Custodia Pro + News Gothic Std (both commercial) → user chose **EB Garamond** (serif display) + **Libre Franklin** (body sans); Manrope/Inter loads removed (grep-verified unconsumed), legacy Cormorant/Darker Grotesque/Great Vibes kept for out-of-scope pages. Existing k-studio-era components re-skin transitionally by design; `/portfolio` + `/project/[slug]` consume only legacy tokens and are untouched. `tsc` clean. Visual pass happens per-phase as components rebuild.

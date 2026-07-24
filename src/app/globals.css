@@ -37,20 +37,42 @@
   --content-tight: 560px;
   --content-gutter: 2rem;
 
-  /* ===== Redesign tokens (warm neutral + brown) =====
+  /* ===== Redesign tokens (VVD direction: near-white ground, brown-black
+     titles, old-style serif display + gothic sans) =====
      Consumed by NEW components only. Old element defaults (body, h1-h6)
-     stay on the legacy tokens above so out-of-scope pages are untouched. */
-  --font-heading: var(--font-manrope);
-  --font-body: var(--font-inter);
+     stay on the legacy tokens above so out-of-scope pages are untouched.
+     Values sampled from /design-refs/vvd/ and verified against
+     vincentvanduysen.com's live stylesheet. */
+  --font-heading: var(--font-eb-garamond);
+  --font-body: var(--font-libre-franklin);
 
-  --color-bg: #faf7f3; /* warm off-white */
-  --color-fg: #211c19; /* warm near-black text */
-  --color-accent: #735a50; /* brown — links, labels, hairlines (same brown as --color-brown-dark) */
-  --color-fg-muted: #8c8074; /* warm muted / secondary */
-  --color-line: #e7dfd7; /* warm hairline rules */
+  --color-bg: #fffffa; /* near-white ground with a faint warm cast */
+  --color-fg: #000000; /* body text — the reference uses literal black */
+  --color-title: #391812; /* brown-black — logotype, page/project titles, serif nav, archive captions */
+  /* @deprecated brown-as-accent is dead — aliased to --color-title so k-studio-era
+     consumers stay coherent until their Phase 3-8 rebuilds; remove in Phase 9 */
+  --color-accent: #391812;
+  --color-fg-muted: #a99b9b; /* warm gray-mauve — inactive nav, secondary text */
+  --color-line: color-mix(
+    in srgb,
+    var(--color-fg-muted) 45%,
+    var(--color-bg)
+  ); /* hairline rules */
 
-  --tracking-label: 0.08em; /* all-caps label letter-spacing */
-  --tracking-heading: -0.02em; /* subtle tightening for display headings */
+  /* Type scale (measured from the VVD refs at 1470px viewport) */
+  --text-meta: 0.75rem; /* smallest meta */
+  --text-body: 0.8125rem; /* body copy, captions, contact lines */
+  --text-nav: 1rem; /* serif nav links + sub-items */
+  --text-title-sm: 1.125rem; /* landing caption title */
+  --text-brand: 1.5rem; /* logotype */
+  --text-title: clamp(1.625rem, 1.2rem + 1.4vw, 2rem); /* page/project titles */
+
+  --leading-body: 1.65; /* generous small-text line-height */
+  --tracking-body: 0.02em; /* tracked small-text texture (News Gothic ref) */
+  /* @deprecated no all-caps label language in the VVD direction — kept for
+     k-studio-era consumers; remove in Phase 9 */
+  --tracking-label: 0.08em;
+  --tracking-heading: 0; /* old-style serif — never negative-track */
 }
 
 @media (max-width: 768px) {

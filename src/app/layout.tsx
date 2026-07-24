@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import {
   Cormorant_Garamond,
   Darker_Grotesque,
+  EB_Garamond,
   Great_Vibes,
-  Inter,
-  Manrope,
+  Libre_Franklin,
 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
@@ -31,19 +31,23 @@ const greatVibes = Great_Vibes({
   display: "swap",
 });
 
-// Redesign fonts (warm neutral + brown, k-studio-style editorial).
+// Redesign fonts (VVD direction): EB Garamond stands in for Custodia Pro
+// (old-style serif display), Libre Franklin for News Gothic Std (body sans).
 // The three fonts above are kept for now because out-of-scope pages
-// (/portfolio, /project) + the not-yet-rebuilt About still resolve
-// --font-serif/--font-sans/--font-script through them.
-const manrope = Manrope({
+// (/portfolio, /project) still resolve --font-serif/--font-sans/--font-script
+// through them.
+const ebGaramond = EB_Garamond({
   subsets: ["latin"],
-  variable: "--font-manrope",
+  weight: ["400", "500"],
+  style: ["normal", "italic"],
+  variable: "--font-eb-garamond",
   display: "swap",
 });
 
-const inter = Inter({
+const libreFranklin = Libre_Franklin({
   subsets: ["latin"],
-  variable: "--font-inter",
+  weight: ["400", "500", "600"],
+  variable: "--font-libre-franklin",
   display: "swap",
 });
 
@@ -61,7 +65,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${darkerGrotesque.variable} ${greatVibes.variable} ${manrope.variable} ${inter.variable}`}
+      className={`${cormorant.variable} ${darkerGrotesque.variable} ${greatVibes.variable} ${ebGaramond.variable} ${libreFranklin.variable}`}
     >
       <body>{children}</body>
       <Analytics />
