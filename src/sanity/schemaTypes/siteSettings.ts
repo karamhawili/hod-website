@@ -7,10 +7,10 @@ export const siteSettings = defineType({
   type: "document",
   icon: CogIcon,
   description:
-    "Global content for the header and footer — nav links, contact details, locations and social links.",
+    "Global content for the navigation rail — nav links, plus contact details awaiting a home in the Studio/Contact pass.",
   groups: [
-    { name: "nav", title: "Header / Navigation", default: true },
-    { name: "footer", title: "Footer" },
+    { name: "nav", title: "Navigation", default: true },
+    { name: "footer", title: "Contact (not currently displayed)" },
   ],
   fields: [
     defineField({
@@ -22,11 +22,11 @@ export const siteSettings = defineType({
     }),
     defineField({
       name: "nav",
-      title: "Navigation Links",
+      title: "Primary Navigation",
       type: "array",
       group: "nav",
       description:
-        "Links shown on the right of the header, in order. The logo always links to the homepage.",
+        "Links in the top stack of the left rail, under the logo (the work section — e.g. Portfolio). The logo always links to the homepage.",
       of: [
         defineArrayMember({
           type: "object",
@@ -42,6 +42,37 @@ export const siteSettings = defineType({
               title: "Link",
               type: "string",
               description: "A path like /portfolio or /about, or a full URL.",
+              validation: (rule) => rule.required(),
+            }),
+          ],
+          preview: {
+            select: { title: "label", subtitle: "href" },
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: "secondaryNav",
+      title: "Secondary Navigation",
+      type: "array",
+      group: "nav",
+      description:
+        "Links pinned to the bottom of the left rail (the studio/info section — e.g. Studio, Join Us).",
+      of: [
+        defineArrayMember({
+          type: "object",
+          fields: [
+            defineField({
+              name: "label",
+              title: "Label",
+              type: "string",
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: "href",
+              title: "Link",
+              type: "string",
+              description: "A path like /studio or /join-us, or a full URL.",
               validation: (rule) => rule.required(),
             }),
           ],

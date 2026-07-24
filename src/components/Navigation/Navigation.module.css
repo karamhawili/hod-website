@@ -1,185 +1,231 @@
-.header {
+/* VVD-style chrome: a fixed, full-height left rail on desktop — logo top-left,
+   primary (work) stack under it in the serif, secondary (studio/info) stack
+   pinned bottom-left in the sans. The rail is whitespace, not a boxed sidebar:
+   no background, no border. Mobile falls back to a slim top bar + fullscreen
+   menu. */
+
+.rail {
   position: fixed;
-  top: 0;
+  inset-block: 0;
   left: 0;
-  width: 100%;
+  width: var(--rail-width);
   z-index: 100;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: space-between;
-  padding: 1.5rem var(--container-padding);
-  color: var(--color-fg);
-  background: transparent;
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease,
-    padding 0.3s ease;
+  padding: 2.25rem;
+  pointer-events: none; /* the empty column shouldn't eat clicks… */
 }
 
-/* Warm-white content over a dark/photo hero (top of page, theme="light"). */
-.header.light {
-  color: var(--color-bg);
+.rail a,
+.rail button {
+  pointer-events: auto; /* …but its links must. */
 }
 
-/* Scrolled: solid warm bar in the page ground color — the bar disappears
-   into the page and only the content reads. No border, no shadow. */
-.header.scrolled {
-  color: var(--color-fg);
-  background: var(--color-bg);
-  padding-top: 0.9rem;
-  padding-bottom: 0.9rem;
+.railTop {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
 }
 
 .logoLink {
   display: inline-flex;
   align-items: center;
-  transition: opacity 0.2s ease;
+  align-self: flex-start;
+  color: var(--color-title);
+  transition:
+    opacity 0.2s ease,
+    color 0.3s ease;
 }
 
 .logoLink:hover {
-  opacity: 0.7;
+  opacity: 0.75;
 }
 
 .logo {
-  height: 34px;
+  height: 28px;
   width: auto;
   display: block;
 }
 
-/* Desktop inline nav */
-.links {
+/* Primary stack — serif, slightly indented from the logo like the reference. */
+.primary {
   display: flex;
-  align-items: center;
-  gap: 2.75rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding-left: 0.5rem;
 }
 
-.links a {
-  position: relative;
+.primary a {
   font-family: var(--font-heading);
-  font-size: 0.64rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: inherit;
+  font-size: var(--text-nav);
+  line-height: 1.6;
+  color: var(--color-fg-muted);
   transition: color 0.25s ease;
 }
 
-/* Hairline that draws in from the left on hover / current page. */
-.links a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -6px;
-  width: 100%;
-  height: 1px;
-  background: currentColor;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s ease;
-}
-
-.links a:hover,
-.links a.active {
-  color: var(--color-accent);
+.primary a:hover,
+.primary a.active {
+  color: var(--color-title);
   opacity: 1;
 }
 
-.links a:hover::after,
-.links a.active::after {
-  transform: scaleX(1);
+/* Secondary stack — sans, muted, pinned to the rail bottom. */
+.secondary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding-left: 0.5rem;
 }
 
-/* Hamburger (mobile only) */
-.hamburger {
+.secondary a {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
+  line-height: 1.6;
+  color: var(--color-fg-muted);
+  transition: color 0.25s ease;
+}
+
+.secondary a:hover,
+.secondary a.active {
+  color: var(--color-fg);
+  opacity: 1;
+}
+
+/* Mobile: header + drawer live in normal document flow so the opening drawer
+   pushes the page content down (per mobile-menu-expanded.png). Same
+   typography and left alignment as the desktop rail. */
+.mobileHeader {
   display: none;
+  background: var(--color-bg);
+  color: var(--color-title);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem var(--container-padding);
+}
+
+.bar .logo {
+  height: 24px;
+}
+
+.hamburger {
+  display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 6px;
+  min-height: 24px;
   background: none;
   border: none;
   padding: 0;
+  color: inherit;
 }
 
 .line {
   width: 26px;
-  height: 2px;
+  height: 1px;
   background: currentColor;
-  transition: background 0.3s ease;
 }
 
-/* Mobile fullscreen menu */
-.menu {
-  position: fixed;
-  inset: 0;
-  z-index: 999;
-  background: var(--color-bg);
-  color: var(--color-fg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-
-.menuOpen {
-  opacity: 1;
-  pointer-events: all;
-}
-
-.closeBtn {
-  position: absolute;
-  top: 1.5rem;
-  right: var(--container-padding);
-  background: none;
-  border: none;
-  font-size: 1.75rem;
+.closeGlyph {
+  font-size: 1.125rem;
   line-height: 1;
-  color: var(--color-fg);
-  transition: color 0.2s ease;
+  color: var(--color-fg-muted);
 }
 
-.closeBtn:hover {
-  color: var(--color-accent);
+/* Collapsible drawer — 0fr → 1fr grid rows animate the reveal without a
+   hardcoded height. The inner padding MUST be gated on the open state:
+   padding is a hard floor on the box height that the collapsed track can't
+   compress (constant padding left the drawer ~2.75rem open, showing the
+   first link and pushing the page past the viewport). Animating the padding
+   on the same curve as the rows keeps the motion soft with no pop. */
+.drawer {
+  display: grid;
+  grid-template-rows: 0fr;
+  overflow: hidden;
+  transition: grid-template-rows 0.45s cubic-bezier(0.33, 0, 0.2, 1);
 }
 
-.menuList {
+.drawerOpen {
+  grid-template-rows: 1fr;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.drawerInner {
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1.75rem;
+  gap: 1.5rem;
+  padding-inline: calc(var(--container-padding) + 0.5rem);
+  padding-block: 0;
+  transition: padding-block 0.45s cubic-bezier(0.33, 0, 0.2, 1);
 }
 
-.menuList a {
+.drawerOpen .drawerInner {
+  padding-block: 0.75rem 2rem;
+}
+
+.drawerPrimary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.drawerPrimary a {
   font-family: var(--font-heading);
-  font-size: clamp(2rem, 6vw, 3rem);
-  color: var(--color-fg);
-  transition: color 0.2s ease;
+  font-size: var(--text-nav);
+  line-height: 1.6;
+  color: var(--color-fg-muted);
 }
 
-.menuList a:hover {
-  color: var(--color-accent);
+.drawerSecondary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+}
+
+.drawerSecondary a {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
+  line-height: 1.6;
+  color: var(--color-fg-muted);
+}
+
+.drawerPrimary a:hover,
+.drawerPrimary a.active {
+  color: var(--color-title);
   opacity: 1;
 }
 
-@media (max-width: 768px) {
-  .header {
-    padding: 1.25rem var(--container-padding);
-  }
+.drawerSecondary a:hover,
+.drawerSecondary a.active {
+  color: var(--color-fg);
+  opacity: 1;
+}
 
-  .header.scrolled {
-    padding-top: 0.9rem;
-    padding-bottom: 0.9rem;
-  }
+/* The reference underlines the active item in the expanded mobile menu. */
+.drawerPrimary a.active,
+.drawerSecondary a.active {
+  text-decoration: underline;
+  text-underline-offset: 0.35em;
+  text-decoration-thickness: 1px;
+}
 
-  .logo {
-    height: 26px;
-  }
-
-  .links {
+@media (max-width: 899px) {
+  .rail {
     display: none;
   }
 
-  .hamburger {
-    display: flex;
+  .mobileHeader {
+    display: block;
   }
 }

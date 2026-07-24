@@ -10,7 +10,9 @@ export default async function Portfolio() {
   return (
     <>
       <Navigation />
-      <main>
+      {/* rail-offset only: keeps the out-of-scope page clear of the new fixed
+          left nav rail. No other redesign changes here until Phase 7. */}
+      <main className="rail-offset">
         <LatestProjects
           showLogo={true}
           showAction={false}
@@ -19,7 +21,7 @@ export default async function Portfolio() {
         />
         <ProjectsGrid projects={allProjects} />
       </main>
-      <Footer showGradient={false} />
+      <Footer />
     </>
   );
 }

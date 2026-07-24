@@ -18,7 +18,7 @@ export default async function StudioPage() {
   return (
     <>
       <Navigation />
-      <main className="theme-redesign">
+      <main className="theme-redesign rail-offset">
         <StudioIntro intro={studio?.intro} />
         <StudioTeam team={studio?.team} />
         <StudioDisciplines disciplines={studio?.disciplines} />

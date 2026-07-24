@@ -35,10 +35,9 @@ These survive from the earlier build and are easy to miss from a code skim:
   `src/sanity/schemaTypes/index.ts`; add singletons to the desk structure in
   `src/sanity/structure.ts`. GROQ goes through the existing `sanityFetch`
   pattern in `src/sanity/lib/queries.ts`.
-- **Nav `theme` prop + Footer `showGradient` prop** were kept alive only
-  because the OLD `/project/[slug]` consumed them (Audit.md C1/C2). Phase 6
-  rebuilds that page — once it no longer needs them, both props can finally
-  be removed. Until then, don't break them.
+- ~~Nav `theme` prop + Footer `showGradient` prop~~ — **removed in Phase 6**
+  (Audit.md C1/C2 closed). The rebuilt `/project/[slug]` renders no chrome at
+  all (close ✕ only), and no other page passes either prop.
 
 ## What VVD actually is (read before building anything)
 
@@ -80,8 +79,8 @@ Not a scrolling marketing site. Three distinct interaction modes:
   thumbnail + name/location/status line underneath, no card chrome.
 - **Category filter** as an indented sub-list under "Archive" in the left nav
   (`All` + categories), mirroring VVD's own Archive sub-nav — NOT a mega-menu,
-  just a flat filter list. Categories: **Residential / Retail / Hospitality /
-  Office / Other** (HOD-specific — confirm/adjust before building).
+  just a flat filter list. Categories (confirmed in Phase 4): **Residential /
+  Restaurants / Beach Clubs / Lounges & Bars / Other**.
 - Search bar (top-right on VVD's version): **deferred, not in this build**
   unless the catalog grows enough to need it.
 
@@ -159,8 +158,8 @@ intentionally minimal:
 }
 ```
 
-`category` schema: simple `{ title, slug }` — Residential/Retail/Hospitality/
-Office/Other (pending confirmation).
+`category` schema: simple `{ title, slug }` — Residential / Restaurants /
+Beach Clubs / Lounges & Bars / Other (confirmed; documents created in Studio).
 
 **Dropped entirely:** `pageBuilder.ts`, all `blocks/*` schemas (`heroBlock`,
 `imageDetailsBlock`, `imageBlock`, `imagePairBlock`, `mixedImagePairBlock`,
@@ -171,10 +170,11 @@ the old tokens/fonts they depended on (`--color-brown-*`,
 finally be retired — the earlier build couldn't delete them because the
 project page still consumed them.
 
-**CMS re-evaluation needed for:** `homePage` singleton (landing is now a
-project-viewer, not editorial feed blocks — the k-studio-era homePage schema
-is void), `siteSettings` (nav labels may need the Archive category list),
-`studioPage` (content model likely survives; revisit visual treatment only).
+**CMS re-evaluation needed for:** ~~`homePage` singleton~~ (resolved in
+Phase 5: deleted entirely — the viewer landing needs no CMS document, it
+renders featured projects directly), `siteSettings` (nav labels may need the
+Archive category list), `studioPage` (content model likely survives; revisit
+visual treatment only).
 
 ## Working rules
 
@@ -196,12 +196,12 @@ is void), `siteSettings` (nav labels may need the Archive category list),
 - [x] Phase 1.5 — Approved fixes (typegen, GROQ split, `.npmrc`)
 - [x] Phase 2 — VVD token pass: palette, type scale, spacing, font re-choice
       (supersedes shipped k-studio-era tokens)
-- [ ] Phase 3 — Nav + Footer restyle for VVD quietness (structure from earlier
+- [x] Phase 3 — Nav + Footer restyle for VVD quietness (structure from earlier
       build likely survives; visual treatment does not)
-- [ ] Phase 4 — Project schema rebuild (drop PageBuilder) + category taxonomy
-- [ ] Phase 5 — Landing project-viewer (hard build: two-axis nav, hover-zone
+- [x] Phase 4 — Project schema rebuild (drop PageBuilder) + category taxonomy
+- [x] Phase 5 — Landing project-viewer (hard build: two-axis nav, hover-zone
       cursor states, scroll-jack, touch gestures, "Go to project" CTA)
-- [ ] Phase 6 — Project detail page (info header + native-ratio scroll body).
+- [x] Phase 6 — Project detail page (info header + native-ratio scroll body).
       Retires the Nav `theme` / Footer `showGradient` props if nothing else
       needs them.
 - [ ] Phase 7 — Archive page (grid + category filter; replaces `/portfolio`,
@@ -211,11 +211,11 @@ is void), `siteSettings` (nav labels may need the Archive category list),
 - [ ] Phase 9 — Responsive + QA pass; retire now-orphaned old tokens/fonts/
       `Section` once PageBuilder is fully gone
 
-## Open items to confirm before the relevant phase
+## Open items (both Phase 4 blockers resolved 2026-07-25)
 
-- **Category list** (Phase 4): confirm Residential/Retail/Hospitality/Office/
-  Other or supply HOD's real taxonomy.
-- **Content migration** (Phase 4): the new `project` schema won't match old
-  Sanity documents. Earlier decision was there's no content worth preserving —
-  if still true, ship the schema and re-enter manually; otherwise a one-off
-  migration script. Confirm before building.
+- **Category list — confirmed:** Residential / Restaurants / Beach Clubs /
+  Lounges & Bars / Other (hospitality-leaning; user rejected the generic list).
+- **Content migration — confirmed: clean break.** No migration script; the
+  user deletes old project docs in `/admin` and re-enters manually. Landing/
+  portfolio feeds are empty until re-entry (query shims keep them rendering
+  new-schema docs meanwhile).

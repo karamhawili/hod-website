@@ -17,7 +17,7 @@ export default async function JoinUs() {
   return (
     <>
       <Navigation />
-      <main className="theme-redesign">
+      <main className="theme-redesign rail-offset">
         <JoinUsHero joinUs={joinUs} fallbackEmail={settings?.email} />
       </main>
       <Footer />

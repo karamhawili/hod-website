@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Logo from "@/components/Logo/Logo";
@@ -8,78 +8,123 @@ import type { NavLink } from "@/types/sanity";
 import styles from "./Navigation.module.css";
 
 interface NavigationClientProps {
-  theme: "default" | "light";
   nav: NavLink[];
+  secondaryNav: NavLink[];
 }
 
-export default function NavigationClient({ theme, nav }: NavigationClientProps) {
+export default function NavigationClient({
+  nav,
+  secondaryNav,
+}: NavigationClientProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  const linkClass = (href: string) =>
+    pathname === href ? styles.active : undefined;
 
-  // At the top of the page, "light" theme shows warm-white content over a
-  // dark/photo hero. Once scrolled onto the frosted bar, content is always dark.
-  const isLight = theme === "light" && !scrolled;
+  const primaryLinks = (
+    <>
+      {nav.map((item) => (
+        <Link key={item.href} href={item.href} className={linkClass(item.href)}>
+          {item.label}
+        </Link>
+      ))}
+    </>
+  );
 
-  const headerClass = [
-    styles.header,
-    isLight ? styles.light : "",
-    scrolled ? styles.scrolled : "",
-  ]
-    .filter(Boolean)
-    .join(" ");
+  const secondaryLinks = (
+    <>
+      {secondaryNav.map((item) => (
+        <Link key={item.href} href={item.href} className={linkClass(item.href)}>
+          {item.label}
+        </Link>
+      ))}
+    </>
+  );
 
   return (
     <>
-      <header className={headerClass}>
-        <Link href="/" className={styles.logoLink} aria-label="House of Design — home">
-          <Logo className={styles.logo} />
-        </Link>
+      {/* Desktop: fixed full-height left rail. */}
+      <header className={styles.rail}>
+        <div className={styles.railTop}>
+          <Link
+            href="/"
+            className={styles.logoLink}
+            aria-label="House of Design — home"
+          >
+            <Logo className={styles.logo} />
+          </Link>
+          <nav className={styles.primary} aria-label="Primary">
+            {primaryLinks}
+          </nav>
+        </div>
 
-        <nav className={styles.links} aria-label="Primary">
-          {nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={pathname === item.href ? styles.active : undefined}
-            >
-              {item.label}
-            </Link>
-          ))}
+        <nav className={styles.secondary} aria-label="Secondary">
+          {secondaryLinks}
         </nav>
-
-        <button
-          className={styles.hamburger}
-          onClick={() => setIsOpen(true)}
-          aria-label="Open menu"
-        >
-          <span className={styles.line} />
-          <span className={styles.line} />
-        </button>
       </header>
 
-      <div className={`${styles.menu} ${isOpen ? styles.menuOpen : ""}`}>
-        <button
-          className={styles.closeBtn}
-          onClick={() => setIsOpen(false)}
-          aria-label="Close menu"
+      {/* Mobile: in-flow header + drawer that slides open beneath it and
+          pushes the page content down (per mobile-menu-expanded.png). */}
+      <div className={styles.mobileHeader}>
+        <div className={styles.bar}>
+          <Link
+            href="/"
+            className={styles.logoLink}
+            aria-label="House of Design — home"
+          >
+            <Logo className={styles.logo} />
+          </Link>
+          <button
+            className={styles.hamburger}
+            onClick={() => setIsOpen((open) => !open)}
+            aria-expanded={isOpen}
+            aria-label={isOpen ? "Close menu" : "Open menu"}
+          >
+            {isOpen ? (
+              <span className={styles.closeGlyph}>✕</span>
+            ) : (
+              <>
+                <span className={styles.line} />
+                <span className={styles.line} />
+              </>
+            )}
+          </button>
+        </div>
+
+        <div
+          className={`${styles.drawer} ${isOpen ? styles.drawerOpen : ""}`}
         >
-          ✕
-        </button>
-        <nav className={styles.menuList} aria-label="Mobile">
-          {nav.map((item) => (
-            <Link key={item.href} href={item.href} onClick={() => setIsOpen(false)}>
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+          <div className={styles.drawerInner}>
+            <nav className={styles.drawerPrimary} aria-label="Mobile primary">
+              {nav.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={linkClass(item.href)}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+            <nav
+              className={styles.drawerSecondary}
+              aria-label="Mobile secondary"
+            >
+              {secondaryNav.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={linkClass(item.href)}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        </div>
       </div>
     </>
   );

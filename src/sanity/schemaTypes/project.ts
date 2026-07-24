@@ -1,50 +1,24 @@
-import { defineField, defineType } from "sanity";
+import { defineArrayMember, defineField, defineType } from "sanity";
 import { ImageIcon } from "@sanity/icons";
 
+// Minimal VVD-style project model. The ordered `images` array is the single
+// source of truth for BOTH the landing carousel and the detail-page scroll.
 export const project = defineType({
   name: "project",
   title: "Project",
   type: "document",
-  groups: [
-    { name: "overview", title: "Overview", default: true },
-    { name: "content", title: "Page Content" },
-    { name: "metadata", title: "Metadata" },
-  ],
+  icon: ImageIcon,
   fields: [
     defineField({
       name: "title",
-      title: "Project Title",
+      title: "Title",
       type: "string",
-      group: "overview",
       validation: (rule) => rule.required(),
-    }),
-    defineField({
-      name: "formattedTitle",
-      title: "Formatted Project Title",
-      type: "array",
-      group: "overview",
-      description:
-        "Optional styled title for frontend display (supports bold and italic).",
-      of: [
-        {
-          type: "block",
-          styles: [{ title: "Normal", value: "normal" }],
-          lists: [],
-          marks: {
-            decorators: [
-              { title: "Bold", value: "strong" },
-              { title: "Italic", value: "em" },
-            ],
-            annotations: [],
-          },
-        },
-      ],
     }),
     defineField({
       name: "slug",
       title: "Slug",
       type: "slug",
-      group: "overview",
       description: "Used in the URL. Auto-generated from the title.",
       options: {
         source: "title",
@@ -53,110 +27,123 @@ export const project = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: "coverImage",
-      title: "Cover Image",
-      type: "image",
-      group: "overview",
-      description: "Main image used in listings and preview cards.",
-      options: {
-        hotspot: true,
-      },
-      validation: (rule) => rule.required(),
-    }),
-    defineField({
-      name: "content",
-      title: "Content",
-      type: "pageBuilder",
-      group: "content",
-      description: "Build the project page by stacking content blocks.",
-    }),
-    defineField({
-      name: "excerpt",
-      title: "Short Description",
-      type: "text",
-      group: "overview",
-      rows: 3,
-      validation: (rule) => rule.max(200),
-    }),
-    defineField({
       name: "location",
       title: "Location",
       type: "string",
-      group: "metadata",
-      options: {
-        list: [
-          { title: "Beirut", value: "Beirut" },
-          { title: "Dubai", value: "Dubai" },
-          { title: "Abu Dhabi", value: "Abu Dhabi" },
-          { title: "Cairo", value: "Cairo" },
-          { title: "Doha", value: "Doha" },
-          { title: "Riyadh", value: "Riyadh" },
-        ],
-        layout: "dropdown",
-      },
+      description: "City and country, e.g. “Beirut, Lebanon”.",
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: "categories",
-      title: "Categories",
-      type: "array",
-      group: "metadata",
-      of: [
-        {
-          type: "reference",
-          to: [{ type: "category" }],
-        },
-      ],
-      validation: (rule) => rule.required().min(1),
+      name: "year",
+      title: "Year",
+      type: "string",
+      description: "A year or range, e.g. “2025” or “2024–2025”.",
     }),
     defineField({
-      name: "year",
-      title: "Year Completed",
-      type: "number",
-      group: "metadata",
-      validation: (rule) =>
-        rule
-          .required()
-          .min(2000)
-          .max(new Date().getFullYear())
-          .integer()
-          .error("Please enter a valid year between 2000 and current year"),
+      name: "status",
+      title: "Status",
+      type: "string",
+      description: "Shown in Archive captions exactly as written.",
+      options: {
+        list: [
+          { title: "In progress", value: "In progress" },
+          { title: "On hold", value: "On hold" },
+          { title: "Completed", value: "Completed" },
+        ],
+        layout: "radio",
+      },
+    }),
+    defineField({
+      name: "category",
+      title: "Category",
+      type: "reference",
+      to: [{ type: "category" }],
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: "description",
+      title: "Description",
+      type: "array",
+      of: [
+        defineArrayMember({
+          type: "block",
+          styles: [{ title: "Normal", value: "normal" }],
+          lists: [],
+          marks: {
+            decorators: [
+              { title: "Bold", value: "strong" },
+              { title: "Italic", value: "em" },
+            ],
+            annotations: [
+              {
+                name: "link",
+                type: "object",
+                title: "Link",
+                fields: [
+                  defineField({
+                    name: "href",
+                    title: "URL",
+                    type: "url",
+                    validation: (rule) =>
+                      rule.uri({
+                        allowRelative: true,
+                        scheme: ["http", "https", "mailto"],
+                      }),
+                  }),
+                ],
+              },
+            ],
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: "credits",
+      title: "Credits",
+      type: "string",
+      description: "e.g. “Photos by Jane Doe”.",
+    }),
+    defineField({
+      name: "images",
+      title: "Images",
+      type: "array",
+      description:
+        "Ordered gallery — drives both the landing carousel and the project page, top to bottom.",
+      of: [
+        defineArrayMember({
+          type: "image",
+          options: { hotspot: true },
+          fields: [
+            defineField({
+              name: "alt",
+              title: "Alternative Text",
+              type: "string",
+              description: "Describes the image for screen readers and SEO.",
+            }),
+          ],
+        }),
+      ],
+      validation: (rule) => rule.min(1).warning("Add at least one image."),
     }),
     defineField({
       name: "featured",
-      title: "Featured Project",
+      title: "Featured",
       type: "boolean",
-      group: "metadata",
-      description:
-        "Mark this project as featured to highlight it on the homepage",
+      description: "Included in the landing-page project rotation.",
       initialValue: false,
-    }),
-    defineField({
-      name: "overlayTextColor",
-      title: "Overlay Text Color",
-      type: "string",
-      group: "metadata",
-      description: "Choose text color based on image brightness.",
-      options: {
-        list: [
-          { title: "White (for dark images)", value: "white" },
-          { title: "Dark Brown (for light images)", value: "dark" },
-        ],
-      },
-      initialValue: "white",
     }),
   ],
   preview: {
     select: {
       title: "title",
       location: "location",
-      categoryTitle: "categories.0.title",
-      media: "coverImage",
+      status: "status",
+      media: "images.0",
     },
-    prepare({ title, location, categoryTitle, media }) {
+    prepare({ title, location, status, media }) {
       return {
         title,
-        subtitle: `${location || "No location"} • ${categoryTitle || "No category"}`,
+        subtitle: [location, status].filter(Boolean).join(" • "),
         media: media || ImageIcon,
       };
     },
