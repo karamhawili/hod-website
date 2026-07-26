@@ -224,7 +224,7 @@ content model survived unchanged; restyled to single-column native-ratio).
       trimmed (intro/disciplines images + team + **publications** objects
       removed) and reordered to match the page (founder → intro → disciplines);
       `StudioTeam` + `StudioPublications` components deleted.
-- [ ] Phase 8.2 — **Contact page** (`/contact` + secondary-nav item): VVD
+- [x] Phase 8.2 — **Contact page** (`/contact` + secondary-nav item): VVD
       `Contact.png` single-column treatment; reads existing `siteSettings`
       contact fields (brandLine, locations, phone, email, socials, mapUrl) —
       no schema change. Where the footer-era contact content lands.

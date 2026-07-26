@@ -59,6 +59,7 @@
 
 .primary a {
   font-family: var(--font-heading);
+  font-weight: 500;
   font-size: var(--text-nav);
   line-height: 1.6;
   color: var(--color-fg-muted);
@@ -82,6 +83,7 @@
 
 .secondary a {
   font-family: var(--font-body);
+  font-weight: 500;
   font-size: var(--text-body);
   letter-spacing: var(--tracking-body);
   line-height: 1.6;
@@ -180,6 +182,7 @@
 
 .drawerPrimary a {
   font-family: var(--font-heading);
+  font-weight: 500;
   font-size: var(--text-nav);
   line-height: 1.6;
   color: var(--color-fg-muted);
@@ -194,6 +197,7 @@
 
 .drawerSecondary a {
   font-family: var(--font-body);
+  font-weight: 500;
   font-size: var(--text-body);
   letter-spacing: var(--tracking-body);
   line-height: 1.6;
