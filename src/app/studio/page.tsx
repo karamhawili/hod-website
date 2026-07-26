@@ -1,15 +1,13 @@
 import type { Metadata } from "next";
-import Footer from "@/components/Footer/Footer";
 import Navigation from "@/components/Navigation/Navigation";
 import { getStudioPage } from "@/sanity/lib/queries";
 import StudioDisciplines from "./_components/StudioDisciplines/StudioDisciplines";
 import StudioFounder from "./_components/StudioFounder/StudioFounder";
 import StudioIntro from "./_components/StudioIntro/StudioIntro";
-import StudioPublications from "./_components/StudioPublications/StudioPublications";
-import StudioTeam from "./_components/StudioTeam/StudioTeam";
+import styles from "./page.module.css";
 
 export const metadata: Metadata = {
-  title: "Studio | House of Design",
+  title: "Studio — House of Design",
 };
 
 export default async function StudioPage() {
@@ -18,14 +16,12 @@ export default async function StudioPage() {
   return (
     <>
       <Navigation />
-      <main className="theme-redesign rail-offset">
-        <StudioIntro intro={studio?.intro} />
-        <StudioTeam team={studio?.team} />
-        <StudioDisciplines disciplines={studio?.disciplines} />
+      <main className={`theme-redesign rail-offset ${styles.page}`}>
         <StudioFounder founder={studio?.founder} />
-        <StudioPublications publications={studio?.publications} />
+        <hr className={styles.separator} />
+        <StudioIntro intro={studio?.intro} />
+        <StudioDisciplines disciplines={studio?.disciplines} />
       </main>
-      <Footer />
     </>
   );
 }

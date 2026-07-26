@@ -15,6 +15,14 @@
 @media (max-width: 899px) {
   .viewer {
     height: calc(100dvh - 64px);
+    /* Approx height of the fixed caption bar below — reserved so the image
+       centers in the space between header and caption, not behind it. */
+    --caption-h: 5rem;
+  }
+
+  /* Exclude the caption band from the centering context. */
+  .stage {
+    bottom: var(--caption-h);
   }
 }
 
@@ -45,7 +53,6 @@
   width: min(85vw, calc(72vh * var(--ar)));
   aspect-ratio: var(--ar);
   opacity: 0;
-  transition: opacity 0.4s ease;
   pointer-events: none;
   margin: 0;
 }
@@ -54,18 +61,40 @@
   opacity: 1;
 }
 
-/* Mounts already carrying this class, so a transition would never fire —
-   the fade-out must be an animation that starts from full opacity. */
-.frame.outgoing {
-  animation: fade-out 0.4s ease forwards;
+/* Carousel slide: no fading — the incoming frame travels in from the edge
+   the navigation points at (offsets set inline via the enter/exit custom
+   props, a full viewport so any frame size clears the screen); the outgoing
+   copy travels out the opposite side. Caption swaps instantly via React. */
+.frame.slideIn {
+  animation: slide-in 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-@keyframes fade-out {
+.frame.slideOut {
+  opacity: 1;
+  animation: slide-out 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+@keyframes slide-in {
   from {
-    opacity: 1;
+    transform: translate(
+      calc(-50% + var(--enter-x, 0px)),
+      calc(-50% + var(--enter-y, 0px))
+    );
   }
   to {
-    opacity: 0;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes slide-out {
+  from {
+    transform: translate(-50%, -50%);
+  }
+  to {
+    transform: translate(
+      calc(-50% + var(--exit-x, 0px)),
+      calc(-50% + var(--exit-y, 0px))
+    );
   }
 }
 
@@ -78,11 +107,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .frame {
-    transition: none;
+  .frame.slideIn {
+    animation: none;
   }
 
-  .frame.outgoing {
+  .frame.slideOut {
     animation: none;
     opacity: 0;
   }
@@ -156,16 +185,20 @@
 
 /* ---- caption ---- */
 
-/* Desktop: the two groups stack into one left-aligned block bottom-right. */
+/* Desktop: the two groups stack into one left-aligned block on the right,
+   its bottom aligned with the bottom of the 72vh image band (images are
+   height-locked, so that edge is the image's bottom). */
 .caption {
   position: absolute;
   z-index: 3;
   right: clamp(1.5rem, 4vw, 3.5rem);
-  bottom: clamp(1.5rem, 5vh, 3rem);
+  bottom: calc((100dvh - 72vh) / 2);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.15rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-bg);
 }
 
 .captionGroup {

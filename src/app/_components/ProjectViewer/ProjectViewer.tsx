@@ -16,12 +16,17 @@ interface ProjectViewerProps {
   projects: VIEWER_PROJECTS_QUERY_RESULT;
 }
 
-// Matches the crossfade duration in the module CSS.
-const TRANSITION_MS = 400;
-// Wheel: one project step per gesture, then a cooldown so trackpad inertia
-// doesn't fire a whole chain of steps.
-const WHEEL_THRESHOLD = 50;
-const WHEEL_COOLDOWN_MS = 700;
+// Matches the carousel slide duration in the module CSS.
+const TRANSITION_MS = 900;
+// Wheel: fire on the leading edge of a gesture (low threshold = the first
+// real movement triggers, so there's no perceptible accumulation lag on a
+// trackpad), then a cooldown so momentum doesn't fire a chain of steps. The
+// cooldown is kept >= TRANSITION_MS so a new slide can't start mid-travel.
+const WHEEL_THRESHOLD = 12;
+const WHEEL_COOLDOWN_MS = 950;
+// Reset the accumulator after this much wheel idle so a leftover sub-threshold
+// nudge can't bias the direction of the next gesture.
+const WHEEL_IDLE_RESET_MS = 150;
 // Touch: below TAP = open project, above SWIPE = navigate.
 const TAP_THRESHOLD_PX = 10;
 const SWIPE_THRESHOLD_PX = 40;
@@ -34,38 +39,61 @@ export default function ProjectViewer({ projects }: ProjectViewerProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [projectIndex, setProjectIndex] = useState(0);
   const [imageIndex, setImageIndex] = useState(0);
-  // The image left behind by a project switch, kept mounted while it fades.
+  // Carousel slide in flight: the frame left behind slides out along `axis`
+  // while the new active frame slides in from the opposite edge.
   const [outgoing, setOutgoing] = useState<{
     image: ViewerImage;
     title: string;
+    axis: "x" | "y";
+    dir: 1 | -1;
   } | null>(null);
   const outgoingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wheelAccum = useRef(0);
   const wheelLast = useRef(0);
+  const wheelEventLast = useRef(0);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+  // Per-project horizontal position, remembered across vertical navigation.
+  // A ref array: O(1) save/restore, no extra renders, no persistence beyond
+  // the visit (which is the wanted scope).
+  const imageMemory = useRef<number[]>([]);
 
   const project = projects[projectIndex] ?? null;
   const images = project?.images ?? [];
   const currentImage = images[imageIndex] ?? null;
 
+  const beginSlide = useCallback(
+    (axis: "x" | "y", dir: 1 | -1, image: ViewerImage, title: string) => {
+      setOutgoing({ image, title, axis, dir });
+      if (outgoingTimer.current) clearTimeout(outgoingTimer.current);
+      outgoingTimer.current = setTimeout(() => setOutgoing(null), TRANSITION_MS);
+    },
+    [],
+  );
+
   const goToImage = useCallback(
     (dir: 1 | -1) => {
-      if (images.length < 2) return;
+      if (images.length < 2 || !currentImage || !project) return;
+      beginSlide("x", dir, currentImage, project.title);
       setImageIndex((index) => wrap(index + dir, images.length));
     },
-    [images.length],
+    [images.length, currentImage, project, beginSlide],
   );
 
   const goToProject = useCallback(
     (dir: 1 | -1) => {
       if (projects.length < 2 || !currentImage || !project) return;
-      setOutgoing({ image: currentImage, title: project.title });
-      setProjectIndex((index) => wrap(index + dir, projects.length));
-      setImageIndex(0);
-      if (outgoingTimer.current) clearTimeout(outgoingTimer.current);
-      outgoingTimer.current = setTimeout(() => setOutgoing(null), TRANSITION_MS);
+      beginSlide("y", dir, currentImage, project.title);
+
+      imageMemory.current[projectIndex] = imageIndex;
+      const nextIndex = wrap(projectIndex + dir, projects.length);
+      const remembered = imageMemory.current[nextIndex] ?? 0;
+      const nextLength = projects[nextIndex]?.images?.length ?? 0;
+      setProjectIndex(nextIndex);
+      // Restore where that project's carousel was left (guarded in case the
+      // gallery shrank under a live content update).
+      setImageIndex(remembered < nextLength ? remembered : 0);
     },
-    [projects.length, currentImage, project],
+    [projects, projectIndex, imageIndex, currentImage, project, beginSlide],
   );
 
   // Scroll interception — the ONE sanctioned scroll-jack (see REDESIGN.md).
@@ -77,6 +105,12 @@ export default function ProjectViewer({ projects }: ProjectViewerProps) {
     const onWheel = (event: WheelEvent) => {
       event.preventDefault();
       const now = Date.now();
+      // Drop stale accumulation from an earlier, unfinished nudge.
+      if (now - wheelEventLast.current > WHEEL_IDLE_RESET_MS) {
+        wheelAccum.current = 0;
+      }
+      wheelEventLast.current = now;
+
       if (now - wheelLast.current < WHEEL_COOLDOWN_MS) return;
 
       const horizontal = Math.abs(event.deltaX) > Math.abs(event.deltaY);
@@ -121,16 +155,19 @@ export default function ProjectViewer({ projects }: ProjectViewerProps) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [goToImage, goToProject]);
 
-  // Warm the neighbouring projects' first images so project switches never
-  // land on an empty frame.
+  // Warm the image each neighbouring project would show on arrival (its
+  // remembered position, or its first image) so switches never land blank.
   useEffect(() => {
     if (projects.length < 2) return;
     [1, -1].forEach((dir) => {
-      const neighbour = projects[wrap(projectIndex + dir, projects.length)];
-      const first = neighbour?.images?.[0];
-      if (first?.asset) {
+      const neighbourIndex = wrap(projectIndex + dir, projects.length);
+      const neighbourImages = projects[neighbourIndex]?.images ?? [];
+      const remembered = imageMemory.current[neighbourIndex] ?? 0;
+      const target =
+        neighbourImages[remembered < neighbourImages.length ? remembered : 0];
+      if (target?.asset) {
         const img = new window.Image();
-        img.src = urlForSized(first, 2000);
+        img.src = urlForSized(target, 2000);
       }
     });
   }, [projectIndex, projects]);
@@ -183,6 +220,7 @@ export default function ProjectViewer({ projects }: ProjectViewerProps) {
     image: ViewerImage,
     title: string,
     className: string,
+    slideVars: React.CSSProperties = {},
     priority = false,
   ) => (
     <figure
@@ -191,6 +229,7 @@ export default function ProjectViewer({ projects }: ProjectViewerProps) {
       style={
         {
           "--ar": String(image.dimensions?.aspectRatio ?? 1.5),
+          ...slideVars,
         } as React.CSSProperties
       }
     >
@@ -209,6 +248,19 @@ export default function ProjectViewer({ projects }: ProjectViewerProps) {
     </figure>
   );
 
+  // Direction-aware carousel offsets: the incoming frame enters from the
+  // edge the navigation points at; the outgoing one exits the opposite way.
+  const enterVars: React.CSSProperties = outgoing
+    ? outgoing.axis === "x"
+      ? ({ "--enter-x": `${outgoing.dir * 100}vw` } as React.CSSProperties)
+      : ({ "--enter-y": `${outgoing.dir * 100}dvh` } as React.CSSProperties)
+    : {};
+  const exitVars: React.CSSProperties = outgoing
+    ? outgoing.axis === "x"
+      ? ({ "--exit-x": `${outgoing.dir * -100}vw` } as React.CSSProperties)
+      : ({ "--exit-y": `${outgoing.dir * -100}dvh` } as React.CSSProperties)
+    : {};
+
   return (
     <div
       ref={rootRef}
@@ -217,15 +269,18 @@ export default function ProjectViewer({ projects }: ProjectViewerProps) {
       onTouchEnd={onTouchEnd}
     >
       <div className={styles.stage} aria-hidden="true">
-        {/* The whole current gallery stays mounted: crossfades between
-            images come free, and siblings are preloaded by the browser. */}
+        {/* The whole current gallery stays mounted so siblings are already
+            loaded when they slide in. Only the active frame is visible;
+            during a slide it animates in while the outgoing copy animates
+            out below. */}
         {images.map((image, index) =>
           renderFrame(
             image,
             project.title,
             index === imageIndex
-              ? `${styles.frame} ${styles.active}`
+              ? `${styles.frame} ${styles.active} ${outgoing ? styles.slideIn : ""}`
               : styles.frame,
+            index === imageIndex ? enterVars : {},
             projectIndex === 0 && index === 0,
           ),
         )}
@@ -233,7 +288,8 @@ export default function ProjectViewer({ projects }: ProjectViewerProps) {
           renderFrame(
             outgoing.image,
             outgoing.title,
-            `${styles.frame} ${styles.outgoing}`,
+            `${styles.frame} ${styles.slideOut}`,
+            exitVars,
           )}
       </div>
 

@@ -1,14 +1,17 @@
-/* Split hero: looping video left, careers pitch right. */
+/* Split hero: looping video left, careers pitch right — the one page allowed
+   a hero. VVD-quiet type: serif heading, sans body, no all-caps or filled
+   buttons. */
 .section {
   display: grid;
   grid-template-columns: 5fr 6fr;
-  column-gap: calc(var(--content-gutter) * 2);
+  column-gap: clamp(2rem, 5vw, 4.5rem);
   align-items: center;
-  max-width: var(--container-max);
-  margin-inline: auto;
-  /* First section on the page — clear the fixed navigation. */
-  padding: clamp(8rem, 16vh, 11rem) var(--container-padding)
-    var(--section-padding);
+  /* Constrained + left-aligned within the rail-offset area (no auto margins),
+     so the video + pitch sit together on the left rather than spanning the
+     full width with the text pushed to the far edge. */
+  max-width: 58rem;
+  min-height: 100dvh;
+  padding: clamp(7rem, 14vh, 10rem) 0 clamp(4rem, 10vh, 7rem);
 }
 
 .media {
@@ -27,75 +30,72 @@
 }
 
 .text {
-  padding-inline: clamp(1.5rem, 3.5vw, 3.5rem);
+  max-width: 30rem;
 }
 
 .label {
-  font-family: var(--font-heading);
-  font-size: 0.68rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-label);
-  color: var(--color-accent);
-  margin-bottom: 1.4rem;
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-fg-muted);
+  margin-bottom: 1.25rem;
 }
 
 .heading {
-  font-size: clamp(1.15rem, 1.7vw, 1.5rem);
-  font-weight: 700;
-  line-height: 1.45;
-  text-transform: uppercase;
+  font-family: var(--font-heading);
+  font-size: var(--text-title);
+  font-weight: 500;
+  letter-spacing: var(--tracking-heading);
+  line-height: 1.25;
+  color: var(--color-title);
   margin-bottom: 1.5rem;
 }
 
 .body {
-  color: var(--color-fg-muted);
-  font-size: 0.95rem;
-  line-height: 1.8;
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
+  line-height: var(--leading-body);
+  color: var(--color-fg);
 }
 
 .body + .body {
-  margin-top: 1.25rem;
+  margin-top: 1rem;
 }
 
 .emailLead {
   margin-top: 2.25rem;
-  margin-bottom: 0.9rem;
-  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
   color: var(--color-fg-muted);
 }
 
-/* Sharp filled rectangle, same ink as the landing CTAs. */
 .cta {
-  display: inline-block;
-  padding: 0.85rem 2rem;
-  background: var(--color-fg);
-  color: var(--color-bg);
-  font-family: var(--font-heading);
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-label);
-  transition: background-color 0.25s ease;
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-title);
+  text-decoration: underline;
+  text-underline-offset: 0.35em;
+  text-decoration-thickness: 1px;
 }
 
 .cta:hover {
-  background: var(--color-accent);
-  opacity: 1;
+  opacity: 0.7;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 899px) {
   .section {
     grid-template-columns: 1fr;
     row-gap: 2.5rem;
-    padding-top: 7rem;
-  }
-
-  .media {
-    aspect-ratio: 4 / 5;
+    min-height: 0;
+    /* rail-offset provides no inline padding below the rail breakpoint. */
+    padding: 3rem 1.5rem;
   }
 
   .text {
-    padding-inline: 0;
+    max-width: none;
   }
 }

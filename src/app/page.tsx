@@ -1,23 +1,24 @@
 import Navigation from "@/components/Navigation/Navigation";
-import {
-  getAllViewerProjects,
-  getViewerProjects,
-} from "@/sanity/lib/queries";
+import { getViewerProjects } from "@/sanity/lib/queries";
 import ProjectViewer from "./_components/ProjectViewer/ProjectViewer";
 
-export default async function Home() {
-  // Featured projects drive the rotation; fall back to all projects so the
-  // landing never renders blank while nothing is marked featured.
-  let projects = await getViewerProjects();
-  if (projects.length === 0) {
-    projects = await getAllViewerProjects();
-  }
+type HomeProps = {
+  // The rail's category links filter the rotation via ?category=<slug>.
+  searchParams: Promise<{ category?: string }>;
+};
+
+export default async function Home({ searchParams }: HomeProps) {
+  const { category } = await searchParams;
+  const projects = await getViewerProjects(category);
 
   return (
     <>
-      <Navigation />
+      <Navigation activeCategory={category} />
       <main className="theme-redesign">
-        <ProjectViewer projects={projects} />
+        {/* Key by category so switching filters remounts the viewer fresh —
+            otherwise its stale projectIndex can point past the shorter list
+            and fall through to the empty state. */}
+        <ProjectViewer key={category ?? "all"} projects={projects} />
       </main>
     </>
   );

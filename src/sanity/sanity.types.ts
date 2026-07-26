@@ -20,11 +20,6 @@ export type SiteSettings = {
   _updatedAt: string;
   _rev: string;
   brandLine?: string;
-  nav?: Array<{
-    label: string;
-    href: string;
-    _key: string;
-  }>;
   secondaryNav?: Array<{
     label: string;
     href: string;
@@ -104,55 +99,6 @@ export type StudioPage = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  intro?: {
-    heading?: string;
-    body?: string;
-    image?: {
-      asset?: SanityImageAssetReference;
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      _type: "image";
-    };
-    secondaryImage?: {
-      asset?: SanityImageAssetReference;
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      _type: "image";
-    };
-    secondaryBody?: string;
-  };
-  team?: {
-    image?: {
-      asset?: SanityImageAssetReference;
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      _type: "image";
-    };
-    heading?: string;
-    body?: string;
-  };
-  disciplines?: {
-    image?: {
-      asset?: SanityImageAssetReference;
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      _type: "image";
-    };
-    secondaryImage?: {
-      asset?: SanityImageAssetReference;
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      _type: "image";
-    };
-    body?: string;
-    sectors?: Array<string>;
-    services?: Array<string>;
-  };
   founder?: {
     name?: string;
     role?: string;
@@ -167,21 +113,15 @@ export type StudioPage = {
     linkLabel?: string;
     linkUrl?: string;
   };
-  publications?: {
-    label?: string;
-    image?: {
-      asset?: SanityImageAssetReference;
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      _type: "image";
-    };
-    items?: Array<{
-      publication: string;
-      title?: string;
-      url?: string;
-      _key: string;
-    }>;
+  intro?: {
+    heading?: string;
+    body?: string;
+  };
+  disciplines?: {
+    heading?: string;
+    body?: string;
+    sectors?: Array<string>;
+    services?: Array<string>;
   };
 };
 
@@ -232,7 +172,6 @@ export type Project = {
     _type: "image";
     _key: string;
   }>;
-  featured?: boolean;
 };
 
 export type Slug = {
@@ -372,45 +311,17 @@ export type AllSanitySchemaTypes =
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: src/sanity/lib/queries.ts
-// Variable: ALL_PROJECTS_QUERY
-// Query: *[_type == "project" && (defined(coverImage) || count(images) > 0)]    | order(_createdAt desc) {      _id,  title,  formattedTitle,  slug,  "coverImage": coalesce(coverImage, images[0]),  excerpt,  "location": coalesce(location, category),  "categories": coalesce(    categories[]->{      _id,      title,      "slug": slug.current,      "color": color.hex    },    [category->{      _id,      title,      "slug": slug.current    }]  ),  year,  featured,  overlayTextColor  }
-export type ALL_PROJECTS_QUERY_RESULT = Array<{
-  _id: string;
-  title: string;
-  formattedTitle: null;
-  slug: Slug;
-  coverImage: {
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    alt?: string;
-    _type: "image";
-    _key: string;
-  } | null;
-  excerpt: null;
-  location: string;
-  categories: Array<{
-    _id: string;
-    title: string;
-    slug: string;
-  }>;
-  year: string | null;
-  featured: boolean | null;
-  overlayTextColor: null;
-}>;
-
-// Source: src/sanity/lib/queries.ts
-// Variable: VIEWER_PROJECTS_QUERY
-// Query: *[_type == "project" && featured == true && defined(slug.current) && count(images) > 0]    | order(_createdAt desc) {   _id,  title,  "slug": slug.current,  location,  year,  images[]{    _key,    alt,    asset,    hotspot,    crop,    "lqip": asset->metadata.lqip,    "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }  } }
-export type VIEWER_PROJECTS_QUERY_RESULT = Array<{
+// Variable: ARCHIVE_PROJECTS_QUERY
+// Query: *[_type == "project" && defined(slug.current) && count(images) > 0      && ($category == null || category->slug.current == $category)]    | order(_createdAt desc) {    _id,    title,    "slug": slug.current,    location,    status,    year,    "category": category->title,    "thumb": images[0]{      alt,      asset,      hotspot,      crop,      "lqip": asset->metadata.lqip,      "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }    }  }
+export type ARCHIVE_PROJECTS_QUERY_RESULT = Array<{
   _id: string;
   title: string;
   slug: string;
   location: string;
+  status: "Completed" | "In progress" | "On hold" | null;
   year: string | null;
-  images: Array<{
-    _key: string;
+  category: string;
+  thumb: {
     alt: string | null;
     asset: SanityImageAssetReference | null;
     hotspot: SanityImageHotspot | null;
@@ -421,13 +332,22 @@ export type VIEWER_PROJECTS_QUERY_RESULT = Array<{
       height: number;
       aspectRatio: number;
     } | null;
-  }> | null;
+  } | null;
 }>;
 
 // Source: src/sanity/lib/queries.ts
-// Variable: ALL_VIEWER_PROJECTS_QUERY
-// Query: *[_type == "project" && defined(slug.current) && count(images) > 0]    | order(_createdAt desc) {   _id,  title,  "slug": slug.current,  location,  year,  images[]{    _key,    alt,    asset,    hotspot,    crop,    "lqip": asset->metadata.lqip,    "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }  } }
-export type ALL_VIEWER_PROJECTS_QUERY_RESULT = Array<{
+// Variable: CATEGORIES_QUERY
+// Query: *[_type == "category" && defined(slug.current)      && count(*[_type == "project" && references(^._id) && count(images) > 0]) > 0]    | order(title asc) {    _id,    title,    "slug": slug.current  }
+export type CATEGORIES_QUERY_RESULT = Array<{
+  _id: string;
+  title: string;
+  slug: string;
+}>;
+
+// Source: src/sanity/lib/queries.ts
+// Variable: VIEWER_PROJECTS_QUERY
+// Query: *[_type == "project" && defined(slug.current) && count(images) > 0      && ($category == null || category->slug.current == $category)]    | order(_createdAt desc) {   _id,  title,  "slug": slug.current,  location,  year,  images[]{    _key,    alt,    asset,    hotspot,    crop,    "lqip": asset->metadata.lqip,    "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }  } }
+export type VIEWER_PROJECTS_QUERY_RESULT = Array<{
   _id: string;
   title: string;
   slug: string;
@@ -493,11 +413,10 @@ export type PROJECT_DETAIL_QUERY_RESULT = {
 
 // Source: src/sanity/lib/queries.ts
 // Variable: SITE_SETTINGS_QUERY
-// Query: *[_id == "siteSettings"][0]{    brandLine,    nav[]{ label, href },    secondaryNav[]{ label, href },    locations[]{ label, address },    phone,    email,    mapUrl,    socials[]{ platform, url }  }
+// Query: *[_id == "siteSettings"][0]{    brandLine,    secondaryNav[]{ label, href },    locations[]{ label, address },    phone,    email,    mapUrl,    socials[]{ platform, url }  }
 export type SITE_SETTINGS_QUERY_RESULT =
   | {
       brandLine: null;
-      nav: null;
       secondaryNav: null;
       locations: null;
       phone: null;
@@ -507,7 +426,6 @@ export type SITE_SETTINGS_QUERY_RESULT =
     }
   | {
       brandLine: null;
-      nav: null;
       secondaryNav: null;
       locations: null;
       phone: null;
@@ -517,10 +435,6 @@ export type SITE_SETTINGS_QUERY_RESULT =
     }
   | {
       brandLine: string | null;
-      nav: Array<{
-        label: string;
-        href: string;
-      }> | null;
       secondaryNav: Array<{
         label: string;
         href: string;
@@ -541,101 +455,48 @@ export type SITE_SETTINGS_QUERY_RESULT =
 
 // Source: src/sanity/lib/queries.ts
 // Variable: STUDIO_PAGE_QUERY
-// Query: *[_id == "studioPage"][0]{    intro{ heading, body, image, secondaryImage, secondaryBody },    team{ image, heading, body },    disciplines{ image, secondaryImage, body, sectors, services },    founder{ name, role, image, bio, linkLabel, linkUrl },    publications{ label, image, items[]{ _key, publication, title, url } }  }
+// Query: *[_id == "studioPage"][0]{    founder{ name, role, bio, linkLabel, linkUrl, image{  asset,  hotspot,  crop,  "lqip": asset->metadata.lqip,  "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }} },    intro{ heading, body },    disciplines{ heading, body, sectors, services }  }
 export type STUDIO_PAGE_QUERY_RESULT =
   | {
-      intro: null;
-      team: null;
-      disciplines: null;
       founder: null;
-      publications: null;
+      intro: null;
+      disciplines: null;
     }
   | {
-      intro: {
-        heading: string | null;
-        body: string | null;
+      founder: {
+        name: string | null;
+        role: string | null;
+        bio: string | null;
+        linkLabel: string | null;
+        linkUrl: string | null;
         image: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
+          asset: SanityImageAssetReference | null;
+          hotspot: SanityImageHotspot | null;
+          crop: SanityImageCrop | null;
+          lqip: string | null;
+          dimensions: {
+            width: number;
+            height: number;
+            aspectRatio: number;
+          } | null;
         } | null;
-        secondaryImage: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        } | null;
-        secondaryBody: string | null;
       } | null;
-      team: {
-        image: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        } | null;
+      intro: {
         heading: string | null;
         body: string | null;
       } | null;
       disciplines: {
-        image: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        } | null;
-        secondaryImage: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        } | null;
+        heading: string | null;
         body: string | null;
         sectors: Array<string> | null;
         services: Array<string> | null;
-      } | null;
-      founder: {
-        name: string | null;
-        role: string | null;
-        image: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        } | null;
-        bio: string | null;
-        linkLabel: string | null;
-        linkUrl: string | null;
-      } | null;
-      publications: {
-        label: string | null;
-        image: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-        } | null;
-        items: Array<{
-          _key: string;
-          publication: string;
-          title: string | null;
-          url: string | null;
-        }> | null;
       } | null;
     }
   | null;
 
 // Source: src/sanity/lib/queries.ts
 // Variable: JOIN_US_PAGE_QUERY
-// Query: *[_id == "joinUsPage"][0]{    "videoUrl": video.asset->url,    image,    heading,    body,    email  }
+// Query: *[_id == "joinUsPage"][0]{    "videoUrl": video.asset->url,    image{  asset,  hotspot,  crop,  "lqip": asset->metadata.lqip,  "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }},    heading,    body,    email  }
 export type JOIN_US_PAGE_QUERY_RESULT =
   | {
       videoUrl: null;
@@ -654,11 +515,15 @@ export type JOIN_US_PAGE_QUERY_RESULT =
   | {
       videoUrl: string | null;
       image: {
-        asset?: SanityImageAssetReference;
-        media?: unknown;
-        hotspot?: SanityImageHotspot;
-        crop?: SanityImageCrop;
-        _type: "image";
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        lqip: string | null;
+        dimensions: {
+          width: number;
+          height: number;
+          aspectRatio: number;
+        } | null;
       } | null;
       heading: string | null;
       body: string | null;

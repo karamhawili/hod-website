@@ -20,44 +20,15 @@ export const siteSettings = defineType({
       group: "footer",
       description: "The name shown in the footer, e.g. “HOUSE OF DESIGN BY SUZY HABRE”.",
     }),
-    defineField({
-      name: "nav",
-      title: "Primary Navigation",
-      type: "array",
-      group: "nav",
-      description:
-        "Links in the top stack of the left rail, under the logo (the work section — e.g. Portfolio). The logo always links to the homepage.",
-      of: [
-        defineArrayMember({
-          type: "object",
-          fields: [
-            defineField({
-              name: "label",
-              title: "Label",
-              type: "string",
-              validation: (rule) => rule.required(),
-            }),
-            defineField({
-              name: "href",
-              title: "Link",
-              type: "string",
-              description: "A path like /portfolio or /about, or a full URL.",
-              validation: (rule) => rule.required(),
-            }),
-          ],
-          preview: {
-            select: { title: "label", subtitle: "href" },
-          },
-        }),
-      ],
-    }),
+    // The former "nav" (primary links) field was retired: the top stack of
+    // the rail now renders the project categories directly (landing filter).
     defineField({
       name: "secondaryNav",
       title: "Secondary Navigation",
       type: "array",
       group: "nav",
       description:
-        "Links pinned to the bottom of the left rail (the studio/info section — e.g. Studio, Join Us).",
+        "Links pinned to the bottom of the left rail — e.g. Archive, Studio, Join Us. (The top of the rail shows the project categories automatically.)",
       of: [
         defineArrayMember({
           type: "object",

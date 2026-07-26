@@ -1,11 +1,11 @@
-import Reveal from "@/components/Reveal/Reveal";
 import { splitParagraphs } from "@/lib/splitParagraphs";
-import { urlForSized } from "@/sanity/lib/image";
-import type { JoinUsPage } from "@/types/sanity";
+import { urlFor } from "@/sanity/lib/image";
+import type { JOIN_US_PAGE_QUERY_RESULT } from "@/sanity/sanity.types";
+import type { SanityImageSource } from "@sanity/image-url";
 import styles from "./JoinUsHero.module.css";
 
-// Placeholder copy until the client fills the joinUsPage singleton — mined
-// from the old join-us page. The bundled video ships with the site.
+// Placeholder copy until the client fills the joinUsPage singleton. The
+// bundled video ships with the site.
 const DEFAULTS = {
   videoUrl: "/join-us/join-us-video.mp4",
   heading: "Grow as a professional on our side",
@@ -14,7 +14,7 @@ const DEFAULTS = {
 };
 
 interface JoinUsHeroProps {
-  joinUs: JoinUsPage | null;
+  joinUs: JOIN_US_PAGE_QUERY_RESULT;
   // siteSettings email — the middle step of the fallback chain:
   // joinUsPage.email → siteSettings.email → bundled default.
   fallbackEmail?: string;
@@ -23,14 +23,19 @@ interface JoinUsHeroProps {
 // The whole page: looping video left, careers pitch + resume CTA right.
 export default function JoinUsHero({ joinUs, fallbackEmail }: JoinUsHeroProps) {
   const videoUrl = joinUs?.videoUrl || DEFAULTS.videoUrl;
-  const posterUrl = joinUs?.image ? urlForSized(joinUs.image, 1400) : undefined;
+  const posterUrl = joinUs?.image?.asset
+    ? urlFor(joinUs.image as SanityImageSource)
+        .width(1400)
+        .auto("format")
+        .url()
+    : undefined;
 
   const paragraphs = splitParagraphs(joinUs?.body || DEFAULTS.body);
   const email = joinUs?.email || fallbackEmail || DEFAULTS.email;
 
   return (
     <section className={styles.section}>
-      <Reveal className={styles.media}>
+      <div className={styles.media}>
         <video
           className={styles.video}
           src={videoUrl}
@@ -40,9 +45,9 @@ export default function JoinUsHero({ joinUs, fallbackEmail }: JoinUsHeroProps) {
           loop
           playsInline
         />
-      </Reveal>
+      </div>
 
-      <Reveal className={styles.text}>
+      <div className={styles.text}>
         <p className={styles.label}>Careers</p>
         <h1 className={styles.heading}>{joinUs?.heading || DEFAULTS.heading}</h1>
         {paragraphs.map((paragraph, index) => (
@@ -54,7 +59,7 @@ export default function JoinUsHero({ joinUs, fallbackEmail }: JoinUsHeroProps) {
         <a href={`mailto:${email}`} className={styles.cta}>
           {email}
         </a>
-      </Reveal>
+      </div>
     </section>
   );
 }

@@ -1,24 +1,36 @@
-import { getSiteSettings } from "@/sanity/lib/queries";
+import { getCategories, getSiteSettings } from "@/sanity/lib/queries";
 import type { NavLink } from "@/types/sanity";
 import NavigationClient from "./NavigationClient";
 
-// Fallbacks when siteSettings hasn't been populated yet. The logo links home,
-// so "Home" is intentionally not a nav item. Primary = the work section
-// (top stack of the rail); secondary = studio/info (pinned bottom-left).
-// "Portfolio" becomes "Archive" in Phase 7; "Join Us" is provisional.
-const DEFAULT_NAV: NavLink[] = [{ label: "Portfolio", href: "/portfolio" }];
-
+// The rail's top stack is the project-category filter list (data-driven from
+// category documents — empty categories are excluded query-side). The bottom
+// stack is CMS-managed; this fallback covers an unpopulated siteSettings.
 const DEFAULT_SECONDARY_NAV: NavLink[] = [
+  { label: "Archive", href: "/archive" },
   { label: "Studio", href: "/studio" },
   { label: "Join Us", href: "/join-us" },
 ];
 
-export default async function Navigation() {
-  const settings = await getSiteSettings();
-  const nav = settings?.nav?.length ? settings.nav : DEFAULT_NAV;
+interface NavigationProps {
+  // Set by the landing page (from its ?category= search param) so the rail
+  // can highlight the active filter without reading search params itself.
+  activeCategory?: string;
+}
+
+export default async function Navigation({ activeCategory }: NavigationProps) {
+  const [settings, categories] = await Promise.all([
+    getSiteSettings(),
+    getCategories(),
+  ]);
   const secondaryNav = settings?.secondaryNav?.length
     ? settings.secondaryNav
     : DEFAULT_SECONDARY_NAV;
 
-  return <NavigationClient nav={nav} secondaryNav={secondaryNav} />;
+  return (
+    <NavigationClient
+      categories={categories}
+      secondaryNav={secondaryNav}
+      activeCategory={activeCategory}
+    />
+  );
 }

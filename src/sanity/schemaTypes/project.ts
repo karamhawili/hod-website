@@ -125,13 +125,6 @@ export const project = defineType({
       ],
       validation: (rule) => rule.min(1).warning("Add at least one image."),
     }),
-    defineField({
-      name: "featured",
-      title: "Featured",
-      type: "boolean",
-      description: "Included in the landing-page project rotation.",
-      initialValue: false,
-    }),
   ],
   preview: {
     select: {

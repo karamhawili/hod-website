@@ -77,12 +77,16 @@ Not a scrolling marketing site. Three distinct interaction modes:
   only shows one project at a time and isn't built for browsing the catalog.
 - Reference: `Screenshot_2026-07-23_at_1_54_02_AM.png` — simple grid,
   thumbnail + name/location/status line underneath, no card chrome.
-- **Category filter** as an indented sub-list under "Archive" in the left nav
-  (`All` + categories), mirroring VVD's own Archive sub-nav — NOT a mega-menu,
-  just a flat filter list. Categories (confirmed in Phase 4): **Residential /
-  Restaurants / Beach Clubs / Lounges & Bars / Other**.
-- Search bar (top-right on VVD's version): **deferred, not in this build**
-  unless the catalog grows enough to need it.
+- ~~Category filter as a sub-list under "Archive"~~ — **superseded (2026-07-25
+  IA amendment):** the rail's primary stack IS the category list (VVD's own
+  model), and those links filter the LANDING rotation via `/?category=slug`.
+  Archive is a plain link in the secondary stack with no sub-list; its
+  category narrowing is covered by search. Categories are data-driven from
+  `category` docs; empty ones are hidden; no "All" (clicking the active
+  category clears the filter; the logo lands unfiltered).
+- Search bar: **built** (2026-07-25, un-deferred by user) — hairline field
+  per `archive with search.png`, client-side filtering over title/location/
+  status/category/year, deliberately undebounced (in-memory, no async work).
 
 ### 4. Every other page (Studio/About, Contact, Publications, Join Us)
 
@@ -153,10 +157,13 @@ intentionally minimal:
         type: 'image', fields: [{ name: 'alt', type: 'string' }]
       }] },                                    // ordered — drives BOTH landing
                                                  // carousel AND detail scroll
-    { name: 'featured', type: 'boolean' },     // included in landing rotation
   ]
 }
 ```
+
+(`featured` was in the original spec but dropped in the 2026-07-25 IA
+amendment — the whole catalog is the landing rotation, filterable by the
+rail's category links. Manual ordering is backlog Audit N7.)
 
 `category` schema: simple `{ title, slug }` — Residential / Restaurants /
 Beach Clubs / Lounges & Bars / Other (confirmed; documents created in Studio).
@@ -172,9 +179,11 @@ project page still consumed them.
 
 **CMS re-evaluation needed for:** ~~`homePage` singleton~~ (resolved in
 Phase 5: deleted entirely — the viewer landing needs no CMS document, it
-renders featured projects directly), `siteSettings` (nav labels may need the
-Archive category list), `studioPage` (content model likely survives; revisit
-visual treatment only).
+renders the project rotation directly), ~~`siteSettings` nav/category list~~
+(resolved in Phase 7 + the 2026-07-25 IA amendment: the rail's primary stack
+reads `category` documents directly; `siteSettings.nav` retired, only
+`secondaryNav` remains CMS-managed), ~~`studioPage`~~ (resolved in Phase 8:
+content model survived unchanged; restyled to single-column native-ratio).
 
 ## Working rules
 
@@ -204,12 +213,27 @@ visual treatment only).
 - [x] Phase 6 — Project detail page (info header + native-ratio scroll body).
       Retires the Nav `theme` / Footer `showGradient` props if nothing else
       needs them.
-- [ ] Phase 7 — Archive page (grid + category filter; replaces `/portfolio`,
+- [x] Phase 7 — Archive page (grid + category filter; replaces `/portfolio`,
       retires `LatestProjects`)
-- [ ] Phase 8 — Studio/About + Join Us visual pass (content model mostly
+- [x] Phase 8 — Studio/About + Join Us visual pass (content model mostly
       survives; restyle only)
+- [x] Phase 8.1 — Studio narrative restructure: founder → hairline separator →
+      firm description (text only) → Sectors/Services (text only). Team text
+      dropped (recruiting = Join Us); all project photos removed; Publications
+      + Contact split out to their own pages (below). studioPage schema
+      trimmed (intro/disciplines images + team + **publications** objects
+      removed) and reordered to match the page (founder → intro → disciplines);
+      `StudioTeam` + `StudioPublications` components deleted.
+- [ ] Phase 8.2 — **Contact page** (`/contact` + secondary-nav item): VVD
+      `Contact.png` single-column treatment; reads existing `siteSettings`
+      contact fields (brandLine, locations, phone, email, socials, mapUrl) —
+      no schema change. Where the footer-era contact content lands.
+- [ ] Phase 8.3 — **Publications page** (`/publications` + secondary-nav
+      item): built fresh — its own `publicationsPage` singleton + component
+      (old `StudioPublications` + `studioPage.publications` were removed in
+      8.1; press-list content recoverable from git history).
 - [ ] Phase 9 — Responsive + QA pass; retire now-orphaned old tokens/fonts/
-      `Section` once PageBuilder is fully gone
+      `Section`/`Reveal`/`useScrollAnimation` once PageBuilder is fully gone
 
 ## Open items (both Phase 4 blockers resolved 2026-07-25)
 

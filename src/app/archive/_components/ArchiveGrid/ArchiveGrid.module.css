@@ -1,0 +1,65 @@
+/* Smaller cards per "archive with search.png": ~200px cells, generous gaps. */
+.grid {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* Bottom-align every card within its row so the captions sit on a shared
+     baseline regardless of thumbnail height. */
+  align-items: end;
+  column-gap: 4rem;
+  row-gap: 5rem;
+  max-width: 44rem;
+  padding-top: clamp(5rem, 14vh, 9rem);
+  padding-bottom: clamp(4rem, 10vh, 8rem);
+}
+
+.cell {
+  display: block;
+}
+
+.thumb {
+  display: block;
+  width: 100%;
+  height: auto; /* native ratio — column width fixed, height free */
+}
+
+.caption {
+  display: block;
+  margin-top: 0.9rem;
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
+  line-height: 1.5;
+  color: var(--color-title);
+}
+
+.cell:hover {
+  opacity: 1;
+}
+
+.cell:hover .caption {
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+  text-decoration-thickness: 1px;
+}
+
+.empty {
+  padding-top: clamp(7rem, 18vh, 11rem);
+  font-family: var(--font-heading);
+  font-size: var(--text-title-sm);
+  color: var(--color-fg-muted);
+}
+
+@media (max-width: 899px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 1.5rem;
+    row-gap: 3rem;
+    padding-top: 3rem;
+    padding-inline: 1.5rem;
+  }
+
+  .empty {
+    padding: 3rem 1.5rem 0;
+  }
+}

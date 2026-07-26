@@ -1,0 +1,8 @@
+/* Archive uses SYMMETRIC inline padding on desktop (end == start == rail
+   width) rather than the shared .rail-offset, whose end padding is smaller.
+   Mobile padding is handled inside the grid/search components. */
+@media (min-width: 900px) {
+  .page {
+    padding-inline: var(--rail-width);
+  }
+}
