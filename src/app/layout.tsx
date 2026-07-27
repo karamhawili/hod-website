@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import {
   Cormorant_Garamond,
   Darker_Grotesque,
@@ -58,22 +59,27 @@ export const metadata: Metadata = {
     "Leading design studio - Private Residential, Restaurants, Lounge, Beaches",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // The Studio (/admin) must not run the frontend's SanityLive or the splash
+  // (see middleware.ts). Pathname comes from the middleware-set header.
+  const pathname = (await headers()).get("x-pathname") ?? "";
+  const isStudio = pathname.startsWith("/admin");
+
   return (
     <html
       lang="en"
       className={`${cormorant.variable} ${darkerGrotesque.variable} ${greatVibes.variable} ${ebGaramond.variable} ${libreFranklin.variable}`}
     >
       <body>
-        <SplashScreen />
+        {!isStudio && <SplashScreen />}
         {children}
       </body>
       <Analytics />
-      <SanityLive />
+      {!isStudio && <SanityLive />}
     </html>
   );
 }
