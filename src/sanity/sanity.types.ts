@@ -40,18 +40,57 @@ export type SiteSettings = {
   }>;
 };
 
-export type SanityFileAssetReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "sanity.fileAsset";
-};
-
 export type SanityImageAssetReference = {
   _ref: string;
   _type: "reference";
   _weak?: boolean;
   [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+};
+
+export type PublicationsPage = {
+  _id: string;
+  _type: "publicationsPage";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  publications?: Array<{
+    image?: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    };
+    publication: string;
+    date?: string;
+    description?: string;
+    url?: string;
+    linkLabel?: string;
+    _key: string;
+  }>;
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x: number;
+  y: number;
+  height: number;
+  width: number;
+};
+
+export type SanityFileAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.fileAsset";
 };
 
 export type JoinUsPage = {
@@ -75,22 +114,6 @@ export type JoinUsPage = {
   heading?: string;
   body?: string;
   email?: string;
-};
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top: number;
-  bottom: number;
-  left: number;
-  right: number;
-};
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x: number;
-  y: number;
-  height: number;
-  width: number;
 };
 
 export type StudioPage = {
@@ -289,11 +312,12 @@ export type Geopoint = {
 
 export type AllSanitySchemaTypes =
   | SiteSettings
-  | SanityFileAssetReference
   | SanityImageAssetReference
-  | JoinUsPage
+  | PublicationsPage
   | SanityImageCrop
   | SanityImageHotspot
+  | SanityFileAssetReference
+  | JoinUsPage
   | StudioPage
   | CategoryReference
   | Project
@@ -491,6 +515,36 @@ export type STUDIO_PAGE_QUERY_RESULT =
         sectors: Array<string> | null;
         services: Array<string> | null;
       } | null;
+    }
+  | null;
+
+// Source: src/sanity/lib/queries.ts
+// Variable: PUBLICATIONS_PAGE_QUERY
+// Query: *[_id == "publicationsPage"][0]{    publications[]{      _key,      publication,      date,      description,      url,      linkLabel,      image{  asset,  hotspot,  crop,  "lqip": asset->metadata.lqip,  "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }}    }  }
+export type PUBLICATIONS_PAGE_QUERY_RESULT =
+  | {
+      publications: null;
+    }
+  | {
+      publications: Array<{
+        _key: string;
+        publication: string;
+        date: string | null;
+        description: string | null;
+        url: string | null;
+        linkLabel: string | null;
+        image: {
+          asset: SanityImageAssetReference | null;
+          hotspot: SanityImageHotspot | null;
+          crop: SanityImageCrop | null;
+          lqip: string | null;
+          dimensions: {
+            width: number;
+            height: number;
+            aspectRatio: number;
+          } | null;
+        } | null;
+      }> | null;
     }
   | null;
 

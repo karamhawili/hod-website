@@ -72,6 +72,15 @@
   opacity: 1;
 }
 
+/* Active category = a removable tag: the ✕ marks it as the current filter and
+   the whole link clears it (href="/"). Same glyph as the mobile close. */
+.clear {
+  margin-left: 0.45rem;
+  font-size: 0.8em;
+  color: var(--color-fg-muted);
+  vertical-align: 0.05em;
+}
+
 /* Secondary stack — sans, muted, pinned to the rail bottom. */
 .secondary {
   display: flex;

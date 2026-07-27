@@ -1,10 +1,15 @@
 import type { StructureResolver } from "sanity/structure";
-import { AddUserIcon, CogIcon, UsersIcon } from "@sanity/icons";
+import { AddUserIcon, CogIcon, DocumentsIcon, UsersIcon } from "@sanity/icons";
 
 // Singleton document types — enforced here in the structure (there is no
 // `singleton: true` schema option). Excluded from the generic list below so
 // they don't appear twice / as creatable documents.
-const SINGLETONS = ["siteSettings", "studioPage", "joinUsPage"];
+const SINGLETONS = [
+  "siteSettings",
+  "studioPage",
+  "joinUsPage",
+  "publicationsPage",
+];
 
 // https://www.sanity.io/docs/structure-builder-cheat-sheet
 export const structure: StructureResolver = (S) =>
@@ -29,6 +34,16 @@ export const structure: StructureResolver = (S) =>
             .schemaType("joinUsPage")
             .documentId("joinUsPage")
             .title("Join Us Page"),
+        ),
+
+      S.listItem()
+        .title("Publications Page")
+        .icon(DocumentsIcon)
+        .child(
+          S.document()
+            .schemaType("publicationsPage")
+            .documentId("publicationsPage")
+            .title("Publications Page"),
         ),
 
       S.listItem()

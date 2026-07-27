@@ -6,6 +6,7 @@ import type {
   CATEGORIES_QUERY_RESULT,
   STUDIO_PAGE_QUERY_RESULT,
   JOIN_US_PAGE_QUERY_RESULT,
+  PUBLICATIONS_PAGE_QUERY_RESULT,
 } from "@/sanity/sanity.types";
 import { SiteSettings } from "@/types/sanity";
 
@@ -159,6 +160,29 @@ export async function getStudioPage(): Promise<STUDIO_PAGE_QUERY_RESULT> {
   });
 
   return result.data as STUDIO_PAGE_QUERY_RESULT;
+}
+
+export const PUBLICATIONS_PAGE_QUERY = defineQuery(`
+  *[_id == "publicationsPage"][0]{
+    publications[]{
+      _key,
+      publication,
+      date,
+      description,
+      url,
+      linkLabel,
+      image${IMAGE_META}
+    }
+  }
+`);
+
+export async function getPublicationsPage(): Promise<PUBLICATIONS_PAGE_QUERY_RESULT> {
+  const result = await sanityFetch({
+    query: PUBLICATIONS_PAGE_QUERY,
+    tags: ["publicationsPage"],
+  });
+
+  return result.data as PUBLICATIONS_PAGE_QUERY_RESULT;
 }
 
 export const JOIN_US_PAGE_QUERY = defineQuery(`

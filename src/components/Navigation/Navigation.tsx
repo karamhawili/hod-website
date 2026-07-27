@@ -8,6 +8,7 @@ import NavigationClient from "./NavigationClient";
 const DEFAULT_SECONDARY_NAV: NavLink[] = [
   { label: "Archive", href: "/archive" },
   { label: "Studio", href: "/studio" },
+  { label: "Publications", href: "/publications" },
   { label: "Contact", href: "/contact" },
   { label: "Join Us", href: "/join-us" },
 ];

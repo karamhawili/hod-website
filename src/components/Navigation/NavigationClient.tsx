@@ -32,9 +32,15 @@ export default function NavigationClient({
           key={category._id}
           href={isActive ? "/" : `/?category=${category.slug}`}
           className={isActive ? styles.active : undefined}
+          aria-label={isActive ? `Clear ${category.title} filter` : undefined}
           onClick={closeMenu ? () => setIsOpen(false) : undefined}
         >
           {category.title}
+          {isActive && (
+            <span className={styles.clear} aria-hidden="true">
+              ✕
+            </span>
+          )}
         </Link>
       );
     });

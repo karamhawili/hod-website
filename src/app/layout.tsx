@@ -8,6 +8,7 @@ import {
 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
+import SplashScreen from "@/components/SplashScreen/SplashScreen";
 import { SanityLive } from "@/sanity/lib/live";
 
 const cormorant = Cormorant_Garamond({
@@ -67,7 +68,10 @@ export default function RootLayout({
       lang="en"
       className={`${cormorant.variable} ${darkerGrotesque.variable} ${greatVibes.variable} ${ebGaramond.variable} ${libreFranklin.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <SplashScreen />
+        {children}
+      </body>
       <Analytics />
       <SanityLive />
     </html>
