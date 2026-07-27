@@ -1,77 +1,126 @@
-.emptyState {
+/* Project detail — info header then the ordered gallery as a plain vertical
+   scroll at native aspect ratio (never cropped). No nav, no footer; just the
+   CloseButton. Normal document scroll — the landing viewer stays the only
+   scroll interception on the site. */
+
+.page {
   min-height: 100dvh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
+  padding-bottom: clamp(4rem, 10vh, 8rem);
 }
 
-.emptyContent {
-  text-align: center;
+/* ---- info header ---- */
+
+.header {
+  max-width: 34rem;
+  margin-inline: auto;
+  padding-top: clamp(5rem, 14vh, 9rem);
+  padding-inline: var(--container-padding);
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: var(--text-title);
+  font-weight: 500;
+  letter-spacing: var(--tracking-heading);
+  color: var(--color-title);
+  margin-bottom: 1.5rem;
+}
+
+/* Location + year: one left-aligned block, identical typography (the
+   landing-caption rule — deliberately overriding the reference's indent). */
+.meta {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
+  line-height: var(--leading-body);
+  color: var(--color-fg);
+}
+
+.description {
+  margin-top: clamp(2.5rem, 6vh, 4rem);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
+  line-height: var(--leading-body);
+  color: var(--color-fg);
+}
+
+.description p + p {
+  margin-top: 1em;
+}
+
+.description a {
+  color: var(--color-title);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  text-decoration-thickness: 1px;
+}
+
+.credits {
+  margin-top: clamp(2.5rem, 6vh, 4rem);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-fg);
+}
+
+.creditsRule {
+  display: block;
+  width: 1.25rem;
+  height: 1px;
+  background: var(--color-fg);
+  margin-bottom: 1rem;
+}
+
+/* ---- gallery ---- */
+
+.gallery {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  max-width: 520px;
+  gap: clamp(4rem, 10vh, 7rem);
+  margin-top: clamp(5rem, 12vh, 9rem);
 }
 
-.emptyTitle {
-  font-family: var(--font-serif);
-  font-size: clamp(2rem, 3.4vw, 2.9rem);
-  line-height: 1.08;
-  text-transform: uppercase;
-  color: var(--color-brown-dark);
-}
-
-.emptyText {
-  font-family: var(--font-sans);
-  font-size: 1rem;
-  line-height: 1.45;
-  color: rgba(30, 10, 8, 0.82);
-}
-
-.studioButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.7rem 1.2rem;
-  border: 1px solid var(--color-brown-dark);
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  background: var(--color-brown-dark);
-  color: var(--color-white);
-  transition:
-    background-color 0.25s ease,
-    color 0.25s ease;
-}
-
-.studioButton:hover {
-  opacity: 80%;
-}
-
-.actions {
+.figure {
+  margin: 0;
+  max-width: 100%;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 1rem;
+  justify-content: center;
 }
 
-.backLink {
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(30, 10, 8, 0.75);
-  padding-bottom: 0.15rem;
-  transition:
-    color 0.2s ease,
-    border-color 0.2s ease;
+/* Free size at native ratio with BOTH a width and a height guard. The height
+   guard is what creates the hierarchy: portraits bind on height and come out
+   narrower, landscapes bind on width and run wide — instead of everything
+   inflating to one uniform column. The 34rem hero column above stays narrower
+   than the images, per the reference. */
+.image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: min(75vw, 1100px);
+  max-height: 82vh;
 }
 
-.backLink:hover {
-  color: var(--color-brown-dark);
-  border-color: var(--color-brown-dark);
+@media (max-width: 899px) {
+  /* ~48px around the text section, tighter ~24px around the images. */
+  .header {
+    padding-top: 6rem;
+    padding-inline: 3rem;
+  }
+
+  .title {
+    margin-bottom: 0.75rem;
+  }
+
+  .gallery {
+    gap: 2.5rem;
+    margin-top: 4rem;
+    padding-inline: 1.5rem;
+  }
+
+  .image {
+    max-width: 100%;
+    max-height: none;
+  }
 }

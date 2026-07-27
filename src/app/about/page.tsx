@@ -1,21 +1,7 @@
-import Footer from "@/components/Footer/Footer";
-import Navigation from "@/components/Navigation/Navigation";
-import AboutHero from "./_components/AboutHero/AboutHero";
-import AboutWorkWithUs from "./_components/AboutWorkWithUs/AboutWorkWithUs";
-import AboutFounder from "./_components/AboutFounder/AboutFounder";
-import AboutServices from "./_components/AboutServices/AboutServices";
+import { permanentRedirect } from "next/navigation";
 
+// The about page was rebuilt as the Studio page (Phase 5 of the redesign).
+// Keep the old URL working for bookmarks, search results, and stale CMS nav.
 export default function About() {
-  return (
-    <>
-      <Navigation />
-      <main>
-        <AboutHero />
-        <AboutWorkWithUs />
-        <AboutFounder />
-        <AboutServices />
-      </main>
-      <Footer showGradient={false} />
-    </>
-  );
+  permanentRedirect("/studio");
 }

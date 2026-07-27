@@ -1,0 +1,103 @@
+/* Split hero: looping video left, careers pitch right — the one page allowed
+   a hero. VVD-quiet type: serif heading, sans body, no all-caps or filled
+   buttons. */
+.section {
+  display: grid;
+  grid-template-columns: 5fr 6fr;
+  column-gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: center;
+  /* Constrained + left-aligned within the rail-offset area (no auto margins),
+     so the video + pitch sit together on the left rather than spanning the
+     full width with the text pushed to the far edge. */
+  max-width: 58rem;
+  min-height: 100dvh;
+  padding: clamp(7rem, 14vh, 10rem) 0 clamp(4rem, 10vh, 7rem);
+}
+
+.media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--color-line);
+}
+
+.video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.text {
+  max-width: 30rem;
+}
+
+.label {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-fg-muted);
+  margin-bottom: 1.25rem;
+}
+
+.heading {
+  font-family: var(--font-heading);
+  font-size: var(--text-title);
+  font-weight: 500;
+  letter-spacing: var(--tracking-heading);
+  line-height: 1.25;
+  color: var(--color-title);
+  margin-bottom: 1.5rem;
+}
+
+.body {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
+  line-height: var(--leading-body);
+  color: var(--color-fg);
+}
+
+.body + .body {
+  margin-top: 1rem;
+}
+
+.emailLead {
+  margin-top: 2.25rem;
+  margin-bottom: 0.4rem;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-fg-muted);
+}
+
+.cta {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-title);
+  text-decoration: underline;
+  text-underline-offset: 0.35em;
+  text-decoration-thickness: 1px;
+}
+
+.cta:hover {
+  opacity: 0.7;
+}
+
+@media (max-width: 899px) {
+  .section {
+    grid-template-columns: 1fr;
+    row-gap: 2.5rem;
+    min-height: 0;
+    /* rail-offset provides no inline padding below the rail breakpoint. */
+    padding: 3rem 1.5rem;
+  }
+
+  .text {
+    max-width: none;
+  }
+}

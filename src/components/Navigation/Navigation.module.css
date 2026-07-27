@@ -1,149 +1,244 @@
-.nav {
+/* VVD-style chrome: a fixed, full-height left rail on desktop — logo top-left,
+   primary (work) stack under it in the serif, secondary (studio/info) stack
+   pinned bottom-left in the sans. The rail is whitespace, not a boxed sidebar:
+   no background, no border. Mobile falls back to a slim top bar + fullscreen
+   menu. */
+
+.rail {
   position: fixed;
-  top: 0;
+  inset-block: 0;
   left: 0;
-  width: 100%;
-  padding: 2rem;
+  width: var(--rail-width);
   z-index: 100;
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
+  padding: 2.25rem;
+  pointer-events: none; /* the empty column shouldn't eat clicks… */
 }
 
-.hamburger {
-  background: none;
-  border: none;
-  padding: 0;
+.rail a,
+.rail button {
+  pointer-events: auto; /* …but its links must. */
+}
+
+.railTop {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  cursor: pointer;
+  gap: 2.5rem;
 }
 
-.line {
-  width: 30px;
-  height: 2px;
-  background: var(--color-black);
-  transition: all 0.3s ease;
-}
-
-.hamburger:hover .line {
-  background: var(--color-brown-dark);
-}
-
-/* Home Icon - Right Side */
-.homeIcon {
-  display: flex;
+.logoLink {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  color: var(--color-black);
-  transition: all 0.3s ease;
-  padding: 0.5rem;
+  align-self: flex-start;
+  color: var(--color-title);
+  transition:
+    opacity 0.2s ease,
+    color 0.3s ease;
 }
 
-.homeIcon:hover {
-  color: var(--color-brown-dark);
-  transform: scale(1.1);
+.logoLink:hover {
+  opacity: 0.75;
+}
+
+.logo {
+  height: 32px;
+  width: auto;
+  display: block;
+}
+
+/* Primary stack — serif, slightly indented from the logo like the reference. */
+.primary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding-left: 0.5rem;
+}
+
+.primary a {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: var(--text-nav);
+  line-height: 1.6;
+  color: var(--color-fg-muted);
+  transition: color 0.25s ease;
+}
+
+.primary a:hover,
+.primary a.active {
+  color: var(--color-title);
   opacity: 1;
 }
 
-.homeIcon svg {
-  width: 24px;
+/* Active category = a removable tag: the ✕ marks it as the current filter and
+   the whole link clears it (href="/"). Same glyph as the mobile close. */
+.clear {
+  margin-left: 0.45rem;
+  font-size: 0.8em;
+  color: var(--color-fg-muted);
+  vertical-align: 0.05em;
+}
+
+/* Secondary stack — sans, muted, pinned to the rail bottom. */
+.secondary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding-left: 0.5rem;
+}
+
+.secondary a {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
+  line-height: 1.6;
+  color: var(--color-fg-muted);
+  transition: color 0.25s ease;
+}
+
+.secondary a:hover,
+.secondary a.active {
+  color: var(--color-fg);
+  opacity: 1;
+}
+
+/* Mobile: header + drawer live in normal document flow so the opening drawer
+   pushes the page content down (per mobile-menu-expanded.png). Same
+   typography and left alignment as the desktop rail. */
+.mobileHeader {
+  display: none;
+  background: var(--color-bg);
+  color: var(--color-title);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem var(--container-padding);
+}
+
+.bar .logo {
   height: 24px;
 }
 
-.light .line {
-  background: var(--color-white);
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.38));
-}
-
-.light .hamburger:hover .line {
-  background: rgba(255, 255, 255, 0.84);
-}
-
-.light .homeIcon {
-  color: var(--color-white);
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.38));
-}
-
-.light .homeIcon:hover {
-  color: rgba(255, 255, 255, 0.84);
-}
-
-/* Menu Overlay */
-.menu {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  background: var(--surface-white);
-  z-index: 999;
+.hamburger {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-
-.menuOpen {
-  opacity: 1;
-  pointer-events: all;
-}
-
-.menuContent {
-  position: relative;
-  width: 100%;
-  max-width: 600px;
-  padding: 2rem;
-}
-
-.closeBtn {
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
+  gap: 6px;
+  min-height: 24px;
   background: none;
   border: none;
-  font-size: 2rem;
-  color: var(--color-black);
-  cursor: pointer;
-  transition: color 0.2s ease;
-}
-
-.closeBtn:hover {
-  color: var(--color-brown-dark);
-}
-
-.menuList {
-  list-style: none;
   padding: 0;
-  margin: 0;
+  color: inherit;
 }
 
-.menuList li {
-  margin-bottom: 2rem;
+.line {
+  width: 26px;
+  height: 1px;
+  background: currentColor;
 }
 
-.menuList a {
-  font-family: var(--font-serif);
-  font-size: clamp(2rem, 4vw, 3rem);
-  color: var(--color-black);
-  transition: color 0.2s ease;
+.closeGlyph {
+  font-size: 1.125rem;
+  line-height: 1;
+  color: var(--color-fg-muted);
 }
 
-.menuList a:hover {
-  color: var(--color-brown-dark);
+/* Collapsible drawer — 0fr → 1fr grid rows animate the reveal without a
+   hardcoded height. The inner padding MUST be gated on the open state:
+   padding is a hard floor on the box height that the collapsed track can't
+   compress (constant padding left the drawer ~2.75rem open, showing the
+   first link and pushing the page past the viewport). Animating the padding
+   on the same curve as the rows keeps the motion soft with no pop. */
+.drawer {
+  display: grid;
+  grid-template-rows: 0fr;
+  overflow: hidden;
+  transition: grid-template-rows 0.45s cubic-bezier(0.33, 0, 0.2, 1);
+}
+
+.drawerOpen {
+  grid-template-rows: 1fr;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.drawerInner {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-inline: calc(var(--container-padding) + 0.5rem);
+  padding-block: 0;
+  transition: padding-block 0.45s cubic-bezier(0.33, 0, 0.2, 1);
+}
+
+.drawerOpen .drawerInner {
+  padding-block: 0.75rem 2rem;
+}
+
+.drawerPrimary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.drawerPrimary a {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: var(--text-nav);
+  line-height: 1.6;
+  color: var(--color-fg-muted);
+}
+
+.drawerSecondary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+}
+
+.drawerSecondary a {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
+  line-height: 1.6;
+  color: var(--color-fg-muted);
+}
+
+.drawerPrimary a:hover,
+.drawerPrimary a.active {
+  color: var(--color-title);
   opacity: 1;
 }
 
-@media (max-width: 768px) {
-  .nav {
-    padding: 1.5rem;
+.drawerSecondary a:hover,
+.drawerSecondary a.active {
+  color: var(--color-fg);
+  opacity: 1;
+}
+
+/* The reference underlines the active item in the expanded mobile menu. */
+.drawerPrimary a.active,
+.drawerSecondary a.active {
+  text-decoration: underline;
+  text-underline-offset: 0.35em;
+  text-decoration-thickness: 1px;
+}
+
+@media (max-width: 899px) {
+  .rail {
+    display: none;
   }
 
-  .homeIcon svg {
-    width: 20px;
-    height: 20px;
+  .mobileHeader {
+    display: block;
   }
 }

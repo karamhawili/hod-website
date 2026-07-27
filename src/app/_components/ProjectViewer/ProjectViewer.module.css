@@ -1,0 +1,301 @@
+/* Landing project viewer — one project per viewport, one image at a time.
+   Zone layout follows design-refs/vvd/Cursor interaction guidelines.png:
+   top band = previous project, middle band split left/right = image nav,
+   bottom band = next project. Chevron cursors are inline SVG data URIs. */
+
+.viewer {
+  position: relative;
+  height: 100dvh;
+  overflow: hidden;
+  touch-action: none;
+}
+
+/* Mobile header sits in normal flow above the viewer (Phase 3 drawer):
+   64px = 24px logo + 2 × 1.25rem bar padding. */
+@media (max-width: 899px) {
+  .viewer {
+    height: calc(100dvh - 64px);
+    /* Approx height of the fixed caption bar below — reserved so the image
+       centers in the space between header and caption, not behind it. */
+    --caption-h: 5rem;
+  }
+
+  /* Exclude the caption band from the centering context. */
+  .stage {
+    bottom: var(--caption-h);
+  }
+}
+
+.empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-heading);
+  font-size: var(--text-title-sm);
+  color: var(--color-fg-muted);
+}
+
+/* ---- image stage ---- */
+
+.stage {
+  position: absolute;
+  inset: 0;
+}
+
+.frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* Height-locked like the reference (~72vh), width follows the native
+     ratio, guarded against overflow on wide images / narrow viewports. */
+  width: min(85vw, calc(72vh * var(--ar)));
+  aspect-ratio: var(--ar);
+  opacity: 0;
+  pointer-events: none;
+  margin: 0;
+}
+
+.frame.active {
+  opacity: 1;
+}
+
+/* Carousel slide: no fading — the incoming frame travels in from the edge
+   the navigation points at (offsets set inline via the enter/exit custom
+   props, a full viewport so any frame size clears the screen); the outgoing
+   copy travels out the opposite side. Caption swaps instantly via React. */
+.frame.slideIn {
+  animation: slide-in 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.frame.slideOut {
+  opacity: 1;
+  animation: slide-out 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translate(
+      calc(-50% + var(--enter-x, 0px)),
+      calc(-50% + var(--enter-y, 0px))
+    );
+  }
+  to {
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes slide-out {
+  from {
+    transform: translate(-50%, -50%);
+  }
+  to {
+    transform: translate(
+      calc(-50% + var(--exit-x, 0px)),
+      calc(-50% + var(--exit-y, 0px))
+    );
+  }
+}
+
+@media (max-width: 899px) {
+  /* Tighter caps than desktop so the image floats with clear air around it;
+     caption bar, header, and everything else keep their spacing. */
+  .frame {
+    width: min(80vw, calc(54dvh * var(--ar)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .frame.slideIn {
+    animation: none;
+  }
+
+  .frame.slideOut {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+.img {
+  object-fit: cover;
+}
+
+/* ---- directional zones ---- */
+
+.zone {
+  position: absolute;
+  z-index: 2;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+/* Band boundaries measured from the reference: 0–39% / 39–61% / 61–100%. */
+.zoneUp {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 39%;
+  cursor:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28' fill='none' stroke='%231a1a1a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M5 17 L14 9 L23 17'/></svg>")
+      14 14,
+    n-resize;
+}
+
+.zoneDown {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 39%;
+  cursor:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28' fill='none' stroke='%231a1a1a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M5 11 L14 19 L23 11'/></svg>")
+      14 14,
+    s-resize;
+}
+
+.zoneLeft {
+  top: 39%;
+  bottom: 39%;
+  left: 0;
+  width: 50%;
+  cursor:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28' fill='none' stroke='%231a1a1a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M17 5 L9 14 L17 23'/></svg>")
+      14 14,
+    w-resize;
+}
+
+.zoneRight {
+  top: 39%;
+  bottom: 39%;
+  right: 0;
+  width: 50%;
+  cursor:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28' fill='none' stroke='%231a1a1a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M11 5 L19 14 L11 23'/></svg>")
+      14 14,
+    e-resize;
+}
+
+/* Touch devices: zones off — swipes and taps on the root take over. */
+@media (hover: none) {
+  .zone {
+    display: none;
+  }
+}
+
+/* ---- caption ---- */
+
+/* Desktop: the two groups stack into one left-aligned block on the right,
+   its bottom aligned with the bottom of the 72vh image band (images are
+   height-locked, so that edge is the image's bottom). */
+.caption {
+  position: absolute;
+  z-index: 3;
+  right: clamp(1.5rem, 4vw, 3.5rem);
+  bottom: calc((100dvh - 72vh) / 2);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-bg);
+}
+
+.captionGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+}
+
+/* Mobile: full-width bottom bar — title/location far left, year/CTA far
+   right — and the CTA loses its chevron. Fixed to the viewport on the page
+   ground so it stays put while the menu drawer pushes content down. */
+@media (max-width: 899px) {
+  .caption {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 1rem var(--container-padding);
+    background: var(--color-bg);
+  }
+
+  .captionEnd {
+    align-items: flex-end;
+  }
+
+  /* Outranks the base .cta rule below (same specificity, later in file). */
+  .captionEnd .cta {
+    margin-top: 0;
+  }
+
+  .ctaIcon {
+    display: none;
+  }
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: var(--text-title-sm);
+  font-weight: 500;
+  letter-spacing: var(--tracking-heading);
+  color: var(--color-fg);
+}
+
+.location {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-fg);
+}
+
+/* Same typography as .location — the caption reads as one left-aligned block. */
+.year {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-fg);
+}
+
+/* Deliberately more confident than the reference's quiet "More info" —
+   same type as the meta lines, slightly lifted off them, a touch lighter. */
+.cta {
+  margin-top: 0.4rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
+  color: color-mix(in srgb, var(--color-fg) 62%, var(--color-bg));
+  cursor: pointer;
+}
+
+.cta:hover {
+  color: var(--color-fg);
+  opacity: 1;
+}
+
+/* The provided chevron_right.svg has a hardcoded fill, so it's applied as a
+   mask over currentColor — the icon always matches the CTA text color. */
+.ctaIcon {
+  width: 0.875rem;
+  height: 0.875rem;
+  background: currentColor;
+  mask: url("/icons/chevron_right.svg") no-repeat center / contain;
+}
+
+/* ---- a11y ---- */
+
+.srStatus {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

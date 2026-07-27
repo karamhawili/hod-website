@@ -1,0 +1,32 @@
+/* Single centered column with generous vertical rhythm — the VVD "every
+   other page" treatment. Column-width tokens cascade to the section
+   stylesheet (studio.module.css). */
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(6rem, 14vh, 10rem);
+  padding-block: clamp(6rem, 16vh, 10rem);
+
+  --studio-text: 34rem;
+  --studio-media: 46rem;
+}
+
+/* Hairline break between the founder lead and the firm description. Sits in
+   the flex gap, so pull it in from the neighbouring gaps a touch. */
+.separator {
+  width: 100%;
+  max-width: var(--studio-text);
+  height: 0;
+  margin: 0;
+  border: 0;
+  border-top: 1px solid var(--color-line);
+}
+
+@media (max-width: 899px) {
+  .page {
+    gap: 4.5rem;
+    padding-block: 4rem;
+    padding-inline: 1.5rem;
+  }
+}

@@ -8,6 +8,7 @@
 
   /* Surfaces */
   --surface-white: #ffffff;
+  /* @deprecated no gradients in redesign — kept for out-of-scope Section/portfolio */
   --surface-gradient:
     linear-gradient(
       90deg,
@@ -21,6 +22,7 @@
   /* Typography */
   --font-serif: var(--font-cormorant);
   --font-sans: var(--font-darker-grotesque);
+  /* @deprecated no script fonts — kept for out-of-scope + About until Phase 5 */
   --font-script: var(--font-great-vibes);
 
   /* Spacing */
@@ -34,6 +36,45 @@
   --content-narrow: 760px;
   --content-tight: 560px;
   --content-gutter: 2rem;
+
+  /* ===== Redesign tokens (VVD direction: near-white ground, brown-black
+     titles, old-style serif display + gothic sans) =====
+     Consumed by NEW components only. Old element defaults (body, h1-h6)
+     stay on the legacy tokens above so out-of-scope pages are untouched.
+     Values sampled from /design-refs/vvd/ and verified against
+     vincentvanduysen.com's live stylesheet. */
+  --font-heading: var(--font-eb-garamond);
+  --font-body: var(--font-libre-franklin);
+
+  --color-bg: #fffffa; /* near-white ground with a faint warm cast */
+  --color-fg: #000000; /* body text — the reference uses literal black */
+  --color-title: #391812; /* brown-black — logotype, page/project titles, serif nav, archive captions */
+  /* @deprecated brown-as-accent is dead — aliased to --color-title so k-studio-era
+     consumers stay coherent until their Phase 3-8 rebuilds; remove in Phase 9 */
+  --color-accent: #391812;
+  --color-fg-muted: #a99b9b; /* warm gray-mauve — inactive nav, secondary text */
+  --color-line: color-mix(
+    in srgb,
+    var(--color-fg-muted) 45%,
+    var(--color-bg)
+  ); /* hairline rules */
+
+  /* Type scale (measured from the VVD refs at 1470px viewport) */
+  --text-meta: 0.75rem; /* smallest meta */
+  --text-body: 0.8125rem; /* body copy, captions, contact lines */
+  --text-nav: 1rem; /* serif nav links + sub-items */
+  --text-title-sm: 1.125rem; /* landing caption title */
+  --text-brand: 1.5rem; /* logotype */
+  --text-title: clamp(1.625rem, 1.2rem + 1.4vw, 2rem); /* page/project titles */
+
+  --rail-width: clamp(260px, 30vw, 440px); /* fixed left nav rail; content offsets via .rail-offset */
+
+  --leading-body: 1.65; /* generous small-text line-height */
+  --tracking-body: 0.02em; /* tracked small-text texture (News Gothic ref) */
+  /* @deprecated no all-caps label language in the VVD direction — kept for
+     k-studio-era consumers; remove in Phase 9 */
+  --tracking-label: 0.08em;
+  --tracking-heading: 0; /* old-style serif — never negative-track */
 }
 
 @media (max-width: 768px) {
@@ -48,6 +89,30 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+/* Base for REDESIGNED pages only (landing/about roots). Old element defaults
+   below stay on legacy tokens so out-of-scope pages are untouched. */
+.theme-redesign {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-body);
+}
+
+.theme-redesign :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-heading);
+  letter-spacing: var(--tracking-heading);
+}
+
+/* Clears page content out from under the fixed left nav rail, plus a smaller
+   balancing band of whitespace on the right so content doesn't run to the far
+   edge. The landing deliberately doesn't use it (full-bleed viewer, rail
+   overlays). Below the rail breakpoint the nav is a top bar — no offset. */
+@media (min-width: 900px) {
+  .rail-offset {
+    padding-inline-start: var(--rail-width);
+    padding-inline-end: clamp(2rem, 6vw, 6rem);
+  }
 }
 
 body {
@@ -85,122 +150,6 @@ img {
 button {
   font-family: inherit;
   cursor: pointer;
-}
-
-/* ========================================
-   SCROLL ANIMATION UTILITIES
-   ======================================== */
-
-/* Base scroll animation - hidden state */
-.animate-on-scroll {
-  opacity: 0;
-  transform: translateY(40px);
-  transition:
-    opacity 0.8s ease,
-    transform 0.8s ease;
-}
-
-.visible.animate-on-scroll,
-.visible .animate-on-scroll {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Fade in + slide up animation */
-.animate-fadeInUp {
-  opacity: 0;
-  transform: translateY(20px);
-  transition:
-    opacity 0.8s ease,
-    transform 0.8s ease;
-}
-
-.visible .animate-fadeInUp {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Scale in animation */
-.animate-scaleIn {
-  opacity: 0;
-  transform: scale(0.95);
-  transition:
-    opacity 1s ease,
-    transform 1s ease;
-}
-
-.visible .animate-scaleIn {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* Zoom out animation - starts zoomed in, pulls back to normal */
-.animate-zoomOut {
-  opacity: 0;
-  transform: scale(1.05);
-  transition:
-    opacity 1s ease,
-    transform 1s ease;
-}
-
-.visible .animate-zoomOut {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* Sequential pop-in animations - for grid items */
-.animate-popIn {
-  opacity: 0;
-  transform: scale(0.8);
-  transition:
-    opacity 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55),
-    transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-.visible .animate-popIn {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* Staggered delays for sequential animations */
-.animate-delay-100 {
-  transition-delay: 0.1s;
-}
-
-.animate-delay-200 {
-  transition-delay: 0.2s;
-}
-
-.animate-delay-300 {
-  transition-delay: 0.3s;
-}
-
-.animate-delay-400 {
-  transition-delay: 0.4s;
-}
-
-.animate-delay-500 {
-  transition-delay: 0.5s;
-}
-
-.animate-delay-600 {
-  transition-delay: 0.6s;
-}
-
-.animate-delay-700 {
-  transition-delay: 0.7s;
-}
-
-.animate-delay-800 {
-  transition-delay: 0.8s;
-}
-
-.animate-delay-900 {
-  transition-delay: 0.9s;
-}
-
-.animate-delay-1000 {
-  transition-delay: 1s;
 }
 
 /* Common section layout pattern */

@@ -1,125 +1,206 @@
 import { defineQuery } from "next-sanity";
 import { sanityFetch } from "@/sanity/lib/live";
-import { Project } from "@/types/sanity";
+import type {
+  VIEWER_PROJECTS_QUERY_RESULT,
+  ARCHIVE_PROJECTS_QUERY_RESULT,
+  CATEGORIES_QUERY_RESULT,
+  STUDIO_PAGE_QUERY_RESULT,
+  JOIN_US_PAGE_QUERY_RESULT,
+  PUBLICATIONS_PAGE_QUERY_RESULT,
+} from "@/sanity/sanity.types";
+import { SiteSettings } from "@/types/sanity";
 
-const PROJECT_FIELDS = `
-  _id,
-  title,
-  formattedTitle,
-  slug,
-  coverImage,
-  content[]{
-    ...,
-    _type == "heroBlock" => {
-      _key,
-      _type,
-      image,
-      alt
-    },
-    _type == "imageDetailsBlock" => {
-      _key,
-      _type,
-      image,
-      imageAlt,
-      title,
-      subtitle,
-      description,
-      layout,
-      imageFormat
-    },
-    _type == "imageBlock" => {
-      _key,
-      _type,
-      image,
-      alt,
-      variant
-    },
-    _type == "centeredTextBlock" => {
-      _key,
-      _type,
-      title,
-      description,
-      width
-    },
-    _type == "imagePairBlock" => {
-      _key,
-      _type,
-      leftImage,
-      leftAlt,
-      rightImage,
-      rightAlt
-    },
-    _type == "mixedImagePairBlock" => {
-      _key,
-      _type,
-      landscapeImage,
-      landscapeAlt,
-      nonLandscapeImage,
-      nonLandscapeAlt,
-      nonLandscapeFormat,
-      landscapePosition
-    }
-  },
-  excerpt,
-  "location": coalesce(location, category),
-  categories[]->{
+// Archive: the "see everything" grid. Thumb = first gallery image.
+export const ARCHIVE_PROJECTS_QUERY = defineQuery(`
+  *[_type == "project" && defined(slug.current) && count(images) > 0
+      && ($category == null || category->slug.current == $category)]
+    | order(_createdAt desc) {
     _id,
     title,
     "slug": slug.current,
-    "color": color.hex
-  },
+    location,
+    status,
+    year,
+    "category": category->title,
+    "thumb": images[0]{
+      alt,
+      asset,
+      hotspot,
+      crop,
+      "lqip": asset->metadata.lqip,
+      "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }
+    }
+  }
+`);
+
+// Only categories that actually have displayable projects — empty ones are
+// hidden from the rail's filter list.
+export const CATEGORIES_QUERY = defineQuery(`
+  *[_type == "category" && defined(slug.current)
+      && count(*[_type == "project" && references(^._id) && count(images) > 0]) > 0]
+    | order(title asc) {
+    _id,
+    title,
+    "slug": slug.current
+  }
+`);
+
+export async function getArchiveProjects(
+  category?: string,
+): Promise<ARCHIVE_PROJECTS_QUERY_RESULT> {
+  const result = await sanityFetch({
+    query: ARCHIVE_PROJECTS_QUERY,
+    params: { category: category ?? null },
+    tags: ["project"],
+  });
+
+  return (result.data ?? []) as ARCHIVE_PROJECTS_QUERY_RESULT;
+}
+
+export async function getCategories(): Promise<CATEGORIES_QUERY_RESULT> {
+  const result = await sanityFetch({
+    query: CATEGORIES_QUERY,
+    tags: ["category"],
+  });
+
+  return (result.data ?? []) as CATEGORIES_QUERY_RESULT;
+}
+
+// Landing project-viewer payload: the ordered gallery with intrinsic
+// dimensions (native-ratio layout) and LQIP placeholders.
+const VIEWER_FIELDS = `
+  _id,
+  title,
+  "slug": slug.current,
+  location,
   year,
-  featured,
-  overlayTextColor
+  images[]{
+    _key,
+    alt,
+    asset,
+    hotspot,
+    crop,
+    "lqip": asset->metadata.lqip,
+    "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }
+  }
 `;
 
-export const FEATURED_PROJECT_QUERY = defineQuery(`
-  *[_type == "project" && featured == true] | order(_createdAt desc) [0] {
-    ${PROJECT_FIELDS}
-  }
+// The full rotation, optionally narrowed by the rail's category filter.
+// No "featured" gate — the whole catalog is the landing rotation.
+export const VIEWER_PROJECTS_QUERY = defineQuery(`
+  *[_type == "project" && defined(slug.current) && count(images) > 0
+      && ($category == null || category->slug.current == $category)]
+    | order(_createdAt desc) { ${VIEWER_FIELDS} }
 `);
 
-export const ALL_PROJECTS_QUERY = defineQuery(`
-  *[_type == "project"] | order(_createdAt desc) {
-    ${PROJECT_FIELDS}
-  }
-`);
+export async function getViewerProjects(
+  category?: string,
+): Promise<VIEWER_PROJECTS_QUERY_RESULT> {
+  const result = await sanityFetch({
+    query: VIEWER_PROJECTS_QUERY,
+    params: { category: category ?? null },
+    tags: ["project"],
+  });
 
-export const FEATURED_PROJECTS_QUERY = defineQuery(`
-  *[_type == "project" && featured == true] | order(_createdAt desc) {
-    ${PROJECT_FIELDS}
-  }
-`);
+  return (result.data ?? []) as VIEWER_PROJECTS_QUERY_RESULT;
+}
 
-export const PROJECT_PAGE_QUERY = defineQuery(`
+// Project detail page: the viewer payload plus the long-form fields.
+export const PROJECT_DETAIL_QUERY = defineQuery(`
   *[_type == "project" && slug.current == $slug][0]{
-    ${PROJECT_FIELDS}
+    ${VIEWER_FIELDS},
+    description,
+    credits
   }
 `);
 
-export async function getFeaturedProject(): Promise<Project | null> {
+export const SITE_SETTINGS_QUERY = defineQuery(`
+  *[_id == "siteSettings"][0]{
+    brandLine,
+    secondaryNav[]{ label, href },
+    locations[]{ label, address },
+    phone,
+    email,
+    mapUrl,
+    socials[]{ platform, url }
+  }
+`);
+
+export async function getSiteSettings(): Promise<SiteSettings | null> {
   const result = await sanityFetch({
-    query: FEATURED_PROJECT_QUERY,
-    tags: ["project"],
+    query: SITE_SETTINGS_QUERY,
+    tags: ["siteSettings"],
   });
 
-  return result.data as Project | null;
+  return result.data as SiteSettings | null;
 }
 
-export async function getAllProjects(): Promise<Project[]> {
+// Image projection carrying native-ratio metadata (intrinsic dimensions +
+// LQIP) so studio/join-us images render at their true aspect, uncropped.
+const IMAGE_META = `{
+  asset,
+  hotspot,
+  crop,
+  "lqip": asset->metadata.lqip,
+  "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }
+}`;
+
+export const STUDIO_PAGE_QUERY = defineQuery(`
+  *[_id == "studioPage"][0]{
+    founder{ name, role, bio, linkLabel, linkUrl, image${IMAGE_META} },
+    intro{ heading, body },
+    disciplines{ heading, body, sectors, services }
+  }
+`);
+
+export async function getStudioPage(): Promise<STUDIO_PAGE_QUERY_RESULT> {
   const result = await sanityFetch({
-    query: ALL_PROJECTS_QUERY,
-    tags: ["project"],
+    query: STUDIO_PAGE_QUERY,
+    tags: ["studioPage"],
   });
 
-  return result.data as Project[];
+  return result.data as STUDIO_PAGE_QUERY_RESULT;
 }
 
-export async function getFeaturedProjects(): Promise<Project[]> {
+export const PUBLICATIONS_PAGE_QUERY = defineQuery(`
+  *[_id == "publicationsPage"][0]{
+    publications[]{
+      _key,
+      publication,
+      date,
+      description,
+      url,
+      linkLabel,
+      image${IMAGE_META}
+    }
+  }
+`);
+
+export async function getPublicationsPage(): Promise<PUBLICATIONS_PAGE_QUERY_RESULT> {
   const result = await sanityFetch({
-    query: FEATURED_PROJECTS_QUERY,
-    tags: ["project"],
+    query: PUBLICATIONS_PAGE_QUERY,
+    tags: ["publicationsPage"],
   });
 
-  return result.data as Project[];
+  return result.data as PUBLICATIONS_PAGE_QUERY_RESULT;
 }
+
+export const JOIN_US_PAGE_QUERY = defineQuery(`
+  *[_id == "joinUsPage"][0]{
+    "videoUrl": video.asset->url,
+    image${IMAGE_META},
+    heading,
+    body,
+    email
+  }
+`);
+
+export async function getJoinUsPage(): Promise<JOIN_US_PAGE_QUERY_RESULT> {
+  const result = await sanityFetch({
+    query: JOIN_US_PAGE_QUERY,
+    tags: ["joinUsPage"],
+  });
+
+  return result.data as JOIN_US_PAGE_QUERY_RESULT;
+}
+

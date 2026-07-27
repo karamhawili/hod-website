@@ -1,29 +1,25 @@
-import AboutSection from "@/components/AboutSection/AboutSection";
-import FeaturedProject from "@/components/FeaturedProject/FeaturedProject";
-import Footer from "@/components/Footer/Footer";
-import Hero from "@/components/Hero/Hero";
-import InstagramGrid from "@/components/InstagramGrid/InstagramGrid";
-import LatestProjects from "@/components/LatestProjects/LatestProjects";
 import Navigation from "@/components/Navigation/Navigation";
-import Recognition from "@/components/Recognition/Recognition";
-import { getAllProjects, getFeaturedProject } from "@/sanity/lib/queries";
+import { getViewerProjects } from "@/sanity/lib/queries";
+import ProjectViewer from "./_components/ProjectViewer/ProjectViewer";
 
-export default async function Home() {
-  const featuredProject = await getFeaturedProject();
-  const allProjects = await getAllProjects();
+type HomeProps = {
+  // The rail's category links filter the rotation via ?category=<slug>.
+  searchParams: Promise<{ category?: string }>;
+};
+
+export default async function Home({ searchParams }: HomeProps) {
+  const { category } = await searchParams;
+  const projects = await getViewerProjects(category);
 
   return (
     <>
-      <Navigation />
-      <main>
-        <Hero />
-        {featuredProject && <FeaturedProject project={featuredProject} />}
-        {allProjects && <LatestProjects projects={allProjects} />}
-        <AboutSection />
-        <InstagramGrid />
-        <Recognition />
+      <Navigation activeCategory={category} />
+      <main className="theme-redesign">
+        {/* Key by category so switching filters remounts the viewer fresh —
+            otherwise its stale projectIndex can point past the shorter list
+            and fall through to the empty state. */}
+        <ProjectViewer key={category ?? "all"} projects={projects} />
       </main>
-      <Footer />
     </>
   );
 }
