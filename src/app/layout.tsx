@@ -9,7 +9,6 @@ import {
 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
-import SplashScreen from "@/components/SplashScreen/SplashScreen";
 import { SanityLive } from "@/sanity/lib/live";
 
 const cormorant = Cormorant_Garamond({
@@ -64,8 +63,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // The Studio (/admin) must not run the frontend's SanityLive or the splash
-  // (see middleware.ts). Pathname comes from the middleware-set header.
+  // The Studio (/admin) must not run the frontend's SanityLive (see
+  // middleware.ts). Pathname comes from the middleware-set header.
   const pathname = (await headers()).get("x-pathname") ?? "";
   const isStudio = pathname.startsWith("/admin");
 
@@ -74,10 +73,7 @@ export default async function RootLayout({
       lang="en"
       className={`${cormorant.variable} ${darkerGrotesque.variable} ${greatVibes.variable} ${ebGaramond.variable} ${libreFranklin.variable}`}
     >
-      <body>
-        {!isStudio && <SplashScreen />}
-        {children}
-      </body>
+      <body>{children}</body>
       <Analytics />
       {!isStudio && <SanityLive />}
     </html>

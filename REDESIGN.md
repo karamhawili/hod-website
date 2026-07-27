@@ -232,9 +232,10 @@ content model survived unchanged; restyled to single-column native-ratio).
       item): built fresh — its own `publicationsPage` singleton + component
       (old `StudioPublications` + `studioPage.publications` were removed in
       8.1; press-list content recoverable from git history).
-- [x] Phase 8.4 — Splash / intro screen: full-viewport near-white overlay,
-      logo fades in 50%→100% scale then the overlay fades away. Root-layout
-      client component; plays once per hard load; reduced-motion safe.
+- [~] Phase 8.4 — Splash / intro screen: built then **removed at user
+      request** (component + layout render deleted). The middleware +
+      `headers()` pathname logic in the root layout stays — it's what keeps
+      `SanityLive` off the Studio (the more important reason it exists).
 - [ ] Phase 9 — Responsive + QA pass; retire now-orphaned old tokens/fonts/
       `Section`/`Reveal`/`useScrollAnimation` once PageBuilder is fully gone
 
