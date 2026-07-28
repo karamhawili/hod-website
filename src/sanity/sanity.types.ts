@@ -195,6 +195,7 @@ export type Project = {
     _type: "image";
     _key: string;
   }>;
+  orderRank?: string;
 };
 
 export type Slug = {
@@ -336,7 +337,7 @@ export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: src/sanity/lib/queries.ts
 // Variable: ARCHIVE_PROJECTS_QUERY
-// Query: *[_type == "project" && defined(slug.current) && count(images) > 0      && ($category == null || category->slug.current == $category)]    | order(_createdAt desc) {    _id,    title,    "slug": slug.current,    location,    status,    year,    "category": category->title,    "thumb": images[0]{      alt,      asset,      hotspot,      crop,      "lqip": asset->metadata.lqip,      "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }    }  }
+// Query: *[_type == "project" && defined(slug.current) && count(images) > 0      && ($category == null || category->slug.current == $category)]    | order(orderRank) {    _id,    title,    "slug": slug.current,    location,    status,    year,    "category": category->title,    "thumb": images[0]{      alt,      asset,      hotspot,      crop,      "lqip": asset->metadata.lqip,      "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }    }  }
 export type ARCHIVE_PROJECTS_QUERY_RESULT = Array<{
   _id: string;
   title: string;
@@ -370,7 +371,7 @@ export type CATEGORIES_QUERY_RESULT = Array<{
 
 // Source: src/sanity/lib/queries.ts
 // Variable: VIEWER_PROJECTS_QUERY
-// Query: *[_type == "project" && defined(slug.current) && count(images) > 0      && ($category == null || category->slug.current == $category)]    | order(_createdAt desc) {   _id,  title,  "slug": slug.current,  location,  year,  images[]{    _key,    alt,    asset,    hotspot,    crop,    "lqip": asset->metadata.lqip,    "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }  } }
+// Query: *[_type == "project" && defined(slug.current) && count(images) > 0      && ($category == null || category->slug.current == $category)]    | order(orderRank) {   _id,  title,  "slug": slug.current,  location,  year,  images[]{    _key,    alt,    asset,    hotspot,    crop,    "lqip": asset->metadata.lqip,    "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }  } }
 export type VIEWER_PROJECTS_QUERY_RESULT = Array<{
   _id: string;
   title: string;

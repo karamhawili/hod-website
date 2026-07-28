@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { urlFor, urlForSized } from "@/sanity/lib/image";
+import { FALLBACK_BLUR } from "@/lib/blur";
 import type { VIEWER_PROJECTS_QUERY_RESULT } from "@/sanity/sanity.types";
 import styles from "./ProjectViewer.module.css";
 
@@ -240,8 +241,8 @@ export default function ProjectViewer({ projects }: ProjectViewerProps) {
           fill
           sizes="(max-width: 899px) 92vw, 60vw"
           className={styles.img}
-          placeholder={image.lqip ? "blur" : undefined}
-          blurDataURL={image.lqip ?? undefined}
+          placeholder="blur"
+          blurDataURL={image.lqip ?? FALLBACK_BLUR}
           priority={priority}
         />
       )}

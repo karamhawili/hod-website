@@ -1,6 +1,7 @@
 import Image, { type StaticImageData } from "next/image";
 import type { SanityImageSource } from "@sanity/image-url";
 import { urlFor } from "@/sanity/lib/image";
+import { FALLBACK_BLUR } from "@/lib/blur";
 
 // Sanity image projected with native-ratio metadata (see IMAGE_META in
 // queries.ts). Kept structural so any *_QUERY_RESULT image field satisfies it.
@@ -45,8 +46,8 @@ export default function NativeImage({
         height={image.dimensions.height}
         sizes={sizes}
         className={className}
-        placeholder={image.lqip ? "blur" : undefined}
-        blurDataURL={image.lqip ?? undefined}
+        placeholder="blur"
+        blurDataURL={image.lqip ?? FALLBACK_BLUR}
         priority={priority}
       />
     );

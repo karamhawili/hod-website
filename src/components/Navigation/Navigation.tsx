@@ -1,14 +1,20 @@
-import { getCategories, getSiteSettings } from "@/sanity/lib/queries";
-import type { NavLink } from "@/types/sanity";
-import NavigationClient from "./NavigationClient";
+import { getCategories } from "@/sanity/lib/queries";
+import NavigationClient, { type SecondaryItem } from "./NavigationClient";
 
 // The rail's top stack is the project-category filter list (data-driven from
-// category documents — empty categories are excluded query-side). The bottom
-// stack is CMS-managed; this fallback covers an unpopulated siteSettings.
-const DEFAULT_SECONDARY_NAV: NavLink[] = [
+// category documents). The bottom (secondary) stack is a fixed structure of
+// app routes; "Press" is a toggle grouping that expands to Publications +
+// Awards (not a route itself).
+const SECONDARY_NAV: SecondaryItem[] = [
   { label: "Archive", href: "/archive" },
   { label: "Studio", href: "/studio" },
-  { label: "Publications", href: "/publications" },
+  {
+    label: "Press",
+    children: [
+      { label: "Publications", href: "/publications" },
+      { label: "Awards", href: "/awards" },
+    ],
+  },
   { label: "Contact", href: "/contact" },
   { label: "Join Us", href: "/join-us" },
 ];
@@ -20,18 +26,12 @@ interface NavigationProps {
 }
 
 export default async function Navigation({ activeCategory }: NavigationProps) {
-  const [settings, categories] = await Promise.all([
-    getSiteSettings(),
-    getCategories(),
-  ]);
-  const secondaryNav = settings?.secondaryNav?.length
-    ? settings.secondaryNav
-    : DEFAULT_SECONDARY_NAV;
+  const categories = await getCategories();
 
   return (
     <NavigationClient
       categories={categories}
-      secondaryNav={secondaryNav}
+      secondary={SECONDARY_NAV}
       activeCategory={activeCategory}
     />
   );

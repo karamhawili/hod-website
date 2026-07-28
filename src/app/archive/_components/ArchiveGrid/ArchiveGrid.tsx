@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { urlFor } from "@/sanity/lib/image";
+import { FALLBACK_BLUR } from "@/lib/blur";
 import type { ARCHIVE_PROJECTS_QUERY_RESULT } from "@/sanity/sanity.types";
 import styles from "./ArchiveGrid.module.css";
 
@@ -33,8 +34,8 @@ export default function ArchiveGrid({ projects }: ArchiveGridProps) {
                   height={project.thumb.dimensions?.height ?? 600}
                   sizes="(max-width: 899px) 44vw, 15vw"
                   className={styles.thumb}
-                  placeholder={project.thumb.lqip ? "blur" : undefined}
-                  blurDataURL={project.thumb.lqip ?? undefined}
+                  placeholder="blur"
+                  blurDataURL={project.thumb.lqip ?? FALLBACK_BLUR}
                 />
               )}
               <span className={styles.caption}>{caption}</span>

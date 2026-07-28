@@ -236,7 +236,22 @@ content model survived unchanged; restyled to single-column native-ratio).
       request** (component + layout render deleted). The middleware +
       `headers()` pathname logic in the root layout stays — it's what keeps
       `SanityLive` off the Studio (the more important reason it exists).
-- [ ] Phase 9 — Responsive + QA pass; retire now-orphaned old tokens/fonts/
+- [ ] Phase 9 — Refinements + Press/Awards + polish. Sub-tasks:
+  - [ ] Fix the landing caption growing leftward with long content (it's
+        right-anchored, so a long title extends the left edge unpredictably).
+  - [ ] Make the header logo bigger on mobile.
+  - [ ] **Press** — new secondary-nav item that expands to a submenu:
+        **Publications** + **Awards** (same indented sub-list pattern the rail
+        already uses; Publications moves under Press).
+  - [ ] **Awards** — new page + content model (`/awards`); data provided by
+        the user when this sub-task starts.
+  - [ ] No image should flash white on load — every `next/image` must show a
+        blurry LQIP placeholder first. Applied to some images, not all; audit
+        and make it universal.
+  - [ ] Fix the stutter on mobile horizontal (image) swipe in the viewer.
+  - [ ] **Manual sorting for projects** (Audit N7) — controls the landing
+        rotation + archive order instead of `_createdAt desc`.
+- [ ] Phase 10 — Responsive + QA pass; retire now-orphaned old tokens/fonts/
       `Section`/`Reveal`/`useScrollAnimation` once PageBuilder is fully gone
 
 ## Open items (both Phase 4 blockers resolved 2026-07-25)

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { PortableText, type PortableTextComponents } from "next-sanity";
 import { sanityFetch } from "@/sanity/lib/live";
 import { urlFor } from "@/sanity/lib/image";
+import { FALLBACK_BLUR } from "@/lib/blur";
 import { PROJECT_DETAIL_QUERY } from "@/sanity/lib/queries";
 import type { PROJECT_DETAIL_QUERY_RESULT } from "@/sanity/sanity.types";
 import CloseButton from "./_components/CloseButton/CloseButton";
@@ -99,8 +100,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                   height={image.dimensions?.height ?? 1333}
                   sizes="(max-width: 899px) 100vw, 62vw"
                   className={styles.image}
-                  placeholder={image.lqip ? "blur" : undefined}
-                  blurDataURL={image.lqip ?? undefined}
+                  placeholder="blur"
+                  blurDataURL={image.lqip ?? FALLBACK_BLUR}
                 />
               </figure>
             ),

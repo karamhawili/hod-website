@@ -14,7 +14,7 @@ import { SiteSettings } from "@/types/sanity";
 export const ARCHIVE_PROJECTS_QUERY = defineQuery(`
   *[_type == "project" && defined(slug.current) && count(images) > 0
       && ($category == null || category->slug.current == $category)]
-    | order(_createdAt desc) {
+    | order(orderRank) {
     _id,
     title,
     "slug": slug.current,
@@ -90,7 +90,7 @@ const VIEWER_FIELDS = `
 export const VIEWER_PROJECTS_QUERY = defineQuery(`
   *[_type == "project" && defined(slug.current) && count(images) > 0
       && ($category == null || category->slug.current == $category)]
-    | order(_createdAt desc) { ${VIEWER_FIELDS} }
+    | order(orderRank) { ${VIEWER_FIELDS} }
 `);
 
 export async function getViewerProjects(

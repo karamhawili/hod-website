@@ -11,10 +11,10 @@
 }
 
 /* Mobile header sits in normal flow above the viewer (Phase 3 drawer):
-   64px = 24px logo + 2 × 1.25rem bar padding. */
+   72px = 32px logo + 2 × 1.25rem bar padding. */
 @media (max-width: 899px) {
   .viewer {
-    height: calc(100dvh - 64px);
+    height: calc(100dvh - 72px);
     /* Approx height of the fixed caption bar below — reserved so the image
        centers in the space between header and caption, not behind it. */
     --caption-h: 5rem;
@@ -193,8 +193,11 @@
 .caption {
   position: absolute;
   z-index: 3;
-  right: clamp(2rem, 8vw, 9rem);
+  right: clamp(2rem, 5vw, 9rem);
   bottom: calc((100dvh - 72vh) / 2);
+  /* Fixed width so the left edge never moves with title length — long titles
+     wrap instead of pushing the block leftward over the image. */
+  width: 12rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -219,6 +222,7 @@
     left: 0;
     right: 0;
     bottom: 0;
+    width: auto;
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-end;
