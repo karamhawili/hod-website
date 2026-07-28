@@ -15,14 +15,14 @@
 @media (max-width: 899px) {
   .viewer {
     height: calc(100dvh - 72px);
-    /* Approx height of the fixed caption bar below — reserved so the image
-       centers in the space between header and caption, not behind it. */
-    --caption-h: 5rem;
   }
-
-  /* Exclude the caption band from the centering context. */
-  .stage {
-    bottom: var(--caption-h);
+  /* Reserve the fixed caption band so the image centers in the space BETWEEN
+     the header and the caption — not the full viewer (which sits too low
+     because the caption eats the bottom). Uses `.viewer .stage` (higher
+     specificity) so it beats the base `.stage { inset: 0 }` regardless of
+     source order. ~4.5rem ≈ the caption bar height. */
+  .viewer .stage {
+    bottom: 4.5rem;
   }
 }
 

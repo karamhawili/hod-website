@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -28,9 +28,17 @@ const WHEEL_COOLDOWN_MS = 950;
 // Reset the accumulator after this much wheel idle so a leftover sub-threshold
 // nudge can't bias the direction of the next gesture.
 const WHEEL_IDLE_RESET_MS = 150;
-// Touch: below TAP = open project, above SWIPE = navigate.
+// Touch: below TAP = open project (no drag committed).
 const TAP_THRESHOLD_PX = 10;
-const SWIPE_THRESHOLD_PX = 40;
+// Drag-follow: lock the gesture axis after this much movement; commit the
+// navigation once the finger passes this fraction of the viewport, else spring
+// back; the release snap animation lasts SNAP_MS.
+const AXIS_LOCK_PX = 8;
+// Commit if the finger travels this fraction of the viewport OR flicks faster
+// than this (px/ms) — the flick makes short, quick swipes navigate too.
+const DRAG_COMMIT_RATIO = 0.12;
+const FLICK_VELOCITY = 0.5;
+const SNAP_MS = 320;
 
 const wrap = (index: number, length: number) =>
   ((index % length) + length) % length;
@@ -52,14 +60,26 @@ export default function ProjectViewer({ projects }: ProjectViewerProps) {
   const wheelAccum = useRef(0);
   const wheelLast = useRef(0);
   const wheelEventLast = useRef(0);
-  const touchStart = useRef<{ x: number; y: number } | null>(null);
   // Per-project horizontal position, remembered across vertical navigation.
   // A ref array: O(1) save/restore, no extra renders, no persistence beyond
   // the visit (which is the wanted scope).
   const imageMemory = useRef<number[]>([]);
+  // Live drag-follow (touch): the finger drags the current frame while the
+  // incoming neighbour follows in; on release it snaps forward (commit) or
+  // back (cancel).
+  const [drag, setDrag] = useState<{
+    axis: "x" | "y";
+    dir: 1 | -1;
+    delta: number;
+    snapping: boolean;
+    incoming: { image: ViewerImage; title: string } | null;
+  } | null>(null);
+  const dragOrigin = useRef<{ x: number; y: number; t: number } | null>(null);
+  const dragAxis = useRef<"x" | "y" | "none" | null>(null);
+  const snapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const project = projects[projectIndex] ?? null;
-  const images = project?.images ?? [];
+  const images = useMemo(() => project?.images ?? [], [project]);
   const currentImage = images[imageIndex] ?? null;
 
   const beginSlide = useCallback(
@@ -95,6 +115,25 @@ export default function ProjectViewer({ projects }: ProjectViewerProps) {
       setImageIndex(remembered < nextLength ? remembered : 0);
     },
     [projects, projectIndex, imageIndex, currentImage, project, beginSlide],
+  );
+
+  // The neighbour a drag reveals in `dir` — resolved in handlers (ref access)
+  // and stored in drag state, so render never reads a ref.
+  const resolveIncoming = useCallback(
+    (axis: "x" | "y", dir: 1 | -1) => {
+      if (!project) return null;
+      if (axis === "x") {
+        const img = images[wrap(imageIndex + dir, images.length)];
+        return img ? { image: img, title: project.title } : null;
+      }
+      const nextIndex = wrap(projectIndex + dir, projects.length);
+      const p = projects[nextIndex];
+      const imgs = p?.images ?? [];
+      const remembered = imageMemory.current[nextIndex] ?? 0;
+      const img = imgs[remembered < imgs.length ? remembered : 0];
+      return p && img ? { image: img, title: p.title } : null;
+    },
+    [project, images, imageIndex, projectIndex, projects],
   );
 
   // Scroll interception — the ONE sanctioned scroll-jack (see REDESIGN.md).
@@ -176,36 +215,112 @@ export default function ProjectViewer({ projects }: ProjectViewerProps) {
   useEffect(
     () => () => {
       if (outgoingTimer.current) clearTimeout(outgoingTimer.current);
+      if (snapTimer.current) clearTimeout(snapTimer.current);
     },
     [],
   );
 
-  // Touch: horizontal swipe = image, vertical swipe = project, tap = open.
+  // Touch drag-follow. `touch-action: none` on the viewer stops native
+  // scrolling, so we track deltas directly and translate the frames live.
   const onTouchStart = (event: React.TouchEvent) => {
+    if (drag?.snapping) return; // ignore new gestures mid-snap
     const touch = event.touches[0];
-    touchStart.current = { x: touch.clientX, y: touch.clientY };
+    dragOrigin.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+      t: performance.now(),
+    };
+    dragAxis.current = null;
+  };
+
+  const onTouchMove = (event: React.TouchEvent) => {
+    const origin = dragOrigin.current;
+    if (!origin || !project) return;
+    const touch = event.touches[0];
+    const dx = touch.clientX - origin.x;
+    const dy = touch.clientY - origin.y;
+
+    // Lock the axis on first real movement — but only if that axis is
+    // navigable (>1 image / >1 project); otherwise the gesture is inert.
+    if (!dragAxis.current) {
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < AXIS_LOCK_PX) return;
+      const horizontal = Math.abs(dx) > Math.abs(dy);
+      if (horizontal && images.length > 1) dragAxis.current = "x";
+      else if (!horizontal && projects.length > 1) dragAxis.current = "y";
+      else {
+        dragAxis.current = "none";
+        return;
+      }
+    }
+    if (dragAxis.current === "none") return;
+
+    const axis = dragAxis.current;
+    const delta = axis === "x" ? dx : dy;
+    const dir: 1 | -1 = delta < 0 ? 1 : -1;
+    setDrag({
+      axis,
+      dir,
+      delta,
+      snapping: false,
+      incoming: resolveIncoming(axis, dir),
+    });
   };
 
   const onTouchEnd = (event: React.TouchEvent) => {
-    const start = touchStart.current;
-    touchStart.current = null;
-    if (!start || !project) return;
+    const origin = dragOrigin.current;
+    const axis = dragAxis.current;
+    dragOrigin.current = null;
+    dragAxis.current = null;
+    if (!origin || !project) return;
 
     const touch = event.changedTouches[0];
-    const dx = touch.clientX - start.x;
-    const dy = touch.clientY - start.y;
+    const dx = touch.clientX - origin.x;
+    const dy = touch.clientY - origin.y;
 
-    if (Math.max(Math.abs(dx), Math.abs(dy)) < TAP_THRESHOLD_PX) {
-      // Tap targets inside the caption (CTA link) handle themselves.
-      if ((event.target as HTMLElement).closest("a")) return;
-      router.push(`/project/${project.slug}`);
+    // No axis lock = a tap → open the project (ignore taps on the CTA link).
+    if (!axis || axis === "none") {
+      if (
+        !axis &&
+        Math.max(Math.abs(dx), Math.abs(dy)) < TAP_THRESHOLD_PX &&
+        !(event.target as HTMLElement).closest("a")
+      ) {
+        router.push(`/project/${project.slug}`);
+      }
+      setDrag(null);
       return;
     }
 
-    if (Math.abs(dx) > Math.abs(dy)) {
-      if (Math.abs(dx) >= SWIPE_THRESHOLD_PX) goToImage(dx < 0 ? 1 : -1);
-    } else if (Math.abs(dy) >= SWIPE_THRESHOLD_PX) {
-      goToProject(dy < 0 ? 1 : -1);
+    const delta = axis === "x" ? dx : dy;
+    const dir: 1 | -1 = delta < 0 ? 1 : -1;
+    const dim = axis === "x" ? window.innerWidth : window.innerHeight;
+    const velocity = Math.abs(delta) / Math.max(1, performance.now() - origin.t);
+    const commit =
+      Math.abs(delta) >= dim * DRAG_COMMIT_RATIO || velocity >= FLICK_VELOCITY;
+
+    if (snapTimer.current) clearTimeout(snapTimer.current);
+
+    const incoming = resolveIncoming(axis, dir);
+
+    if (commit) {
+      // Snap the active frame fully off; the incoming one lands centered.
+      setDrag({ axis, dir, delta: -dir * dim, snapping: true, incoming });
+      snapTimer.current = setTimeout(() => {
+        if (axis === "x") {
+          setImageIndex((index) => wrap(index + dir, images.length));
+        } else {
+          imageMemory.current[projectIndex] = imageIndex;
+          const nextIndex = wrap(projectIndex + dir, projects.length);
+          const remembered = imageMemory.current[nextIndex] ?? 0;
+          const nextLen = projects[nextIndex]?.images?.length ?? 0;
+          setProjectIndex(nextIndex);
+          setImageIndex(remembered < nextLen ? remembered : 0);
+        }
+        setDrag(null);
+      }, SNAP_MS);
+    } else {
+      // Spring back to center.
+      setDrag({ axis, dir, delta: 0, snapping: true, incoming });
+      snapTimer.current = setTimeout(() => setDrag(null), SNAP_MS);
     }
   };
 
@@ -249,6 +364,51 @@ export default function ProjectViewer({ projects }: ProjectViewerProps) {
     </figure>
   );
 
+  // ---- drag-follow render ----
+  // A frame positioned by an inline transform (finger-tracked), with a snap
+  // transition when releasing.
+  const renderDragFrame = (
+    image: ViewerImage,
+    title: string,
+    offset: string,
+    key: string,
+  ) => (
+    <figure
+      key={key}
+      className={styles.frame}
+      style={
+        {
+          "--ar": String(image.dimensions?.aspectRatio ?? 1.5),
+          opacity: 1,
+          willChange: "transform",
+          transition: drag?.snapping ? `transform ${SNAP_MS}ms ease` : "none",
+          transform:
+            drag?.axis === "x"
+              ? `translate(calc(-50% + ${offset}), -50%)`
+              : `translate(-50%, calc(-50% + ${offset}))`,
+        } as React.CSSProperties
+      }
+    >
+      {image.asset && (
+        <Image
+          src={urlFor(image).width(2000).auto("format").url()}
+          alt={image.alt ?? title}
+          fill
+          sizes="(max-width: 899px) 92vw, 60vw"
+          className={styles.img}
+          placeholder="blur"
+          blurDataURL={image.lqip ?? FALLBACK_BLUR}
+        />
+      )}
+    </figure>
+  );
+
+  const incomingBase = drag
+    ? drag.axis === "x"
+      ? `${drag.dir * 100}vw`
+      : `${drag.dir * 100}dvh`
+    : "0px";
+
   // Direction-aware carousel offsets: the incoming frame enters from the
   // edge the navigation points at; the outgoing one exits the opposite way.
   const enterVars: React.CSSProperties = outgoing
@@ -267,31 +427,54 @@ export default function ProjectViewer({ projects }: ProjectViewerProps) {
       ref={rootRef}
       className={styles.viewer}
       onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
     >
       <div className={styles.stage} aria-hidden="true">
-        {/* The whole current gallery stays mounted so siblings are already
-            loaded when they slide in. Only the active frame is visible;
-            during a slide it animates in while the outgoing copy animates
-            out below. */}
-        {images.map((image, index) =>
-          renderFrame(
-            image,
-            project.title,
-            index === imageIndex
-              ? `${styles.frame} ${styles.active} ${outgoing ? styles.slideIn : ""}`
-              : styles.frame,
-            index === imageIndex ? enterVars : {},
-            projectIndex === 0 && index === 0,
-          ),
+        {drag && currentImage ? (
+          // Drag-follow: just the two moving frames (cheap to re-render per
+          // touchmove) — the finger-tracked current image + the incoming one.
+          <>
+            {renderDragFrame(
+              currentImage,
+              project.title,
+              `${drag.delta}px`,
+              "drag-active",
+            )}
+            {drag.incoming &&
+              renderDragFrame(
+                drag.incoming.image,
+                drag.incoming.title,
+                `${incomingBase} + ${drag.delta}px`,
+                "drag-incoming",
+              )}
+          </>
+        ) : (
+          <>
+            {/* The whole current gallery stays mounted so siblings are already
+                loaded when they slide in. Only the active frame is visible;
+                during a slide it animates in while the outgoing copy animates
+                out below. */}
+            {images.map((image, index) =>
+              renderFrame(
+                image,
+                project.title,
+                index === imageIndex
+                  ? `${styles.frame} ${styles.active} ${outgoing ? styles.slideIn : ""}`
+                  : styles.frame,
+                index === imageIndex ? enterVars : {},
+                projectIndex === 0 && index === 0,
+              ),
+            )}
+            {outgoing &&
+              renderFrame(
+                outgoing.image,
+                outgoing.title,
+                `${styles.frame} ${styles.slideOut}`,
+                exitVars,
+              )}
+          </>
         )}
-        {outgoing &&
-          renderFrame(
-            outgoing.image,
-            outgoing.title,
-            `${styles.frame} ${styles.slideOut}`,
-            exitVars,
-          )}
       </div>
 
       {/* Directional input zones (desktop pointer only — hidden on touch,
