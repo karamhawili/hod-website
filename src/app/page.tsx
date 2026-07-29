@@ -3,13 +3,14 @@ import { getViewerProjects } from "@/sanity/lib/queries";
 import ProjectViewer from "./_components/ProjectViewer/ProjectViewer";
 
 type HomeProps = {
-  // The rail's category links filter the rotation via ?category=<slug>;
-  // ?project=<slug> restores the viewer to a project when returning from it.
-  searchParams: Promise<{ category?: string; project?: string }>;
+  // The rail's category links filter the rotation via ?category=<slug>. The
+  // active project rides in the URL hash (/#<slug>) — read client-side by the
+  // viewer — so it isn't a search param here.
+  searchParams: Promise<{ category?: string }>;
 };
 
 export default async function Home({ searchParams }: HomeProps) {
-  const { category, project } = await searchParams;
+  const { category } = await searchParams;
   const projects = await getViewerProjects(category);
 
   return (
@@ -23,7 +24,6 @@ export default async function Home({ searchParams }: HomeProps) {
           key={category ?? "all"}
           projects={projects}
           category={category}
-          initialSlug={project}
         />
       </main>
     </>

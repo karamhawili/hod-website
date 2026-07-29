@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -18,8 +25,6 @@ interface ProjectViewerProps {
   // Active landing filter — encoded into the return URL so the close ✕ lands
   // back on the same filtered rotation.
   category?: string;
-  // Start on this project (its slug) — set when returning from a project page.
-  initialSlug?: string;
 }
 
 // Matches the carousel slide duration in the module CSS.
@@ -48,18 +53,20 @@ const SNAP_MS = 320;
 const wrap = (index: number, length: number) =>
   ((index % length) + length) % length;
 
+// useLayoutEffect on the server logs a warning; fall back to useEffect there.
+// The deep-link hash read below only ever matters on the client anyway.
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
 export default function ProjectViewer({
   projects,
   category,
-  initialSlug,
 }: ProjectViewerProps) {
   const router = useRouter();
   const rootRef = useRef<HTMLDivElement>(null);
-  const [projectIndex, setProjectIndex] = useState(() => {
-    if (!initialSlug) return 0;
-    const i = projects.findIndex((p) => p.slug === initialSlug);
-    return i >= 0 ? i : 0;
-  });
+  // Always start at 0 on the server (the hash isn't visible there); a deep-link
+  // /#<slug> is applied before paint by the layout effect below.
+  const [projectIndex, setProjectIndex] = useState(0);
   const [imageIndex, setImageIndex] = useState(0);
   // Carousel slide in flight: the frame left behind slides out along `axis`
   // while the new active frame slides in from the opposite edge.
@@ -96,12 +103,15 @@ export default function ProjectViewer({
   const currentImage = images[imageIndex] ?? null;
 
   // Link to a project's detail page carrying a `from` return URL that restores
-  // this exact filtered rotation + project (the close ✕ reads it).
+  // this exact filtered rotation + project (the close ✕ reads it). The project
+  // rides in the hash (`/#<slug>`) — the same channel scroll uses — and the
+  // category stays a query param (server-meaningful filter).
   const projectHref = (slug: string) => {
-    const ret = new URLSearchParams();
-    if (category) ret.set("category", category);
-    ret.set("project", slug);
-    return `/project/${slug}?from=${encodeURIComponent(`/?${ret.toString()}`)}`;
+    const query = category
+      ? `?${new URLSearchParams({ category }).toString()}`
+      : "";
+    const back = `/${query}#${encodeURIComponent(slug)}`;
+    return `/project/${slug}?from=${encodeURIComponent(back)}`;
   };
 
   const beginSlide = useCallback(
@@ -232,6 +242,40 @@ export default function ProjectViewer({
         img.src = urlForSized(target, 2000);
       }
     });
+  }, [projectIndex, projects]);
+
+  // Deep-link: honour a /#<slug> hash on load so a shared/refreshed URL — and
+  // the close-✕ return round-trip, which now also rides the hash — lands on the
+  // right project. Runs before paint to avoid a flash from project 0 to the
+  // linked one. Can't seed useState from the hash — the server never sees it,
+  // so that would hydration-mismatch.
+  useIsomorphicLayoutEffect(() => {
+    const slug = decodeURIComponent(window.location.hash.replace(/^#/, ""));
+    if (!slug) return;
+    const i = projects.findIndex((p) => p.slug === slug);
+    if (i > 0) setProjectIndex(i);
+    // Mount-only: a deep link is read once; later hash edits aren't tracked.
+  }, []);
+
+  // Reflect the current project in the URL hash as the rotation moves — one
+  // place that covers wheel/touch/keyboard. Hash + replaceState is deliberate:
+  // cheap, and does NOT trigger a Next navigation / server refetch (unlike a
+  // query param). Skip the first run so a fresh "/" (or a hash we just honoured
+  // above) stays untouched until the user actually navigates.
+  const hashSynced = useRef(false);
+  useEffect(() => {
+    const slug = projects[projectIndex]?.slug;
+    if (!slug) return;
+    if (!hashSynced.current) {
+      hashSynced.current = true;
+      return;
+    }
+    const { pathname, search } = window.location;
+    window.history.replaceState(
+      null,
+      "",
+      `${pathname}${search}#${encodeURIComponent(slug)}`,
+    );
   }, [projectIndex, projects]);
 
   useEffect(
