@@ -7,6 +7,7 @@ import type {
   STUDIO_PAGE_QUERY_RESULT,
   JOIN_US_PAGE_QUERY_RESULT,
   PUBLICATIONS_PAGE_QUERY_RESULT,
+  AWARDS_PAGE_QUERY_RESULT,
 } from "@/sanity/sanity.types";
 import { SiteSettings } from "@/types/sanity";
 
@@ -183,6 +184,22 @@ export async function getPublicationsPage(): Promise<PUBLICATIONS_PAGE_QUERY_RES
   });
 
   return result.data as PUBLICATIONS_PAGE_QUERY_RESULT;
+}
+
+export const AWARDS_PAGE_QUERY = defineQuery(`
+  *[_id == "awardsPage"][0]{
+    recognition[]{ project, awards },
+    studioAwards
+  }
+`);
+
+export async function getAwardsPage(): Promise<AWARDS_PAGE_QUERY_RESULT> {
+  const result = await sanityFetch({
+    query: AWARDS_PAGE_QUERY,
+    tags: ["awardsPage"],
+  });
+
+  return result.data as AWARDS_PAGE_QUERY_RESULT;
 }
 
 export const JOIN_US_PAGE_QUERY = defineQuery(`

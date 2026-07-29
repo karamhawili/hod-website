@@ -4,6 +4,7 @@ import {
   CogIcon,
   DocumentsIcon,
   ImageIcon,
+  StarIcon,
   TagIcon,
   UsersIcon,
 } from "@sanity/icons";
@@ -17,6 +18,7 @@ const SINGLETONS = [
   "studioPage",
   "joinUsPage",
   "publicationsPage",
+  "awardsPage",
 ];
 
 // Document types listed explicitly below (so they aren't duplicated by the
@@ -56,6 +58,16 @@ export const structure: StructureResolver = (S, context) =>
             .schemaType("publicationsPage")
             .documentId("publicationsPage")
             .title("Publications Page"),
+        ),
+
+      S.listItem()
+        .title("Awards Page")
+        .icon(StarIcon)
+        .child(
+          S.document()
+            .schemaType("awardsPage")
+            .documentId("awardsPage")
+            .title("Awards Page"),
         ),
 
       S.listItem()

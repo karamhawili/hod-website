@@ -1,3 +1,6 @@
+/* Awards — a two-column ledger (project left, its award lines right) for the
+   project section, then a hairline and a plain studio-awards list. Left-
+   aligned within the rail-offset area, like Contact/Publications. */
 .page {
   max-width: 46rem;
   padding-top: clamp(6rem, 16vh, 10rem);
@@ -10,19 +13,84 @@
   font-weight: 500;
   letter-spacing: var(--tracking-heading);
   color: var(--color-title);
-  margin-bottom: 1.5rem;
+  margin-bottom: clamp(3rem, 8vh, 5rem);
 }
 
-.note {
+.sectionTitle {
+  font-family: var(--font-body);
+  font-size: var(--text-meta);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+  margin-bottom: clamp(1.5rem, 4vh, 2.25rem);
+}
+
+.ledger,
+.studioList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Row rhythm: generous, even gaps so single- and multi-award projects read
+   with the same air. */
+.ledger {
+  gap: clamp(1.75rem, 4vh, 2.75rem);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 12rem 1fr;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: baseline;
+}
+
+/* Serif project name anchors the row — the ledger's left rail. */
+.project {
+  font-family: var(--font-heading);
+  font-size: var(--text-title-sm);
+  font-weight: 500;
+  letter-spacing: var(--tracking-heading);
+  color: var(--color-title);
+}
+
+.awards {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.studioList {
+  gap: 0.6rem;
+}
+
+.award {
   font-family: var(--font-body);
   font-size: var(--text-body);
   letter-spacing: var(--tracking-body);
-  color: var(--color-fg-muted);
+  line-height: var(--leading-body);
+  color: var(--color-fg);
+}
+
+.separator {
+  width: 100%;
+  height: 0;
+  margin: clamp(3rem, 7vh, 5rem) 0;
+  border: 0;
+  border-top: 1px solid var(--color-line);
 }
 
 @media (max-width: 899px) {
   .page {
     padding-top: 4rem;
     padding-inline: 1.5rem;
+  }
+
+  /* Stack: project name above its award lines. */
+  .row {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
   }
 }

@@ -243,8 +243,11 @@ content model survived unchanged; restyled to single-column native-ratio).
   - [x] **Press** — new secondary-nav item that expands to a submenu:
         **Publications** + **Awards** (same indented sub-list pattern the rail
         already uses; Publications moves under Press).
-  - [ ] **Awards** — new page + content model (`/awards`); data provided by
-        the user when this sub-task starts. **Data-gated — awaiting user.**
+  - [x] **Awards** — new page + content model (`/awards`). `awardsPage`
+        singleton: `recognition[]{ project, awards[] }` + flat `studioAwards[]`.
+        Two-column ledger (project → its award lines) for the project section,
+        hairline, then a plain studio-awards list. Reference data seeded as
+        page defaults (also the ready-to-edit CMS template).
   - [x] No image should flash white on load — every `next/image` must show a
         blurry LQIP placeholder first. Applied to some images, not all; audit
         and make it universal. (Also filtered empty CMS image slots via

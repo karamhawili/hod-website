@@ -1,4 +1,5 @@
 import { type SchemaTypeDefinition } from "sanity";
+import { awardsPage } from "./awardsPage";
 import { category } from "./category";
 import { joinUsPage } from "./joinUsPage";
 import { project } from "./project";
@@ -13,6 +14,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     studioPage,
     joinUsPage,
     publicationsPage,
+    awardsPage,
     siteSettings,
   ],
 };

@@ -40,6 +40,20 @@ export type SiteSettings = {
   }>;
 };
 
+export type AwardsPage = {
+  _id: string;
+  _type: "awardsPage";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  recognition?: Array<{
+    project: string;
+    awards?: Array<string>;
+    _key: string;
+  }>;
+  studioAwards?: Array<string>;
+};
+
 export type SanityImageAssetReference = {
   _ref: string;
   _type: "reference";
@@ -313,6 +327,7 @@ export type Geopoint = {
 
 export type AllSanitySchemaTypes =
   | SiteSettings
+  | AwardsPage
   | SanityImageAssetReference
   | PublicationsPage
   | SanityImageCrop
@@ -546,6 +561,23 @@ export type PUBLICATIONS_PAGE_QUERY_RESULT =
           } | null;
         } | null;
       }> | null;
+    }
+  | null;
+
+// Source: src/sanity/lib/queries.ts
+// Variable: AWARDS_PAGE_QUERY
+// Query: *[_id == "awardsPage"][0]{    recognition[]{ project, awards },    studioAwards  }
+export type AWARDS_PAGE_QUERY_RESULT =
+  | {
+      recognition: null;
+      studioAwards: null;
+    }
+  | {
+      recognition: Array<{
+        project: string;
+        awards: Array<string> | null;
+      }> | null;
+      studioAwards: Array<string> | null;
     }
   | null;
 
