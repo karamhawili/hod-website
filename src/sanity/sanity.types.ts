@@ -337,7 +337,7 @@ export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: src/sanity/lib/queries.ts
 // Variable: ARCHIVE_PROJECTS_QUERY
-// Query: *[_type == "project" && defined(slug.current) && count(images) > 0      && ($category == null || category->slug.current == $category)]    | order(orderRank) {    _id,    title,    "slug": slug.current,    location,    status,    year,    "category": category->title,    "thumb": images[0]{      alt,      asset,      hotspot,      crop,      "lqip": asset->metadata.lqip,      "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }    }  }
+// Query: *[_type == "project" && defined(slug.current) && count(images[defined(asset)]) > 0      && ($category == null || category->slug.current == $category)]    | order(orderRank) {    _id,    title,    "slug": slug.current,    location,    status,    year,    "category": category->title,    "thumb": images[defined(asset)][0]{      alt,      asset,      hotspot,      crop,      "lqip": asset->metadata.lqip,      "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }    }  }
 export type ARCHIVE_PROJECTS_QUERY_RESULT = Array<{
   _id: string;
   title: string;
@@ -348,7 +348,7 @@ export type ARCHIVE_PROJECTS_QUERY_RESULT = Array<{
   category: string;
   thumb: {
     alt: string | null;
-    asset: SanityImageAssetReference | null;
+    asset: SanityImageAssetReference;
     hotspot: SanityImageHotspot | null;
     crop: SanityImageCrop | null;
     lqip: string | null;
@@ -362,7 +362,7 @@ export type ARCHIVE_PROJECTS_QUERY_RESULT = Array<{
 
 // Source: src/sanity/lib/queries.ts
 // Variable: CATEGORIES_QUERY
-// Query: *[_type == "category" && defined(slug.current)      && count(*[_type == "project" && references(^._id) && count(images) > 0]) > 0]    | order(title asc) {    _id,    title,    "slug": slug.current  }
+// Query: *[_type == "category" && defined(slug.current)      && count(*[_type == "project" && references(^._id) && count(images[defined(asset)]) > 0]) > 0]    | order(title asc) {    _id,    title,    "slug": slug.current  }
 export type CATEGORIES_QUERY_RESULT = Array<{
   _id: string;
   title: string;
@@ -371,7 +371,7 @@ export type CATEGORIES_QUERY_RESULT = Array<{
 
 // Source: src/sanity/lib/queries.ts
 // Variable: VIEWER_PROJECTS_QUERY
-// Query: *[_type == "project" && defined(slug.current) && count(images) > 0      && ($category == null || category->slug.current == $category)]    | order(orderRank) {   _id,  title,  "slug": slug.current,  location,  year,  images[]{    _key,    alt,    asset,    hotspot,    crop,    "lqip": asset->metadata.lqip,    "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }  } }
+// Query: *[_type == "project" && defined(slug.current) && count(images[defined(asset)]) > 0      && ($category == null || category->slug.current == $category)]    | order(orderRank) {   _id,  title,  "slug": slug.current,  location,  year,  images[defined(asset)]{    _key,    alt,    asset,    hotspot,    crop,    "lqip": asset->metadata.lqip,    "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }  } }
 export type VIEWER_PROJECTS_QUERY_RESULT = Array<{
   _id: string;
   title: string;
@@ -381,7 +381,7 @@ export type VIEWER_PROJECTS_QUERY_RESULT = Array<{
   images: Array<{
     _key: string;
     alt: string | null;
-    asset: SanityImageAssetReference | null;
+    asset: SanityImageAssetReference;
     hotspot: SanityImageHotspot | null;
     crop: SanityImageCrop | null;
     lqip: string | null;
@@ -395,7 +395,7 @@ export type VIEWER_PROJECTS_QUERY_RESULT = Array<{
 
 // Source: src/sanity/lib/queries.ts
 // Variable: PROJECT_DETAIL_QUERY
-// Query: *[_type == "project" && slug.current == $slug][0]{      _id,  title,  "slug": slug.current,  location,  year,  images[]{    _key,    alt,    asset,    hotspot,    crop,    "lqip": asset->metadata.lqip,    "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }  },    description,    credits  }
+// Query: *[_type == "project" && slug.current == $slug][0]{      _id,  title,  "slug": slug.current,  location,  year,  images[defined(asset)]{    _key,    alt,    asset,    hotspot,    crop,    "lqip": asset->metadata.lqip,    "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }  },    description,    credits  }
 export type PROJECT_DETAIL_QUERY_RESULT = {
   _id: string;
   title: string;
@@ -405,7 +405,7 @@ export type PROJECT_DETAIL_QUERY_RESULT = {
   images: Array<{
     _key: string;
     alt: string | null;
-    asset: SanityImageAssetReference | null;
+    asset: SanityImageAssetReference;
     hotspot: SanityImageHotspot | null;
     crop: SanityImageCrop | null;
     lqip: string | null;
