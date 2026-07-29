@@ -4,20 +4,15 @@ import { useRouter } from "next/navigation";
 import styles from "./CloseButton.module.css";
 
 // The detail page renders no nav (per the reference — just a close ✕).
-// Close returns to where the visitor came from when that was on-site,
-// otherwise to the landing viewer.
+// Close returns to the `from` URL the opener passed (e.g. the archive with its
+// search preserved); otherwise the landing viewer. `document.referrer` is
+// unreliable for client-side navigation, so we rely on the explicit `from`.
 export default function CloseButton() {
   const router = useRouter();
 
   const onClose = () => {
-    const cameFromSite =
-      typeof document !== "undefined" &&
-      document.referrer.startsWith(window.location.origin);
-    if (cameFromSite && window.history.length > 1) {
-      router.back();
-    } else {
-      router.push("/");
-    }
+    const from = new URLSearchParams(window.location.search).get("from");
+    router.push(from || "/");
   };
 
   return (

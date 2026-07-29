@@ -251,6 +251,22 @@ content model survived unchanged; restyled to single-column native-ratio).
   - [ ] Fix the stutter on mobile horizontal (image) swipe in the viewer.
   - [ ] **Manual sorting for projects** (Audit N7) — controls the landing
         rotation + archive order instead of `_createdAt desc`.
+  - [ ] **Reflect the current project in the viewer URL on scroll** — as the
+        landing rotation changes project, update the URL to the current project
+        so it's shareable/deep-linkable and refresh lands on the same project.
+        **Use a hash (`/#<project-slug>`), not a query param:** a hash change
+        via `history.replaceState` is cheap and does NOT trigger a Next
+        navigation / server re-render / refetch — right for state that changes
+        on every scroll. (`?project=` stays for the close-✕ return round-trip;
+        the viewer would read the hash on load to pick the start project.)
+        Keep `?category=` as-is (server-meaningful filter).
+  - [ ] (last) **Bookmarkable / refresh-proof archive search** — sync the
+        search query into the archive URL (`/archive?q=`) live while typing, so
+        a refresh or shared link preserves it (today it's client state, restored
+        only via the project-close `from` round-trip). **Use a query param
+        (`?q=`) updated via `history.replaceState`** — standard/bookmarkable for
+        search, and replaceState avoids a server refetch of the project list on
+        every keystroke.
 - [ ] Phase 10 — Responsive + QA pass; retire now-orphaned old tokens/fonts/
       `Section`/`Reveal`/`useScrollAnimation` once PageBuilder is fully gone
 

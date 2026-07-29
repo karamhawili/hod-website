@@ -8,14 +8,21 @@ export const metadata: Metadata = {
   title: "Archive — House of Design",
 };
 
-export default async function ArchivePage() {
-  const projects = await getArchiveProjects();
+type ArchivePageProps = {
+  searchParams: Promise<{ q?: string }>;
+};
+
+export default async function ArchivePage({ searchParams }: ArchivePageProps) {
+  const [projects, { q }] = await Promise.all([
+    getArchiveProjects(),
+    searchParams,
+  ]);
 
   return (
     <>
       <Navigation />
       <main className={`theme-redesign ${styles.page}`}>
-        <ArchiveExplorer projects={projects} />
+        <ArchiveExplorer projects={projects} initialQuery={q ?? ""} />
       </main>
     </>
   );

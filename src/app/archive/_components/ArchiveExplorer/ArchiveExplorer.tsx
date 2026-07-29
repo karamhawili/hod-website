@@ -7,6 +7,8 @@ import styles from "./ArchiveExplorer.module.css";
 
 interface ArchiveExplorerProps {
   projects: ARCHIVE_PROJECTS_QUERY_RESULT;
+  // Restores the search when returning from a project (via ?q= on the URL).
+  initialQuery?: string;
 }
 
 // Search is deliberately NOT debounced: the catalog is already in memory
@@ -14,9 +16,18 @@ interface ArchiveExplorerProps {
 // a small array — there's no async work to coalesce, and a debounce would
 // only delay feedback. useDeferredValue keeps the input echo instant if the
 // list ever grows large enough for filtering to become noticeable.
-export default function ArchiveExplorer({ projects }: ArchiveExplorerProps) {
-  const [query, setQuery] = useState("");
+export default function ArchiveExplorer({
+  projects,
+  initialQuery = "",
+}: ArchiveExplorerProps) {
+  const [query, setQuery] = useState(initialQuery);
   const deferredQuery = useDeferredValue(query);
+
+  // Where a clicked project should return to — the archive with the current
+  // search preserved. Passed to the grid so each project link carries it.
+  const returnTo =
+    "/archive" +
+    (query.trim() ? `?q=${encodeURIComponent(query.trim())}` : "");
 
   const haystacks = useMemo(
     () =>
@@ -45,19 +56,34 @@ export default function ArchiveExplorer({ projects }: ArchiveExplorerProps) {
 
   return (
     <div className={styles.explorer}>
-      <input
-        type="search"
-        className={styles.search}
-        value={query}
-        onChange={(event) => setQuery(event.target.value)}
-        placeholder="Search"
-        aria-label="Search projects by title, category, location or year"
-      />
+      <div className={styles.searchRow}>
+        <input
+          type="search"
+          className={styles.search}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          aria-label="Search projects by title, category, location or year"
+        />
+        {query ? (
+          <button
+            type="button"
+            className={styles.clear}
+            onClick={() => setQuery("")}
+            aria-label="Clear search"
+          >
+            ✕
+          </button>
+        ) : (
+          <span className={styles.hint} aria-hidden="true">
+            Search
+          </span>
+        )}
+      </div>
 
       {searching && filtered.length === 0 ? (
         <p className={styles.noMatches}>No matches.</p>
       ) : (
-        <ArchiveGrid projects={filtered} />
+        <ArchiveGrid projects={filtered} returnTo={returnTo} />
       )}
 
       <p className={styles.srStatus} role="status" aria-live="polite">

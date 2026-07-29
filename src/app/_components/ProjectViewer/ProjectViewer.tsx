@@ -15,6 +15,11 @@ type ViewerImage = NonNullable<
 
 interface ProjectViewerProps {
   projects: VIEWER_PROJECTS_QUERY_RESULT;
+  // Active landing filter — encoded into the return URL so the close ✕ lands
+  // back on the same filtered rotation.
+  category?: string;
+  // Start on this project (its slug) — set when returning from a project page.
+  initialSlug?: string;
 }
 
 // Matches the carousel slide duration in the module CSS.
@@ -43,10 +48,18 @@ const SNAP_MS = 320;
 const wrap = (index: number, length: number) =>
   ((index % length) + length) % length;
 
-export default function ProjectViewer({ projects }: ProjectViewerProps) {
+export default function ProjectViewer({
+  projects,
+  category,
+  initialSlug,
+}: ProjectViewerProps) {
   const router = useRouter();
   const rootRef = useRef<HTMLDivElement>(null);
-  const [projectIndex, setProjectIndex] = useState(0);
+  const [projectIndex, setProjectIndex] = useState(() => {
+    if (!initialSlug) return 0;
+    const i = projects.findIndex((p) => p.slug === initialSlug);
+    return i >= 0 ? i : 0;
+  });
   const [imageIndex, setImageIndex] = useState(0);
   // Carousel slide in flight: the frame left behind slides out along `axis`
   // while the new active frame slides in from the opposite edge.
@@ -81,6 +94,15 @@ export default function ProjectViewer({ projects }: ProjectViewerProps) {
   const project = projects[projectIndex] ?? null;
   const images = useMemo(() => project?.images ?? [], [project]);
   const currentImage = images[imageIndex] ?? null;
+
+  // Link to a project's detail page carrying a `from` return URL that restores
+  // this exact filtered rotation + project (the close ✕ reads it).
+  const projectHref = (slug: string) => {
+    const ret = new URLSearchParams();
+    if (category) ret.set("category", category);
+    ret.set("project", slug);
+    return `/project/${slug}?from=${encodeURIComponent(`/?${ret.toString()}`)}`;
+  };
 
   const beginSlide = useCallback(
     (axis: "x" | "y", dir: 1 | -1, image: ViewerImage, title: string) => {
@@ -284,7 +306,7 @@ export default function ProjectViewer({ projects }: ProjectViewerProps) {
         Math.max(Math.abs(dx), Math.abs(dy)) < TAP_THRESHOLD_PX &&
         !(event.target as HTMLElement).closest("a")
       ) {
-        router.push(`/project/${project.slug}`);
+        router.push(projectHref(project.slug));
       }
       setDrag(null);
       return;
@@ -517,7 +539,7 @@ export default function ProjectViewer({ projects }: ProjectViewerProps) {
         </div>
         <div className={`${styles.captionGroup} ${styles.captionEnd}`}>
           {project.year && <p className={styles.year}>{project.year}</p>}
-          <Link href={`/project/${project.slug}`} className={styles.cta}>
+          <Link href={projectHref(project.slug)} className={styles.cta}>
             Go to project
             <span className={styles.ctaIcon} aria-hidden="true" />
           </Link>
