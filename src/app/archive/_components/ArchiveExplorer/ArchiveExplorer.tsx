@@ -1,6 +1,6 @@
 "use client";
 
-import { useDeferredValue, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import type { ARCHIVE_PROJECTS_QUERY_RESULT } from "@/sanity/sanity.types";
 import ArchiveGrid from "../ArchiveGrid/ArchiveGrid";
 import styles from "./ArchiveExplorer.module.css";
@@ -23,11 +23,26 @@ export default function ArchiveExplorer({
   const [query, setQuery] = useState(initialQuery);
   const deferredQuery = useDeferredValue(query);
 
-  // Where a clicked project should return to — the archive with the current
-  // search preserved. Passed to the grid so each project link carries it.
+  // The archive URL for the current search — `/archive` or `/archive?q=…`.
+  // Doubles as (a) the return URL each project link carries, and (b) the live
+  // address-bar value below.
   const returnTo =
     "/archive" +
     (query.trim() ? `?q=${encodeURIComponent(query.trim())}` : "");
+
+  // Keep the URL in sync with the search live while typing, so a refresh or a
+  // shared/bookmarked link preserves it. `replaceState` (not the Next router)
+  // is deliberate: it updates the address bar without a navigation or a server
+  // refetch of the project list on every keystroke. Skip the first run so the
+  // load URL (which may already carry ?q=) is left untouched.
+  const firstSync = useRef(true);
+  useEffect(() => {
+    if (firstSync.current) {
+      firstSync.current = false;
+      return;
+    }
+    window.history.replaceState(null, "", returnTo);
+  }, [returnTo]);
 
   const haystacks = useMemo(
     () =>

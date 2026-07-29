@@ -270,13 +270,11 @@ content model survived unchanged; restyled to single-column native-ratio).
         `?project=` query param was dropped as redundant — the `from` URL is
         `/[?category=…]#<slug>`). `?category=` stays a query param
         (server-meaningful filter).
-  - [ ] (last) **Bookmarkable / refresh-proof archive search** — sync the
-        search query into the archive URL (`/archive?q=`) live while typing, so
-        a refresh or shared link preserves it (today it's client state, restored
-        only via the project-close `from` round-trip). **Use a query param
-        (`?q=`) updated via `history.replaceState`** — standard/bookmarkable for
-        search, and replaceState avoids a server refetch of the project list on
-        every keystroke.
+  - [x] (last) **Bookmarkable / refresh-proof archive search** — the search
+        query syncs into `/archive?q=` live while typing via
+        `history.replaceState` (no navigation / server refetch per keystroke);
+        refresh, shared link, and the project-close `from` round-trip all
+        restore it (`ArchiveExplorer.initialQuery`).
 - [ ] Phase 10 — Responsive + QA pass; retire now-orphaned old tokens/fonts/
       `Section`/`Reveal`/`useScrollAnimation` once PageBuilder is fully gone
 
