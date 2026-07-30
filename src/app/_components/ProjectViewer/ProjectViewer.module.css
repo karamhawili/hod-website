@@ -99,6 +99,16 @@
   opacity: 1;
 }
 
+/* Pre-promote the frames that can slide next (active ± its neighbours) to their
+   own compositor layer, so the horizontal animation is GPU-composited from the
+   first frame. Without this the browser promotes + rasterizes the image texture
+   partway INTO the animation, producing a brief mid-slide stall. Scoped to a
+   few frames to keep layer memory bounded. */
+.frame.promote {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
 /* Horizontal carousel slide: no fading — the incoming frame travels in from
    the edge the navigation points at (a full viewport, so any frame size clears
    the screen); the outgoing copy travels out the opposite side. Caption swaps

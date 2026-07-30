@@ -585,22 +585,28 @@ export default function ProjectViewer({
                       {/* Current project: whole gallery mounted; only the
                           active frame is visible, and horizontal nav animates
                           it in while the outgoing copy animates out. */}
-                      {images.map((image, index) =>
-                        renderFrame(
+                      {images.map((image, index) => {
+                        const isActive = index === imageIndex;
+                        // The frames that can slide next: active and its two
+                        // horizontal neighbours. Pre-promoted so the slide
+                        // composites from frame 1 (no mid-animation stall).
+                        const near =
+                          isActive ||
+                          index === wrap(imageIndex + 1, images.length) ||
+                          index === wrap(imageIndex - 1, images.length);
+                        return renderFrame(
                           image,
                           proj.title,
-                          index === imageIndex
-                            ? `${styles.frame} ${styles.active} ${slideInClass}`
-                            : styles.frame,
+                          `${styles.frame}${isActive ? ` ${styles.active} ${slideInClass}` : ""}${near ? ` ${styles.promote}` : ""}`,
                           {},
                           projectIndex === 0 && index === 0,
-                        ),
-                      )}
+                        );
+                      })}
                       {outgoing &&
                         renderFrame(
                           outgoing.image,
                           outgoing.title,
-                          `${styles.frame} ${slideOutClass}`,
+                          `${styles.frame} ${styles.promote} ${slideOutClass}`,
                         )}
                     </>
                   ) : (
