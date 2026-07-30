@@ -26,7 +26,7 @@ interface ProjectViewerProps {
   category?: string;
 }
 
-// Matches the vertical track + horizontal frame slide durations in the CSS.
+// Matches the track transition duration in the module CSS.
 const TRANSITION_MS = 900;
 // Wheel: fire on the leading edge of a gesture (low threshold = the first
 // real movement triggers, so there's no perceptible accumulation lag on a
@@ -57,6 +57,10 @@ const wrap = (index: number, length: number) =>
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 export default function ProjectViewer({
   projects,
   category,
@@ -67,33 +71,33 @@ export default function ProjectViewer({
   // /#<slug> is applied before paint by the layout effect below.
   const [projectIndex, setProjectIndex] = useState(0);
   const [imageIndex, setImageIndex] = useState(0);
-  // Horizontal (image) slide in flight: the frame left behind slides out while
-  // the new active frame slides in. Vertical (project) slides no longer use
-  // this — they translate the persistent row-track instead.
-  const [outgoing, setOutgoing] = useState<{
-    image: ViewerImage;
-    title: string;
-    axis: "x";
-    dir: 1 | -1;
-  } | null>(null);
-  const outgoingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wheelAccum = useRef(0);
   const wheelLast = useRef(0);
   const wheelEventLast = useRef(0);
   // Per-project horizontal position, remembered across vertical navigation and
-  // read during render (so neighbour rows pre-mount the exact arrival image the
-  // commit will land on — same key ⇒ the frame persists, no re-mount/blur).
+  // read during render (so a project pre-mounts at the exact arrival image the
+  // commit lands on — same key ⇒ the frame persists, no re-mount/blur).
   const [imageMemory, setImageMemory] = useState<Record<string, number>>({});
-  // Vertical project-track animation: `trackShift` (−1/0/1 stage-heights) is
-  // the live translate; `resetting` drops the transition for the single commit
-  // frame; `dirHint` is which side the sole neighbour sits on when there are
-  // exactly two projects (prev === next).
-  const [trackShift, setTrackShift] = useState(0);
-  const [resetting, setResetting] = useState(false);
-  const [dirHint, setDirHint] = useState<1 | -1>(1);
+
+  // Two persistent carousel tracks — vertical (projects) and horizontal
+  // (images). Each: `*Shift` is the live translate (−1/0/1 track-lengths),
+  // `*Resetting` drops the transition for the single commit frame, `*DirHint`
+  // is which side the sole neighbour sits on when there are exactly two
+  // (prev === next). Refs guard against overlapping slides.
+  const [vShift, setVShift] = useState(0);
+  const [vResetting, setVResetting] = useState(false);
+  const [vDirHint, setVDirHint] = useState<1 | -1>(1);
   const vSliding = useRef(false);
   const vSlideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const vSlideRaf = useRef<number | null>(null);
+
+  const [hShift, setHShift] = useState(0);
+  const [hResetting, setHResetting] = useState(false);
+  const [hDirHint, setHDirHint] = useState<1 | -1>(1);
+  const hSliding = useRef(false);
+  const hSlideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hSlideRaf = useRef<number | null>(null);
+
   // Live drag-follow (touch): the finger drags the current frame while the
   // incoming neighbour follows in; on release it snaps forward (commit) or
   // back (cancel).
@@ -135,66 +139,70 @@ export default function ProjectViewer({
     return `/project/${slug}?from=${encodeURIComponent(back)}`;
   };
 
-  const beginSlide = useCallback(
-    (dir: 1 | -1, image: ViewerImage, title: string) => {
-      setOutgoing({ image, title, axis: "x", dir });
-      if (outgoingTimer.current) clearTimeout(outgoingTimer.current);
-      outgoingTimer.current = setTimeout(() => setOutgoing(null), TRANSITION_MS);
-    },
-    [],
-  );
-
+  // Horizontal (image) navigation — translate the image track by one slot,
+  // then commit + reset. `wrap()` looping preserved (only neighbours render).
   const goToImage = useCallback(
     (dir: 1 | -1) => {
-      if (vSliding.current) return;
-      if (images.length < 2 || !currentImage || !project) return;
-      beginSlide(dir, currentImage, project.title);
-      setImageIndex((index) => wrap(index + dir, images.length));
+      if (hSliding.current || vSliding.current) return;
+      if (images.length < 2 || !project) return;
+
+      hSliding.current = true;
+      if (dir !== hDirHint) setHDirHint(dir);
+      setHShift(-dir);
+      const reduced = prefersReducedMotion();
+
+      if (hSlideTimer.current) clearTimeout(hSlideTimer.current);
+      hSlideTimer.current = setTimeout(
+        () => {
+          setHResetting(true);
+          setImageIndex((index) => wrap(index + dir, images.length));
+          setHShift(0);
+          hSlideRaf.current = requestAnimationFrame(() => {
+            setHResetting(false);
+            hSliding.current = false;
+          });
+        },
+        reduced ? 0 : TRANSITION_MS,
+      );
     },
-    [images.length, currentImage, project, beginSlide],
+    [images.length, project, hDirHint],
   );
 
-  // Vertical (project) navigation — translate the persistent row-track by one
-  // slot, then commit + reset. `wrap()` looping is preserved because the window
-  // only ever renders the immediate neighbours.
+  // Vertical (project) navigation — translate the project track by one slot,
+  // then commit + reset.
   const goToProject = useCallback(
     (dir: 1 | -1) => {
-      if (vSliding.current || outgoing) return;
+      if (vSliding.current || hSliding.current) return;
       if (projects.length < 2 || !project) return;
 
       vSliding.current = true;
       // Remember where the current project's carousel is, so it pre-mounts at
       // that image when it becomes a neighbour on the way back.
       setImageMemory((m) => ({ ...m, [project._id]: imageIndex }));
-      // Two-project case: place the sole neighbour on the travelled side first
-      // (instant, off-screen) so it enters from the right edge.
-      if (dir !== dirHint) setDirHint(dir);
-      setTrackShift(-dir);
-
-      // Reduced motion: no track transition, so don't wait — commit next tick.
-      const reduced = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
+      if (dir !== vDirHint) setVDirHint(dir);
+      setVShift(-dir);
+      const reduced = prefersReducedMotion();
 
       if (vSlideTimer.current) clearTimeout(vSlideTimer.current);
-      vSlideTimer.current = setTimeout(() => {
-        const nextIndex = wrap(projectIndex + dir, projects.length);
-        const nextProj = projects[nextIndex];
-        const nextLen = nextProj?.images?.length ?? 0;
-        const remembered = imageMemory[nextProj._id] ?? 0;
-        // Commit in one batched render: transition off, re-slot, shift back to
-        // 0 — the centered neighbour stays put visually.
-        setResetting(true);
-        setProjectIndex(nextIndex);
-        setImageIndex(remembered < nextLen ? remembered : 0);
-        setTrackShift(0);
-        vSlideRaf.current = requestAnimationFrame(() => {
-          setResetting(false);
-          vSliding.current = false;
-        });
-      }, reduced ? 0 : TRANSITION_MS);
+      vSlideTimer.current = setTimeout(
+        () => {
+          const nextIndex = wrap(projectIndex + dir, projects.length);
+          const nextProj = projects[nextIndex];
+          const nextLen = nextProj?.images?.length ?? 0;
+          const remembered = imageMemory[nextProj._id] ?? 0;
+          setVResetting(true);
+          setProjectIndex(nextIndex);
+          setImageIndex(remembered < nextLen ? remembered : 0);
+          setVShift(0);
+          vSlideRaf.current = requestAnimationFrame(() => {
+            setVResetting(false);
+            vSliding.current = false;
+          });
+        },
+        reduced ? 0 : TRANSITION_MS,
+      );
     },
-    [projects, projectIndex, imageIndex, project, outgoing, dirHint, imageMemory],
+    [projects, projectIndex, imageIndex, project, vDirHint, imageMemory],
   );
 
   // The neighbour a drag reveals in `dir` — resolved in handlers (so render
@@ -310,10 +318,11 @@ export default function ProjectViewer({
 
   useEffect(
     () => () => {
-      if (outgoingTimer.current) clearTimeout(outgoingTimer.current);
       if (snapTimer.current) clearTimeout(snapTimer.current);
       if (vSlideTimer.current) clearTimeout(vSlideTimer.current);
+      if (hSlideTimer.current) clearTimeout(hSlideTimer.current);
       if (vSlideRaf.current) cancelAnimationFrame(vSlideRaf.current);
+      if (hSlideRaf.current) cancelAnimationFrame(hSlideRaf.current);
     },
     [],
   );
@@ -431,22 +440,11 @@ export default function ProjectViewer({
     );
   }
 
-  const renderFrame = (
-    image: ViewerImage,
-    title: string,
-    className: string,
-    slideVars: React.CSSProperties = {},
-    priority = false,
-  ) => (
+  const renderFrame = (image: ViewerImage, title: string, priority = false) => (
     <figure
       key={image._key}
-      className={className}
-      style={
-        {
-          "--ar": String(image.dimensions?.aspectRatio ?? 1.5),
-          ...slideVars,
-        } as React.CSSProperties
-      }
+      className={`${styles.frame} ${styles.active}`}
+      style={{ "--ar": String(image.dimensions?.aspectRatio ?? 1.5) } as React.CSSProperties}
     >
       {image.asset && (
         <Image
@@ -508,33 +506,36 @@ export default function ProjectViewer({
       : `${drag.dir * 100}dvh`
     : "0px";
 
-  // Horizontal slide classes: direction-split so the keyframes carry concrete
-  // 100vw offsets (compositable) instead of a var()-driven transform.
-  const slideInClass = outgoing
-    ? outgoing.dir === 1
-      ? styles.slideInFwd
-      : styles.slideInBack
-    : "";
-  const slideOutClass = outgoing
-    ? outgoing.dir === 1
-      ? styles.slideOutFwd
-      : styles.slideOutBack
-    : "";
-
-  // The persistent vertical window: current + its immediate neighbour(s). Two
-  // projects share one neighbour (prev === next) placed on `dirHint`'s side;
-  // three or more get distinct prev/next rows. Keyed by project id so the
-  // incoming row is reused (already painted) across a commit.
-  const len = projects.length;
-  const rows: { proj: ViewerProject; slot: number }[] = [{ proj: project, slot: 0 }];
-  if (len >= 2) {
-    const nextIdx = wrap(projectIndex + 1, len);
-    const prevIdx = wrap(projectIndex - 1, len);
+  // Persistent vertical window: current + immediate neighbour project(s).
+  const plen = projects.length;
+  const projectRows: { proj: ViewerProject; slot: number }[] = [
+    { proj: project, slot: 0 },
+  ];
+  if (plen >= 2) {
+    const nextIdx = wrap(projectIndex + 1, plen);
+    const prevIdx = wrap(projectIndex - 1, plen);
     if (nextIdx === prevIdx) {
-      rows.push({ proj: projects[nextIdx], slot: dirHint });
+      projectRows.push({ proj: projects[nextIdx], slot: vDirHint });
     } else {
-      rows.push({ proj: projects[prevIdx], slot: -1 });
-      rows.push({ proj: projects[nextIdx], slot: 1 });
+      projectRows.push({ proj: projects[prevIdx], slot: -1 });
+      projectRows.push({ proj: projects[nextIdx], slot: 1 });
+    }
+  }
+
+  // Persistent horizontal window for the CURRENT project: current + immediate
+  // neighbour image(s). Neighbour projects render only their arrival image.
+  const ilen = images.length;
+  const imageCells: { img: ViewerImage; slot: number }[] = currentImage
+    ? [{ img: currentImage, slot: 0 }]
+    : [];
+  if (ilen >= 2 && currentImage) {
+    const nextI = wrap(imageIndex + 1, ilen);
+    const prevI = wrap(imageIndex - 1, ilen);
+    if (nextI === prevI) {
+      imageCells.push({ img: images[nextI], slot: hDirHint });
+    } else {
+      imageCells.push({ img: images[prevI], slot: -1 });
+      imageCells.push({ img: images[nextI], slot: 1 });
     }
   }
 
@@ -566,57 +567,50 @@ export default function ProjectViewer({
               )}
           </>
         ) : (
+          // Vertical project track. Every row (current + neighbours) mounts an
+          // inner horizontal image track, so all frames are persistent,
+          // already-painted, opacity-1 elements — a slide only translates a
+          // track, never mounts or re-rasterizes a frame mid-animation.
           <div
-            className={`${styles.track}${resetting ? ` ${styles.noTransition}` : ""}`}
-            // Concrete translate3d (not a CSS var) so the transition runs on
-            // the compositor instead of the main thread — keeps it smooth.
-            style={{ transform: `translate3d(0, ${trackShift * 100}%, 0)` }}
+            className={`${styles.track}${vResetting ? ` ${styles.noTransition}` : ""}`}
+            style={{ transform: `translate3d(0, ${vShift * 100}%, 0)` }}
           >
-            {rows.map(({ proj, slot }) => {
+            {projectRows.map(({ proj, slot }) => {
               const isCurrent = proj._id === project._id;
+              const cells = isCurrent
+                ? imageCells
+                : (() => {
+                    const arrival = proj.images?.[arrivalIndexFor(proj)];
+                    return arrival ? [{ img: arrival, slot: 0 }] : [];
+                  })();
               return (
                 <div
                   key={proj._id}
                   className={styles.row}
                   style={{ "--slot": slot } as React.CSSProperties}
                 >
-                  {isCurrent ? (
-                    <>
-                      {/* Current project: whole gallery mounted; only the
-                          active frame is visible, and horizontal nav animates
-                          it in while the outgoing copy animates out. */}
-                      {images.map((image, index) =>
-                        renderFrame(
-                          image,
+                  <div
+                    className={`${styles.htrack}${isCurrent && hResetting ? ` ${styles.noTransition}` : ""}`}
+                    style={
+                      isCurrent
+                        ? { transform: `translate3d(${hShift * 100}%, 0, 0)` }
+                        : undefined
+                    }
+                  >
+                    {cells.map((cell) => (
+                      <div
+                        key={cell.img._key}
+                        className={styles.hcell}
+                        style={{ "--slot": cell.slot } as React.CSSProperties}
+                      >
+                        {renderFrame(
+                          cell.img,
                           proj.title,
-                          index === imageIndex
-                            ? `${styles.frame} ${styles.active} ${slideInClass}`
-                            : styles.frame,
-                          {},
-                          projectIndex === 0 && index === 0,
-                        ),
-                      )}
-                      {outgoing &&
-                        renderFrame(
-                          outgoing.image,
-                          outgoing.title,
-                          `${styles.frame} ${slideOutClass}`,
+                          projectIndex === 0 && isCurrent && cell.slot === 0,
                         )}
-                    </>
-                  ) : (
-                    // Neighbour project: only its arrival image, pre-mounted so
-                    // it's already painted when it slides to center.
-                    (() => {
-                      const arrival = proj.images?.[arrivalIndexFor(proj)];
-                      return arrival
-                        ? renderFrame(
-                            arrival,
-                            proj.title,
-                            `${styles.frame} ${styles.active}`,
-                          )
-                        : null;
-                    })()
-                  )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               );
             })}

@@ -43,38 +43,50 @@
   inset: 0;
 }
 
-/* Persistent vertical project-track. Each project is a `.row` kept mounted at
-   its window slot (prev −1 / current 0 / next +1, in stage-heights). Project
-   navigation translates the whole track by one slot with a transition, then
-   silently re-slots + resets to 0 on commit — so the incoming/outgoing frames
-   are already-painted persistent elements (no next/image re-mount, no LQIP
-   re-blur). Horizontal image nav still happens per-frame inside the current
-   row (the enter/exit slide animations below), untouched. */
-.track {
+/* Two nested persistent carousel tracks: `.track` (projects, Y) holds a `.row`
+   per windowed project, and each row holds an `.htrack` (images, X) with an
+   `.hcell` per windowed image. Every frame is a mounted, already-painted,
+   opacity-1 element parked at its slot; navigation only translates a track by
+   one slot (concrete translate3d, transitioned), then silently re-slots +
+   resets to 0 on commit. Nothing mounts, re-rasterizes, or toggles opacity
+   mid-slide — which is what keeps both axes on the compositor and smooth.
+
+   Both track transforms are set INLINE as concrete translate3d values (not a
+   var()-in-calc): a var-driven transform transition falls back to the main
+   thread and drops frames — a plain value stays on the GPU. */
+.track,
+.htrack {
   position: absolute;
   inset: 0;
-  /* Transform is set inline as a concrete translate3d value (not a
-     var()-in-calc): a var-driven transform transition falls back to the main
-     thread and drops frames — a plain value stays on the compositor. */
   transition: transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
   will-change: transform;
   backface-visibility: hidden;
 }
 
 /* Applied for the single commit frame: jump back to shift 0 without animating
-   (the row re-slotting compensates, so there's no visual movement). */
-.track.noTransition {
+   (the re-slotting compensates, so there's no visual movement). */
+.track.noTransition,
+.htrack.noTransition {
   transition: none;
 }
 
+/* Static slot positions (not animated → var()-in-calc is fine here). Rows step
+   the Y axis by stage-heights, cells the X axis by row-widths. */
 .row {
   position: absolute;
   inset: 0;
   transform: translateY(calc(var(--slot, 0) * 100%));
 }
 
+.hcell {
+  position: absolute;
+  inset: 0;
+  transform: translateX(calc(var(--slot, 0) * 100%));
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .track {
+  .track,
+  .htrack {
     transition: none;
   }
 }
@@ -97,67 +109,6 @@
 
 .frame.active {
   opacity: 1;
-}
-
-/* Horizontal carousel slide: no fading — the incoming frame travels in from
-   the edge the navigation points at (a full viewport, so any frame size clears
-   the screen); the outgoing copy travels out the opposite side. Caption swaps
-   instantly via React.
-
-   The animation runs on the independent `translate` PROPERTY with pure values
-   (100vw → 0), leaving the `-50%,-50%` centring in `transform`. This keeps it
-   GPU-composited: animating the `transform` shorthand here would need
-   translate(calc(-50% + 100vw), …), and a calc-mixed transform animation is
-   NOT composited — it drops to the main thread and stutters. */
-.frame.slideInFwd {
-  animation: slide-in-fwd 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-.frame.slideInBack {
-  animation: slide-in-back 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-.frame.slideOutFwd {
-  opacity: 1;
-  animation: slide-out-fwd 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
-}
-.frame.slideOutBack {
-  opacity: 1;
-  animation: slide-out-back 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
-}
-
-/* Next (dir 1): incoming enters from the right, outgoing exits to the left. */
-@keyframes slide-in-fwd {
-  from {
-    translate: 100vw 0;
-  }
-  to {
-    translate: 0 0;
-  }
-}
-@keyframes slide-out-fwd {
-  from {
-    translate: 0 0;
-  }
-  to {
-    translate: -100vw 0;
-  }
-}
-
-/* Prev (dir −1): incoming enters from the left, outgoing exits to the right. */
-@keyframes slide-in-back {
-  from {
-    translate: -100vw 0;
-  }
-  to {
-    translate: 0 0;
-  }
-}
-@keyframes slide-out-back {
-  from {
-    translate: 0 0;
-  }
-  to {
-    translate: 100vw 0;
-  }
 }
 
 @media (max-width: 899px) {
