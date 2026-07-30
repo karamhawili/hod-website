@@ -1,5 +1,14 @@
 import type { StructureResolver } from "sanity/structure";
-import { AddUserIcon, CogIcon, DocumentsIcon, UsersIcon } from "@sanity/icons";
+import {
+  AddUserIcon,
+  CogIcon,
+  DocumentsIcon,
+  ImageIcon,
+  StarIcon,
+  TagIcon,
+  UsersIcon,
+} from "@sanity/icons";
+import { orderableDocumentListDeskItem } from "@sanity/orderable-document-list";
 
 // Singleton document types — enforced here in the structure (there is no
 // `singleton: true` schema option). Excluded from the generic list below so
@@ -9,10 +18,15 @@ const SINGLETONS = [
   "studioPage",
   "joinUsPage",
   "publicationsPage",
+  "awardsPage",
 ];
 
+// Document types listed explicitly below (so they aren't duplicated by the
+// generic fallback).
+const EXPLICIT_TYPES = [...SINGLETONS, "project", "category"];
+
 // https://www.sanity.io/docs/structure-builder-cheat-sheet
-export const structure: StructureResolver = (S) =>
+export const structure: StructureResolver = (S, context) =>
   S.list()
     .title("Content")
     .items([
@@ -47,6 +61,16 @@ export const structure: StructureResolver = (S) =>
         ),
 
       S.listItem()
+        .title("Awards Page")
+        .icon(StarIcon)
+        .child(
+          S.document()
+            .schemaType("awardsPage")
+            .documentId("awardsPage")
+            .title("Awards Page"),
+        ),
+
+      S.listItem()
         .title("Site Settings")
         .icon(CogIcon)
         .child(
@@ -58,7 +82,20 @@ export const structure: StructureResolver = (S) =>
 
       S.divider(),
 
+      // Drag-to-reorder projects — the order drives the landing rotation +
+      // archive.
+      orderableDocumentListDeskItem({
+        type: "project",
+        title: "Projects",
+        icon: ImageIcon,
+        S,
+        context,
+      }),
+
+      S.documentTypeListItem("category").title("Categories").icon(TagIcon),
+
+      // Any other (future) non-singleton, non-explicit types.
       ...S.documentTypeListItems().filter(
-        (listItem) => !SINGLETONS.includes(listItem.getId() as string),
+        (listItem) => !EXPLICIT_TYPES.includes(listItem.getId() as string),
       ),
     ]);

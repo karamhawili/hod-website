@@ -1,5 +1,6 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
 import { ImageIcon } from "@sanity/icons";
+import { orderRankField } from "@sanity/orderable-document-list";
 
 // Minimal VVD-style project model. The ordered `images` array is the single
 // source of truth for BOTH the landing carousel and the detail-page scroll.
@@ -125,13 +126,16 @@ export const project = defineType({
       ],
       validation: (rule) => rule.min(1).warning("Add at least one image."),
     }),
+    // Drag-to-reorder rank (managed from the Projects list in the desk); drives
+    // the landing rotation + archive order.
+    orderRankField({ type: "project" }),
   ],
   preview: {
     select: {
       title: "title",
       location: "location",
       status: "status",
-      media: "images.0",
+      media: "images.0.asset",
     },
     prepare({ title, location, status, media }) {
       return {

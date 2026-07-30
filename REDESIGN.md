@@ -219,8 +219,7 @@ content model survived unchanged; restyled to single-column native-ratio).
       survives; restyle only)
 - [x] Phase 8.1 — Studio narrative restructure: founder → hairline separator →
       firm description (text only) → Sectors/Services (text only). Team text
-      dropped (recruiting = Join Us); all project photos removed; Publications
-      + Contact split out to their own pages (below). studioPage schema
+      dropped (recruiting = Join Us); all project photos removed; Publications + Contact split out to their own pages (below). studioPage schema
       trimmed (intro/disciplines images + team + **publications** objects
       removed) and reordered to match the page (founder → intro → disciplines);
       `StudioTeam` + `StudioPublications` components deleted.
@@ -233,10 +232,61 @@ content model survived unchanged; restyled to single-column native-ratio).
       (old `StudioPublications` + `studioPage.publications` were removed in
       8.1; press-list content recoverable from git history).
 - [~] Phase 8.4 — Splash / intro screen: built then **removed at user
-      request** (component + layout render deleted). The middleware +
-      `headers()` pathname logic in the root layout stays — it's what keeps
-      `SanityLive` off the Studio (the more important reason it exists).
-- [ ] Phase 9 — Responsive + QA pass; retire now-orphaned old tokens/fonts/
+  request** (component + layout render deleted). The middleware +
+  `headers()` pathname logic in the root layout stays — it's what keeps
+  `SanityLive` off the Studio (the more important reason it exists).
+- [ ] Phase 9 — Refinements + Press/Awards + polish. Sub-tasks:
+  - [x] Fix the landing caption growing leftward with long content (it's
+        right-anchored, so a long title extends the left edge unpredictably).
+  - [x] Make the header logo bigger on mobile.
+  - [x] **Press** — new secondary-nav item that expands to a submenu:
+        **Publications** + **Awards** (same indented sub-list pattern the rail
+        already uses; Publications moves under Press).
+  - [x] **Awards** — new page + content model (`/awards`). `awardsPage`
+        singleton: `recognition[]{ project, awards[] }` + flat `studioAwards[]`.
+        Two-column ledger (project → its award lines) for the project section,
+        hairline, then a plain studio-awards list. Reference data seeded as
+        page defaults (also the ready-to-edit CMS template).
+  - [x] No image should flash white on load — every `next/image` must show a
+        blurry LQIP placeholder first. Applied to some images, not all; audit
+        and make it universal. (Also filtered empty CMS image slots via
+        `images[defined(asset)]`.)
+  - [x] Fix the stutter on mobile horizontal (image) swipe in the viewer.
+        Drag-follow rebuilt; verified good on device by user.
+  - [ ] **Desktop scroll flicker** — the current image briefly shows its LQIP
+        blur before the slide. Root cause: a fresh `next/image` mount always
+        re-paints its blur placeholder for one frame, even when cached. Two
+        band-aid attempts (cached-`<img>` for outgoing, then also incoming)
+        each traded the blur for a white/blank flash — reverted by user.
+        **Deferred: evaluate migrating the viewer to Embla** (keeps every slide
+        mounted → nothing re-mounts → no placeholder ever). Needs nested
+        (two-axis) Embla + re-wiring scroll-jack/zones/keyboard/wheel/touch —
+        plan before building.
+  - [x] **Manual sorting for projects** (Audit N7) — controls the landing
+        rotation + archive order instead of `_createdAt desc`.
+  - [x] **Reflect the current project in the viewer URL on scroll** — as the
+        landing rotation changes project, the URL updates to `/#<project-slug>`
+        via `history.replaceState` (cheap; no Next navigation / refetch). The
+        viewer reads the hash before paint on load to pick the start project.
+        The close-✕ return round-trip now **also rides the hash** (the old
+        `?project=` query param was dropped as redundant — the `from` URL is
+        `/[?category=…]#<slug>`). `?category=` stays a query param
+        (server-meaningful filter).
+  - [x] (last) **Bookmarkable / refresh-proof archive search** — the search
+        query syncs into `/archive?q=` live while typing via
+        `history.replaceState` (no navigation / server refetch per keystroke);
+        refresh, shared link, and the project-close `from` round-trip all
+        restore it (`ArchiveExplorer.initialQuery`).
+  - [x] **Archive caption overlap** — a long caption could bleed into the row
+        below (captions were `position: absolute`, out of flow, to bottom-align
+        images). Rebuilt with CSS **subgrid**: each visual row shares an image
+        track + a caption track, cells subgrid onto them — image bottoms align
+        AND captions stay in flow so a long one grows its track instead of
+        overlapping. No markup change.
+  - [x] **Studio project-list thumbnail** — the orderable Projects list showed
+        no thumbnails (plugin fetches a minimal projection; the default media
+        renderer didn't resolve inline `images.0`). Fixed by changing this to images.0.asset
+- [ ] Phase 10 — Responsive + QA pass; retire now-orphaned old tokens/fonts/
       `Section`/`Reveal`/`useScrollAnimation` once PageBuilder is fully gone
 
 ## Open items (both Phase 4 blockers resolved 2026-07-25)

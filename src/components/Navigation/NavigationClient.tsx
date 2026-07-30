@@ -5,21 +5,29 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Logo from "@/components/Logo/Logo";
 import type { CATEGORIES_QUERY_RESULT } from "@/sanity/sanity.types";
-import type { NavLink } from "@/types/sanity";
 import styles from "./Navigation.module.css";
+
+// A secondary-rail item is either a plain link or a toggle grouping with
+// children (e.g. Press → Publications, Awards).
+export type SecondaryItem =
+  | { label: string; href: string; children?: never }
+  | { label: string; href?: never; children: { label: string; href: string }[] };
 
 interface NavigationClientProps {
   categories: CATEGORIES_QUERY_RESULT;
-  secondaryNav: NavLink[];
+  secondary: SecondaryItem[];
   activeCategory?: string;
 }
 
 export default function NavigationClient({
   categories,
-  secondaryNav,
+  secondary,
   activeCategory,
 }: NavigationClientProps) {
   const [isOpen, setIsOpen] = useState(false);
+  // Press submenu: null = follow the route (auto-open on a press page);
+  // true/false once the user has toggled it.
+  const [pressOpen, setPressOpen] = useState<boolean | null>(null);
   const pathname = usePathname();
 
   // Primary stack = the landing filter (VVD's model: the taxonomy IS the
@@ -46,16 +54,48 @@ export default function NavigationClient({
     });
 
   const renderSecondary = (closeMenu?: boolean) =>
-    secondaryNav.map((item) => (
-      <Link
-        key={item.href}
-        href={item.href}
-        className={pathname === item.href ? styles.active : undefined}
-        onClick={closeMenu ? () => setIsOpen(false) : undefined}
-      >
-        {item.label}
-      </Link>
-    ));
+    secondary.map((item) => {
+      if (item.children) {
+        const childActive = item.children.some((c) => c.href === pathname);
+        const expanded = pressOpen ?? childActive;
+        return (
+          <div key={item.label} className={styles.secondaryGroup}>
+            <button
+              type="button"
+              className={`${styles.groupToggle} ${childActive ? styles.active : ""}`}
+              aria-expanded={expanded}
+              onClick={() => setPressOpen(!expanded)}
+            >
+              {item.label}
+            </button>
+            {expanded && (
+              <span className={styles.subList}>
+                {item.children.map((child) => (
+                  <Link
+                    key={child.href}
+                    href={child.href}
+                    className={pathname === child.href ? styles.active : undefined}
+                    onClick={closeMenu ? () => setIsOpen(false) : undefined}
+                  >
+                    {child.label}
+                  </Link>
+                ))}
+              </span>
+            )}
+          </div>
+        );
+      }
+      return (
+        <Link
+          key={item.href}
+          href={item.href}
+          className={pathname === item.href ? styles.active : undefined}
+          onClick={closeMenu ? () => setIsOpen(false) : undefined}
+        >
+          {item.label}
+        </Link>
+      );
+    });
 
   return (
     <>

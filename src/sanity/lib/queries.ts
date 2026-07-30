@@ -7,14 +7,15 @@ import type {
   STUDIO_PAGE_QUERY_RESULT,
   JOIN_US_PAGE_QUERY_RESULT,
   PUBLICATIONS_PAGE_QUERY_RESULT,
+  AWARDS_PAGE_QUERY_RESULT,
 } from "@/sanity/sanity.types";
 import { SiteSettings } from "@/types/sanity";
 
 // Archive: the "see everything" grid. Thumb = first gallery image.
 export const ARCHIVE_PROJECTS_QUERY = defineQuery(`
-  *[_type == "project" && defined(slug.current) && count(images) > 0
+  *[_type == "project" && defined(slug.current) && count(images[defined(asset)]) > 0
       && ($category == null || category->slug.current == $category)]
-    | order(_createdAt desc) {
+    | order(orderRank) {
     _id,
     title,
     "slug": slug.current,
@@ -22,7 +23,7 @@ export const ARCHIVE_PROJECTS_QUERY = defineQuery(`
     status,
     year,
     "category": category->title,
-    "thumb": images[0]{
+    "thumb": images[defined(asset)][0]{
       alt,
       asset,
       hotspot,
@@ -37,7 +38,7 @@ export const ARCHIVE_PROJECTS_QUERY = defineQuery(`
 // hidden from the rail's filter list.
 export const CATEGORIES_QUERY = defineQuery(`
   *[_type == "category" && defined(slug.current)
-      && count(*[_type == "project" && references(^._id) && count(images) > 0]) > 0]
+      && count(*[_type == "project" && references(^._id) && count(images[defined(asset)]) > 0]) > 0]
     | order(title asc) {
     _id,
     title,
@@ -74,7 +75,7 @@ const VIEWER_FIELDS = `
   "slug": slug.current,
   location,
   year,
-  images[]{
+  images[defined(asset)]{
     _key,
     alt,
     asset,
@@ -88,9 +89,9 @@ const VIEWER_FIELDS = `
 // The full rotation, optionally narrowed by the rail's category filter.
 // No "featured" gate — the whole catalog is the landing rotation.
 export const VIEWER_PROJECTS_QUERY = defineQuery(`
-  *[_type == "project" && defined(slug.current) && count(images) > 0
+  *[_type == "project" && defined(slug.current) && count(images[defined(asset)]) > 0
       && ($category == null || category->slug.current == $category)]
-    | order(_createdAt desc) { ${VIEWER_FIELDS} }
+    | order(orderRank) { ${VIEWER_FIELDS} }
 `);
 
 export async function getViewerProjects(
@@ -183,6 +184,22 @@ export async function getPublicationsPage(): Promise<PUBLICATIONS_PAGE_QUERY_RES
   });
 
   return result.data as PUBLICATIONS_PAGE_QUERY_RESULT;
+}
+
+export const AWARDS_PAGE_QUERY = defineQuery(`
+  *[_id == "awardsPage"][0]{
+    recognition[]{ project, awards },
+    studioAwards
+  }
+`);
+
+export async function getAwardsPage(): Promise<AWARDS_PAGE_QUERY_RESULT> {
+  const result = await sanityFetch({
+    query: AWARDS_PAGE_QUERY,
+    tags: ["awardsPage"],
+  });
+
+  return result.data as AWARDS_PAGE_QUERY_RESULT;
 }
 
 export const JOIN_US_PAGE_QUERY = defineQuery(`
