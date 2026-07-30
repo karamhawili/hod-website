@@ -135,7 +135,7 @@ export const project = defineType({
       title: "title",
       location: "location",
       status: "status",
-      media: "images.0",
+      media: "images.0.asset",
     },
     prepare({ title, location, status, media }) {
       return {

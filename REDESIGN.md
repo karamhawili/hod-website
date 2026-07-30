@@ -219,8 +219,7 @@ content model survived unchanged; restyled to single-column native-ratio).
       survives; restyle only)
 - [x] Phase 8.1 — Studio narrative restructure: founder → hairline separator →
       firm description (text only) → Sectors/Services (text only). Team text
-      dropped (recruiting = Join Us); all project photos removed; Publications
-      + Contact split out to their own pages (below). studioPage schema
+      dropped (recruiting = Join Us); all project photos removed; Publications + Contact split out to their own pages (below). studioPage schema
       trimmed (intro/disciplines images + team + **publications** objects
       removed) and reordered to match the page (founder → intro → disciplines);
       `StudioTeam` + `StudioPublications` components deleted.
@@ -233,9 +232,9 @@ content model survived unchanged; restyled to single-column native-ratio).
       (old `StudioPublications` + `studioPage.publications` were removed in
       8.1; press-list content recoverable from git history).
 - [~] Phase 8.4 — Splash / intro screen: built then **removed at user
-      request** (component + layout render deleted). The middleware +
-      `headers()` pathname logic in the root layout stays — it's what keeps
-      `SanityLive` off the Studio (the more important reason it exists).
+  request** (component + layout render deleted). The middleware +
+  `headers()` pathname logic in the root layout stays — it's what keeps
+  `SanityLive` off the Studio (the more important reason it exists).
 - [ ] Phase 9 — Refinements + Press/Awards + polish. Sub-tasks:
   - [x] Fix the landing caption growing leftward with long content (it's
         right-anchored, so a long title extends the left edge unpredictably).
@@ -278,6 +277,15 @@ content model survived unchanged; restyled to single-column native-ratio).
         `history.replaceState` (no navigation / server refetch per keystroke);
         refresh, shared link, and the project-close `from` round-trip all
         restore it (`ArchiveExplorer.initialQuery`).
+  - [x] **Archive caption overlap** — a long caption could bleed into the row
+        below (captions were `position: absolute`, out of flow, to bottom-align
+        images). Rebuilt with CSS **subgrid**: each visual row shares an image
+        track + a caption track, cells subgrid onto them — image bottoms align
+        AND captions stay in flow so a long one grows its track instead of
+        overlapping. No markup change.
+  - [x] **Studio project-list thumbnail** — the orderable Projects list showed
+        no thumbnails (plugin fetches a minimal projection; the default media
+        renderer didn't resolve inline `images.0`). Fixed by changing this to images.0.asset
 - [ ] Phase 10 — Responsive + QA pass; retire now-orphaned old tokens/fonts/
       `Section`/`Reveal`/`useScrollAnimation` once PageBuilder is fully gone
 
