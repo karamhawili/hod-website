@@ -99,40 +99,63 @@
   opacity: 1;
 }
 
-/* Carousel slide: no fading — the incoming frame travels in from the edge
-   the navigation points at (offsets set inline via the enter/exit custom
-   props, a full viewport so any frame size clears the screen); the outgoing
-   copy travels out the opposite side. Caption swaps instantly via React. */
-.frame.slideIn {
-  animation: slide-in 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
+/* Horizontal carousel slide: no fading — the incoming frame travels in from
+   the edge the navigation points at (a full viewport, so any frame size clears
+   the screen); the outgoing copy travels out the opposite side. Caption swaps
+   instantly via React.
 
-.frame.slideOut {
+   Direction-split into concrete-value keyframes (fwd = next/dir 1, back =
+   prev/dir −1) rather than one var()-driven pair: a transform animation that
+   references a custom property is NOT composited (it runs on the main thread
+   and drops frames), whereas these fixed 100vw offsets stay on the GPU. */
+.frame.slideInFwd {
+  animation: slide-in-fwd 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.frame.slideInBack {
+  animation: slide-in-back 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.frame.slideOutFwd {
   opacity: 1;
-  animation: slide-out 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  animation: slide-out-fwd 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+.frame.slideOutBack {
+  opacity: 1;
+  animation: slide-out-back 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
 }
 
-@keyframes slide-in {
+/* Next (dir 1): incoming enters from the right, outgoing exits to the left. */
+@keyframes slide-in-fwd {
   from {
-    transform: translate(
-      calc(-50% + var(--enter-x, 0px)),
-      calc(-50% + var(--enter-y, 0px))
-    );
+    transform: translate(calc(-50% + 100vw), -50%);
   }
   to {
     transform: translate(-50%, -50%);
   }
 }
-
-@keyframes slide-out {
+@keyframes slide-out-fwd {
   from {
     transform: translate(-50%, -50%);
   }
   to {
-    transform: translate(
-      calc(-50% + var(--exit-x, 0px)),
-      calc(-50% + var(--exit-y, 0px))
-    );
+    transform: translate(calc(-50% - 100vw), -50%);
+  }
+}
+
+/* Prev (dir −1): incoming enters from the left, outgoing exits to the right. */
+@keyframes slide-in-back {
+  from {
+    transform: translate(calc(-50% - 100vw), -50%);
+  }
+  to {
+    transform: translate(-50%, -50%);
+  }
+}
+@keyframes slide-out-back {
+  from {
+    transform: translate(-50%, -50%);
+  }
+  to {
+    transform: translate(calc(-50% + 100vw), -50%);
   }
 }
 
@@ -145,11 +168,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .frame.slideIn {
+  .frame.slideInFwd,
+  .frame.slideInBack {
     animation: none;
   }
 
-  .frame.slideOut {
+  .frame.slideOutFwd,
+  .frame.slideOutBack {
     animation: none;
     opacity: 0;
   }

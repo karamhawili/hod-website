@@ -508,14 +508,18 @@ export default function ProjectViewer({
       : `${drag.dir * 100}dvh`
     : "0px";
 
-  // Horizontal carousel offsets: the incoming frame enters from the edge the
-  // navigation points at; the outgoing one exits the opposite way.
-  const enterVars: React.CSSProperties = outgoing
-    ? ({ "--enter-x": `${outgoing.dir * 100}vw` } as React.CSSProperties)
-    : {};
-  const exitVars: React.CSSProperties = outgoing
-    ? ({ "--exit-x": `${outgoing.dir * -100}vw` } as React.CSSProperties)
-    : {};
+  // Horizontal slide classes: direction-split so the keyframes carry concrete
+  // 100vw offsets (compositable) instead of a var()-driven transform.
+  const slideInClass = outgoing
+    ? outgoing.dir === 1
+      ? styles.slideInFwd
+      : styles.slideInBack
+    : "";
+  const slideOutClass = outgoing
+    ? outgoing.dir === 1
+      ? styles.slideOutFwd
+      : styles.slideOutBack
+    : "";
 
   // The persistent vertical window: current + its immediate neighbour(s). Two
   // projects share one neighbour (prev === next) placed on `dirHint`'s side;
@@ -586,9 +590,9 @@ export default function ProjectViewer({
                           image,
                           proj.title,
                           index === imageIndex
-                            ? `${styles.frame} ${styles.active} ${outgoing ? styles.slideIn : ""}`
+                            ? `${styles.frame} ${styles.active} ${slideInClass}`
                             : styles.frame,
-                          index === imageIndex ? enterVars : {},
+                          {},
                           projectIndex === 0 && index === 0,
                         ),
                       )}
@@ -596,8 +600,7 @@ export default function ProjectViewer({
                         renderFrame(
                           outgoing.image,
                           outgoing.title,
-                          `${styles.frame} ${styles.slideOut}`,
-                          exitVars,
+                          `${styles.frame} ${slideOutClass}`,
                         )}
                     </>
                   ) : (
