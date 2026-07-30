@@ -43,6 +43,54 @@
   inset: 0;
 }
 
+/* Two nested persistent carousel tracks: `.track` (projects, Y) holds a `.row`
+   per windowed project, and each row holds an `.htrack` (images, X) with an
+   `.hcell` per windowed image. Every frame is a mounted, already-painted,
+   opacity-1 element parked at its slot; navigation only translates a track by
+   one slot (concrete translate3d, transitioned), then silently re-slots +
+   resets to 0 on commit. Nothing mounts, re-rasterizes, or toggles opacity
+   mid-slide — which is what keeps both axes on the compositor and smooth.
+
+   Both track transforms are set INLINE as concrete translate3d values (not a
+   var()-in-calc): a var-driven transform transition falls back to the main
+   thread and drops frames — a plain value stays on the GPU. */
+.track,
+.htrack {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Applied for the single commit frame: jump back to shift 0 without animating
+   (the re-slotting compensates, so there's no visual movement). */
+.track.noTransition,
+.htrack.noTransition {
+  transition: none;
+}
+
+/* Static slot positions (not animated → var()-in-calc is fine here). Rows step
+   the Y axis by stage-heights, cells the X axis by row-widths. */
+.row {
+  position: absolute;
+  inset: 0;
+  transform: translateY(calc(var(--slot, 0) * 100%));
+}
+
+.hcell {
+  position: absolute;
+  inset: 0;
+  transform: translateX(calc(var(--slot, 0) * 100%));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track,
+  .htrack {
+    transition: none;
+  }
+}
+
 .frame {
   position: absolute;
   top: 50%;
@@ -63,43 +111,6 @@
   opacity: 1;
 }
 
-/* Carousel slide: no fading — the incoming frame travels in from the edge
-   the navigation points at (offsets set inline via the enter/exit custom
-   props, a full viewport so any frame size clears the screen); the outgoing
-   copy travels out the opposite side. Caption swaps instantly via React. */
-.frame.slideIn {
-  animation: slide-in 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-
-.frame.slideOut {
-  opacity: 1;
-  animation: slide-out 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
-}
-
-@keyframes slide-in {
-  from {
-    transform: translate(
-      calc(-50% + var(--enter-x, 0px)),
-      calc(-50% + var(--enter-y, 0px))
-    );
-  }
-  to {
-    transform: translate(-50%, -50%);
-  }
-}
-
-@keyframes slide-out {
-  from {
-    transform: translate(-50%, -50%);
-  }
-  to {
-    transform: translate(
-      calc(-50% + var(--exit-x, 0px)),
-      calc(-50% + var(--exit-y, 0px))
-    );
-  }
-}
-
 @media (max-width: 899px) {
   /* Tighter caps than desktop so the image floats with clear air around it;
      caption bar, header, and everything else keep their spacing. */
@@ -109,11 +120,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .frame.slideIn {
+  .frame.slideInFwd,
+  .frame.slideInBack {
     animation: none;
   }
 
-  .frame.slideOut {
+  .frame.slideOutFwd,
+  .frame.slideOutBack {
     animation: none;
     opacity: 0;
   }

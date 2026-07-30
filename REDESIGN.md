@@ -253,15 +253,19 @@ content model survived unchanged; restyled to single-column native-ratio).
         `images[defined(asset)]`.)
   - [x] Fix the stutter on mobile horizontal (image) swipe in the viewer.
         Drag-follow rebuilt; verified good on device by user.
-  - [ ] **Desktop scroll flicker** — the current image briefly shows its LQIP
-        blur before the slide. Root cause: a fresh `next/image` mount always
-        re-paints its blur placeholder for one frame, even when cached. Two
-        band-aid attempts (cached-`<img>` for outgoing, then also incoming)
-        each traded the blur for a white/blank flash — reverted by user.
-        **Deferred: evaluate migrating the viewer to Embla** (keeps every slide
-        mounted → nothing re-mounts → no placeholder ever). Needs nested
-        (two-axis) Embla + re-wiring scroll-jack/zones/keyboard/wheel/touch —
-        plan before building.
+  - [x] **Desktop scroll flicker + jank** — the current image briefly showed
+        its LQIP blur before a slide, and slides stuttered. Root cause: a fresh
+        `next/image` mount re-paints its blur for one frame, and per-nav the
+        viewer mounted/opacity-toggled frames on the main thread mid-animation.
+        Embla was evaluated and rejected (nested two-axis rewrite, disproportion-
+        ate). Fixed by hand instead: the viewer is now **two nested persistent
+        carousel tracks** — vertical `.track` of project `.row`s, each holding a
+        horizontal `.htrack` of image `.hcell`s. Every frame is a mounted,
+        pre-painted, opacity-1 element parked at its slot; navigation only
+        translates a track by one slot (concrete `translate3d`, transitioned)
+        then commits + silently resets. Nothing mounts/re-rasterizes/toggles
+        opacity mid-slide, so both axes stay on the GPU compositor — no re-blur,
+        no jank. (Built on branch `viewer-persistent-vertical-track`.)
   - [x] **Manual sorting for projects** (Audit N7) — controls the landing
         rotation + archive order instead of `_createdAt desc`.
   - [x] **Reflect the current project in the viewer URL on scroll** — as the

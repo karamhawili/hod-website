@@ -11,14 +11,13 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { urlFor, urlForSized } from "@/sanity/lib/image";
+import { urlFor } from "@/sanity/lib/image";
 import { FALLBACK_BLUR } from "@/lib/blur";
 import type { VIEWER_PROJECTS_QUERY_RESULT } from "@/sanity/sanity.types";
 import styles from "./ProjectViewer.module.css";
 
-type ViewerImage = NonNullable<
-  VIEWER_PROJECTS_QUERY_RESULT[number]["images"]
->[number];
+type ViewerProject = VIEWER_PROJECTS_QUERY_RESULT[number];
+type ViewerImage = NonNullable<ViewerProject["images"]>[number];
 
 interface ProjectViewerProps {
   projects: VIEWER_PROJECTS_QUERY_RESULT;
@@ -27,7 +26,7 @@ interface ProjectViewerProps {
   category?: string;
 }
 
-// Matches the carousel slide duration in the module CSS.
+// Matches the track transition duration in the module CSS.
 const TRANSITION_MS = 900;
 // Wheel: fire on the leading edge of a gesture (low threshold = the first
 // real movement triggers, so there's no perceptible accumulation lag on a
@@ -58,6 +57,10 @@ const wrap = (index: number, length: number) =>
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 export default function ProjectViewer({
   projects,
   category,
@@ -68,22 +71,33 @@ export default function ProjectViewer({
   // /#<slug> is applied before paint by the layout effect below.
   const [projectIndex, setProjectIndex] = useState(0);
   const [imageIndex, setImageIndex] = useState(0);
-  // Carousel slide in flight: the frame left behind slides out along `axis`
-  // while the new active frame slides in from the opposite edge.
-  const [outgoing, setOutgoing] = useState<{
-    image: ViewerImage;
-    title: string;
-    axis: "x" | "y";
-    dir: 1 | -1;
-  } | null>(null);
-  const outgoingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wheelAccum = useRef(0);
   const wheelLast = useRef(0);
   const wheelEventLast = useRef(0);
-  // Per-project horizontal position, remembered across vertical navigation.
-  // A ref array: O(1) save/restore, no extra renders, no persistence beyond
-  // the visit (which is the wanted scope).
-  const imageMemory = useRef<number[]>([]);
+  // Per-project horizontal position, remembered across vertical navigation and
+  // read during render (so a project pre-mounts at the exact arrival image the
+  // commit lands on — same key ⇒ the frame persists, no re-mount/blur).
+  const [imageMemory, setImageMemory] = useState<Record<string, number>>({});
+
+  // Two persistent carousel tracks — vertical (projects) and horizontal
+  // (images). Each: `*Shift` is the live translate (−1/0/1 track-lengths),
+  // `*Resetting` drops the transition for the single commit frame, `*DirHint`
+  // is which side the sole neighbour sits on when there are exactly two
+  // (prev === next). Refs guard against overlapping slides.
+  const [vShift, setVShift] = useState(0);
+  const [vResetting, setVResetting] = useState(false);
+  const [vDirHint, setVDirHint] = useState<1 | -1>(1);
+  const vSliding = useRef(false);
+  const vSlideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const vSlideRaf = useRef<number | null>(null);
+
+  const [hShift, setHShift] = useState(0);
+  const [hResetting, setHResetting] = useState(false);
+  const [hDirHint, setHDirHint] = useState<1 | -1>(1);
+  const hSliding = useRef(false);
+  const hSlideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hSlideRaf = useRef<number | null>(null);
+
   // Live drag-follow (touch): the finger drags the current frame while the
   // incoming neighbour follows in; on release it snaps forward (commit) or
   // back (cancel).
@@ -102,6 +116,17 @@ export default function ProjectViewer({
   const images = useMemo(() => project?.images ?? [], [project]);
   const currentImage = images[imageIndex] ?? null;
 
+  // The image a project shows on arrival: its remembered horizontal position,
+  // clamped in case the gallery shrank under a live content update.
+  const arrivalIndexFor = useCallback(
+    (proj: ViewerProject) => {
+      const len = proj.images?.length ?? 0;
+      const remembered = imageMemory[proj._id] ?? 0;
+      return remembered < len ? remembered : 0;
+    },
+    [imageMemory],
+  );
+
   // Link to a project's detail page carrying a `from` return URL that restores
   // this exact filtered rotation + project (the close ✕ reads it). The project
   // rides in the hash (`/#<slug>`) — the same channel scroll uses — and the
@@ -114,43 +139,74 @@ export default function ProjectViewer({
     return `/project/${slug}?from=${encodeURIComponent(back)}`;
   };
 
-  const beginSlide = useCallback(
-    (axis: "x" | "y", dir: 1 | -1, image: ViewerImage, title: string) => {
-      setOutgoing({ image, title, axis, dir });
-      if (outgoingTimer.current) clearTimeout(outgoingTimer.current);
-      outgoingTimer.current = setTimeout(() => setOutgoing(null), TRANSITION_MS);
-    },
-    [],
-  );
-
+  // Horizontal (image) navigation — translate the image track by one slot,
+  // then commit + reset. `wrap()` looping preserved (only neighbours render).
   const goToImage = useCallback(
     (dir: 1 | -1) => {
-      if (images.length < 2 || !currentImage || !project) return;
-      beginSlide("x", dir, currentImage, project.title);
-      setImageIndex((index) => wrap(index + dir, images.length));
+      if (hSliding.current || vSliding.current) return;
+      if (images.length < 2 || !project) return;
+
+      hSliding.current = true;
+      if (dir !== hDirHint) setHDirHint(dir);
+      setHShift(-dir);
+      const reduced = prefersReducedMotion();
+
+      if (hSlideTimer.current) clearTimeout(hSlideTimer.current);
+      hSlideTimer.current = setTimeout(
+        () => {
+          setHResetting(true);
+          setImageIndex((index) => wrap(index + dir, images.length));
+          setHShift(0);
+          hSlideRaf.current = requestAnimationFrame(() => {
+            setHResetting(false);
+            hSliding.current = false;
+          });
+        },
+        reduced ? 0 : TRANSITION_MS,
+      );
     },
-    [images.length, currentImage, project, beginSlide],
+    [images.length, project, hDirHint],
   );
 
+  // Vertical (project) navigation — translate the project track by one slot,
+  // then commit + reset.
   const goToProject = useCallback(
     (dir: 1 | -1) => {
-      if (projects.length < 2 || !currentImage || !project) return;
-      beginSlide("y", dir, currentImage, project.title);
+      if (vSliding.current || hSliding.current) return;
+      if (projects.length < 2 || !project) return;
 
-      imageMemory.current[projectIndex] = imageIndex;
-      const nextIndex = wrap(projectIndex + dir, projects.length);
-      const remembered = imageMemory.current[nextIndex] ?? 0;
-      const nextLength = projects[nextIndex]?.images?.length ?? 0;
-      setProjectIndex(nextIndex);
-      // Restore where that project's carousel was left (guarded in case the
-      // gallery shrank under a live content update).
-      setImageIndex(remembered < nextLength ? remembered : 0);
+      vSliding.current = true;
+      // Remember where the current project's carousel is, so it pre-mounts at
+      // that image when it becomes a neighbour on the way back.
+      setImageMemory((m) => ({ ...m, [project._id]: imageIndex }));
+      if (dir !== vDirHint) setVDirHint(dir);
+      setVShift(-dir);
+      const reduced = prefersReducedMotion();
+
+      if (vSlideTimer.current) clearTimeout(vSlideTimer.current);
+      vSlideTimer.current = setTimeout(
+        () => {
+          const nextIndex = wrap(projectIndex + dir, projects.length);
+          const nextProj = projects[nextIndex];
+          const nextLen = nextProj?.images?.length ?? 0;
+          const remembered = imageMemory[nextProj._id] ?? 0;
+          setVResetting(true);
+          setProjectIndex(nextIndex);
+          setImageIndex(remembered < nextLen ? remembered : 0);
+          setVShift(0);
+          vSlideRaf.current = requestAnimationFrame(() => {
+            setVResetting(false);
+            vSliding.current = false;
+          });
+        },
+        reduced ? 0 : TRANSITION_MS,
+      );
     },
-    [projects, projectIndex, imageIndex, currentImage, project, beginSlide],
+    [projects, projectIndex, imageIndex, project, vDirHint, imageMemory],
   );
 
-  // The neighbour a drag reveals in `dir` — resolved in handlers (ref access)
-  // and stored in drag state, so render never reads a ref.
+  // The neighbour a drag reveals in `dir` — resolved in handlers (so render
+  // never depends on it) and stored in drag state.
   const resolveIncoming = useCallback(
     (axis: "x" | "y", dir: 1 | -1) => {
       if (!project) return null;
@@ -161,11 +217,10 @@ export default function ProjectViewer({
       const nextIndex = wrap(projectIndex + dir, projects.length);
       const p = projects[nextIndex];
       const imgs = p?.images ?? [];
-      const remembered = imageMemory.current[nextIndex] ?? 0;
-      const img = imgs[remembered < imgs.length ? remembered : 0];
+      const img = imgs[arrivalIndexFor(p)];
       return p && img ? { image: img, title: p.title } : null;
     },
-    [project, images, imageIndex, projectIndex, projects],
+    [project, images, imageIndex, projectIndex, projects, arrivalIndexFor],
   );
 
   // Scroll interception — the ONE sanctioned scroll-jack (see REDESIGN.md).
@@ -227,23 +282,6 @@ export default function ProjectViewer({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [goToImage, goToProject]);
 
-  // Warm the image each neighbouring project would show on arrival (its
-  // remembered position, or its first image) so switches never land blank.
-  useEffect(() => {
-    if (projects.length < 2) return;
-    [1, -1].forEach((dir) => {
-      const neighbourIndex = wrap(projectIndex + dir, projects.length);
-      const neighbourImages = projects[neighbourIndex]?.images ?? [];
-      const remembered = imageMemory.current[neighbourIndex] ?? 0;
-      const target =
-        neighbourImages[remembered < neighbourImages.length ? remembered : 0];
-      if (target?.asset) {
-        const img = new window.Image();
-        img.src = urlForSized(target, 2000);
-      }
-    });
-  }, [projectIndex, projects]);
-
   // Deep-link: honour a /#<slug> hash on load so a shared/refreshed URL — and
   // the close-✕ return round-trip, which now also rides the hash — lands on the
   // right project. Runs before paint to avoid a flash from project 0 to the
@@ -280,8 +318,11 @@ export default function ProjectViewer({
 
   useEffect(
     () => () => {
-      if (outgoingTimer.current) clearTimeout(outgoingTimer.current);
       if (snapTimer.current) clearTimeout(snapTimer.current);
+      if (vSlideTimer.current) clearTimeout(vSlideTimer.current);
+      if (hSlideTimer.current) clearTimeout(hSlideTimer.current);
+      if (vSlideRaf.current) cancelAnimationFrame(vSlideRaf.current);
+      if (hSlideRaf.current) cancelAnimationFrame(hSlideRaf.current);
     },
     [],
   );
@@ -374,10 +415,11 @@ export default function ProjectViewer({
         if (axis === "x") {
           setImageIndex((index) => wrap(index + dir, images.length));
         } else {
-          imageMemory.current[projectIndex] = imageIndex;
+          setImageMemory((m) => ({ ...m, [project._id]: imageIndex }));
           const nextIndex = wrap(projectIndex + dir, projects.length);
-          const remembered = imageMemory.current[nextIndex] ?? 0;
-          const nextLen = projects[nextIndex]?.images?.length ?? 0;
+          const nextProj = projects[nextIndex];
+          const nextLen = nextProj?.images?.length ?? 0;
+          const remembered = imageMemory[nextProj._id] ?? 0;
           setProjectIndex(nextIndex);
           setImageIndex(remembered < nextLen ? remembered : 0);
         }
@@ -398,22 +440,11 @@ export default function ProjectViewer({
     );
   }
 
-  const renderFrame = (
-    image: ViewerImage,
-    title: string,
-    className: string,
-    slideVars: React.CSSProperties = {},
-    priority = false,
-  ) => (
+  const renderFrame = (image: ViewerImage, title: string, priority = false) => (
     <figure
       key={image._key}
-      className={className}
-      style={
-        {
-          "--ar": String(image.dimensions?.aspectRatio ?? 1.5),
-          ...slideVars,
-        } as React.CSSProperties
-      }
+      className={`${styles.frame} ${styles.active}`}
+      style={{ "--ar": String(image.dimensions?.aspectRatio ?? 1.5) } as React.CSSProperties}
     >
       {image.asset && (
         <Image
@@ -475,18 +506,38 @@ export default function ProjectViewer({
       : `${drag.dir * 100}dvh`
     : "0px";
 
-  // Direction-aware carousel offsets: the incoming frame enters from the
-  // edge the navigation points at; the outgoing one exits the opposite way.
-  const enterVars: React.CSSProperties = outgoing
-    ? outgoing.axis === "x"
-      ? ({ "--enter-x": `${outgoing.dir * 100}vw` } as React.CSSProperties)
-      : ({ "--enter-y": `${outgoing.dir * 100}dvh` } as React.CSSProperties)
-    : {};
-  const exitVars: React.CSSProperties = outgoing
-    ? outgoing.axis === "x"
-      ? ({ "--exit-x": `${outgoing.dir * -100}vw` } as React.CSSProperties)
-      : ({ "--exit-y": `${outgoing.dir * -100}dvh` } as React.CSSProperties)
-    : {};
+  // Persistent vertical window: current + immediate neighbour project(s).
+  const plen = projects.length;
+  const projectRows: { proj: ViewerProject; slot: number }[] = [
+    { proj: project, slot: 0 },
+  ];
+  if (plen >= 2) {
+    const nextIdx = wrap(projectIndex + 1, plen);
+    const prevIdx = wrap(projectIndex - 1, plen);
+    if (nextIdx === prevIdx) {
+      projectRows.push({ proj: projects[nextIdx], slot: vDirHint });
+    } else {
+      projectRows.push({ proj: projects[prevIdx], slot: -1 });
+      projectRows.push({ proj: projects[nextIdx], slot: 1 });
+    }
+  }
+
+  // Persistent horizontal window for the CURRENT project: current + immediate
+  // neighbour image(s). Neighbour projects render only their arrival image.
+  const ilen = images.length;
+  const imageCells: { img: ViewerImage; slot: number }[] = currentImage
+    ? [{ img: currentImage, slot: 0 }]
+    : [];
+  if (ilen >= 2 && currentImage) {
+    const nextI = wrap(imageIndex + 1, ilen);
+    const prevI = wrap(imageIndex - 1, ilen);
+    if (nextI === prevI) {
+      imageCells.push({ img: images[nextI], slot: hDirHint });
+    } else {
+      imageCells.push({ img: images[prevI], slot: -1 });
+      imageCells.push({ img: images[nextI], slot: 1 });
+    }
+  }
 
   return (
     <div
@@ -516,30 +567,54 @@ export default function ProjectViewer({
               )}
           </>
         ) : (
-          <>
-            {/* The whole current gallery stays mounted so siblings are already
-                loaded when they slide in. Only the active frame is visible;
-                during a slide it animates in while the outgoing copy animates
-                out below. */}
-            {images.map((image, index) =>
-              renderFrame(
-                image,
-                project.title,
-                index === imageIndex
-                  ? `${styles.frame} ${styles.active} ${outgoing ? styles.slideIn : ""}`
-                  : styles.frame,
-                index === imageIndex ? enterVars : {},
-                projectIndex === 0 && index === 0,
-              ),
-            )}
-            {outgoing &&
-              renderFrame(
-                outgoing.image,
-                outgoing.title,
-                `${styles.frame} ${styles.slideOut}`,
-                exitVars,
-              )}
-          </>
+          // Vertical project track. Every row (current + neighbours) mounts an
+          // inner horizontal image track, so all frames are persistent,
+          // already-painted, opacity-1 elements — a slide only translates a
+          // track, never mounts or re-rasterizes a frame mid-animation.
+          <div
+            className={`${styles.track}${vResetting ? ` ${styles.noTransition}` : ""}`}
+            style={{ transform: `translate3d(0, ${vShift * 100}%, 0)` }}
+          >
+            {projectRows.map(({ proj, slot }) => {
+              const isCurrent = proj._id === project._id;
+              const cells = isCurrent
+                ? imageCells
+                : (() => {
+                    const arrival = proj.images?.[arrivalIndexFor(proj)];
+                    return arrival ? [{ img: arrival, slot: 0 }] : [];
+                  })();
+              return (
+                <div
+                  key={proj._id}
+                  className={styles.row}
+                  style={{ "--slot": slot } as React.CSSProperties}
+                >
+                  <div
+                    className={`${styles.htrack}${isCurrent && hResetting ? ` ${styles.noTransition}` : ""}`}
+                    style={
+                      isCurrent
+                        ? { transform: `translate3d(${hShift * 100}%, 0, 0)` }
+                        : undefined
+                    }
+                  >
+                    {cells.map((cell) => (
+                      <div
+                        key={cell.img._key}
+                        className={styles.hcell}
+                        style={{ "--slot": cell.slot } as React.CSSProperties}
+                      >
+                        {renderFrame(
+                          cell.img,
+                          proj.title,
+                          projectIndex === 0 && isCurrent && cell.slot === 0,
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
 
