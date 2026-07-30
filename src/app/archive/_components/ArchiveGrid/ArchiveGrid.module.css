@@ -3,45 +3,43 @@
   list-style: none;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  /* Bottom-align the images within each row. Captions are taken out of flow
-     (below), so a cell's height is just its image — the image bottoms line up
-     and wrapping captions grow downward instead of pushing the image up. */
-  align-items: end;
+  /* Each visual row is two row tracks — image, then caption — and every cell
+     subgrids onto them (below). So image bottoms share one line and captions
+     share another, while captions stay IN FLOW: a long one grows the caption
+     track and pushes the next row down instead of overlapping it. */
   column-gap: 4rem;
-  row-gap: 5rem;
+  row-gap: 5rem; /* between visual rows: a caption and the next image */
   max-width: 44rem;
   padding-top: clamp(5rem, 14vh, 9rem);
   padding-bottom: clamp(4rem, 10vh, 8rem);
 }
 
+/* Layout-transparent so the <a> becomes the grid cell (and the subgrid). */
+.grid > li {
+  display: contents;
+}
+
 .cell {
-  display: block;
-  position: relative; /* anchor for the out-of-flow caption */
+  grid-row: span 2;
+  display: grid;
+  grid-template-rows: subgrid;
+  row-gap: 0.9rem; /* image -> caption within a cell (overrides the 5rem) */
 }
 
 .thumb {
   display: block;
   width: 100%;
   height: auto; /* native ratio — column width fixed, height free */
+  align-self: end; /* sit at the bottom of the image track → bottoms align */
 }
 
-/* Below the image, out of flow so it never affects the image's alignment.
-   It hangs into the row-gap; wrapping just extends it further down. */
 .caption {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  margin-top: 0.9rem;
+  align-self: start; /* hang just under the image, not floated to track bottom */
   font-family: var(--font-body);
   font-size: var(--text-body);
   letter-spacing: var(--tracking-body);
   line-height: 1.5;
   color: var(--color-title);
-}
-
-.cell:hover {
-  opacity: 1;
 }
 
 .cell:hover .caption {
@@ -61,9 +59,7 @@
   .grid {
     grid-template-columns: repeat(2, 1fr);
     column-gap: 1.5rem;
-    /* Roomy enough for the out-of-flow caption (up to ~2 lines) to sit in the
-       gap without touching the next row. */
-    row-gap: 4.5rem;
+    row-gap: 4rem;
     padding-top: 3rem;
     padding-inline: 1.5rem;
   }
