@@ -99,25 +99,16 @@
   opacity: 1;
 }
 
-/* Pre-promote the frames that can slide next (active ± its neighbours) to their
-   own compositor layer, so the horizontal animation is GPU-composited from the
-   first frame. Without this the browser promotes + rasterizes the image texture
-   partway INTO the animation, producing a brief mid-slide stall. Scoped to a
-   few frames to keep layer memory bounded. */
-.frame.promote {
-  will-change: transform;
-  backface-visibility: hidden;
-}
-
 /* Horizontal carousel slide: no fading — the incoming frame travels in from
    the edge the navigation points at (a full viewport, so any frame size clears
    the screen); the outgoing copy travels out the opposite side. Caption swaps
    instantly via React.
 
-   Direction-split into concrete-value keyframes (fwd = next/dir 1, back =
-   prev/dir −1) rather than one var()-driven pair: a transform animation that
-   references a custom property is NOT composited (it runs on the main thread
-   and drops frames), whereas these fixed 100vw offsets stay on the GPU. */
+   The animation runs on the independent `translate` PROPERTY with pure values
+   (100vw → 0), leaving the `-50%,-50%` centring in `transform`. This keeps it
+   GPU-composited: animating the `transform` shorthand here would need
+   translate(calc(-50% + 100vw), …), and a calc-mixed transform animation is
+   NOT composited — it drops to the main thread and stutters. */
 .frame.slideInFwd {
   animation: slide-in-fwd 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
@@ -136,36 +127,36 @@
 /* Next (dir 1): incoming enters from the right, outgoing exits to the left. */
 @keyframes slide-in-fwd {
   from {
-    transform: translate(calc(-50% + 100vw), -50%);
+    translate: 100vw 0;
   }
   to {
-    transform: translate(-50%, -50%);
+    translate: 0 0;
   }
 }
 @keyframes slide-out-fwd {
   from {
-    transform: translate(-50%, -50%);
+    translate: 0 0;
   }
   to {
-    transform: translate(calc(-50% - 100vw), -50%);
+    translate: -100vw 0;
   }
 }
 
 /* Prev (dir −1): incoming enters from the left, outgoing exits to the right. */
 @keyframes slide-in-back {
   from {
-    transform: translate(calc(-50% - 100vw), -50%);
+    translate: -100vw 0;
   }
   to {
-    transform: translate(-50%, -50%);
+    translate: 0 0;
   }
 }
 @keyframes slide-out-back {
   from {
-    transform: translate(-50%, -50%);
+    translate: 0 0;
   }
   to {
-    transform: translate(calc(-50% + 100vw), -50%);
+    translate: 100vw 0;
   }
 }
 
