@@ -564,7 +564,9 @@ export default function ProjectViewer({
         ) : (
           <div
             className={`${styles.track}${resetting ? ` ${styles.noTransition}` : ""}`}
-            style={{ "--shift": trackShift } as React.CSSProperties}
+            // Concrete translate3d (not a CSS var) so the transition runs on
+            // the compositor instead of the main thread — keeps it smooth.
+            style={{ transform: `translate3d(0, ${trackShift * 100}%, 0)` }}
           >
             {rows.map(({ proj, slot }) => {
               const isCurrent = proj._id === project._id;
