@@ -290,8 +290,20 @@ content model survived unchanged; restyled to single-column native-ratio).
   - [x] **Studio project-list thumbnail** — the orderable Projects list showed
         no thumbnails (plugin fetches a minimal projection; the default media
         renderer didn't resolve inline `images.0`). Fixed by changing this to images.0.asset
-- [ ] Phase 10 — Responsive + QA pass; retire now-orphaned old tokens/fonts/
+- [~] Phase 10 — Responsive + QA pass; retire now-orphaned old tokens/fonts/
       `Section`/`Reveal`/`useScrollAnimation` once PageBuilder is fully gone
+  - [x] **Dead-code retirement** — deleted `Reveal` + `useScrollAnimation`
+        (0 imports); removed the k-studio-era tokens (`--color-brown-*`,
+        `--color-black/white/gray-dark`, `--surface-white/gradient`,
+        `--font-serif/sans/script`, `--container-max`, `--section-padding`,
+        `--content-*`, `--color-accent`) and the `.section-*` classes (all 0
+        usages); dropped the 3 now-unused Google fonts (Cormorant, Darker
+        Grotesque, Great Vibes) from `layout.tsx`; migrated the base
+        `body`/`h1-h6` defaults onto the redesign tokens. `--tracking-label`
+        kept (Awards section labels). Build + all routes (incl. `/admin`) green.
+  - [ ] **Responsive + QA pass** — deliberate breakpoint walk across every
+        route (landing viewer, archive, project detail, studio, contact,
+        publications, awards, join us).
 
 ## Open items (both Phase 4 blockers resolved 2026-07-25)
 
