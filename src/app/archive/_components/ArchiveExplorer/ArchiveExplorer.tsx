@@ -1,6 +1,7 @@
 "use client";
 
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { ARCHIVE_PROJECTS_QUERY_RESULT } from "@/sanity/sanity.types";
 import ArchiveGrid from "../ArchiveGrid/ArchiveGrid";
 import styles from "./ArchiveExplorer.module.css";
@@ -20,6 +21,7 @@ export default function ArchiveExplorer({
   projects,
   initialQuery = "",
 }: ArchiveExplorerProps) {
+  const router = useRouter();
   const [query, setQuery] = useState(initialQuery);
   const deferredQuery = useDeferredValue(query);
 
@@ -30,19 +32,26 @@ export default function ArchiveExplorer({
     "/archive" +
     (query.trim() ? `?q=${encodeURIComponent(query.trim())}` : "");
 
-  // Keep the URL in sync with the search live while typing, so a refresh or a
-  // shared/bookmarked link preserves it. `replaceState` (not the Next router)
-  // is deliberate: it updates the address bar without a navigation or a server
-  // refetch of the project list on every keystroke. Skip the first run so the
-  // load URL (which may already carry ?q=) is left untouched.
+  // Keep the URL in sync with the search, so refresh / shared links AND the
+  // browser/mobile BACK button all restore it. This goes through the Next
+  // router (not raw `history.replaceState`) on purpose: replaceState isn't
+  // tracked by the App Router, so its URL wasn't kept in history/cache and
+  // back returned to a bare `/archive`. `router.replace` records the entry
+  // properly (and, since `getArchiveProjects` is query-independent, re-renders
+  // with the same list — only `initialQuery` changes). Debounced (trailing) so
+  // instant local filtering isn't a soft-nav per keystroke; the load URL is
+  // skipped. `scroll: false` keeps the scroll position.
   const firstSync = useRef(true);
   useEffect(() => {
     if (firstSync.current) {
       firstSync.current = false;
       return;
     }
-    window.history.replaceState(null, "", returnTo);
-  }, [returnTo]);
+    const id = setTimeout(() => {
+      router.replace(returnTo, { scroll: false });
+    }, 300);
+    return () => clearTimeout(id);
+  }, [returnTo, router]);
 
   const haystacks = useMemo(
     () =>
