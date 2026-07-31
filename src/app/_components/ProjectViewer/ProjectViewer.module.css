@@ -41,6 +41,14 @@
 .stage {
   position: absolute;
   inset: 0;
+  /* The whole stage subtree is non-interactive so the touchstart target is
+     always the persistent `.viewer` root, never a `.track`/`.row`/`.hcell`
+     wrapper that unmounts when a drag begins. Touch events are delivered to the
+     touchstart target for the entire gesture; if that node is removed mid-swipe
+     the rest of the gesture is lost — which dropped the FIRST mobile swipe.
+     Desktop input comes from the `.zone` buttons (siblings, above the stage),
+     so this doesn't affect it. */
+  pointer-events: none;
 }
 
 /* Two nested persistent carousel tracks: `.track` (projects, Y) holds a `.row`
