@@ -52,8 +52,8 @@
   height: 32px;
   width: auto;
   color: #ffffff;
-  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.5))
-    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+  /* Very subtle — just enough lift to hold on lighter images. */
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
   pointer-events: none;
 }
 
