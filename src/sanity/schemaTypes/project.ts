@@ -62,6 +62,14 @@ export const project = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: "showOnHome",
+      title: "Show on home",
+      type: "boolean",
+      initialValue: false,
+      description:
+        "Feature this project in the home-page viewer. The Archive always lists every project regardless.",
+    }),
+    defineField({
       name: "description",
       title: "Description",
       type: "array",
@@ -135,11 +143,13 @@ export const project = defineType({
       title: "title",
       location: "location",
       status: "status",
+      showOnHome: "showOnHome",
       media: "images.0.asset",
     },
-    prepare({ title, location, status, media }) {
+    prepare({ title, location, status, showOnHome, media }) {
       return {
-        title,
+        // ★ marks projects featured on the home viewer, scannable in the list.
+        title: showOnHome ? `★ ${title}` : title,
         subtitle: [location, status].filter(Boolean).join(" • "),
         media: media || ImageIcon,
       };

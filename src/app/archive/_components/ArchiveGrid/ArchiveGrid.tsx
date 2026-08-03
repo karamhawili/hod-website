@@ -13,7 +13,7 @@ interface ArchiveGridProps {
 }
 
 // Sparse thumbnail grid per the reference: fixed column width, native-ratio
-// height, one-line caption ("Title, Location, Status"), no card chrome.
+// height, one-line caption ("Title, Location"), no card chrome.
 export default function ArchiveGrid({ projects, returnTo }: ArchiveGridProps) {
   if (projects.length === 0) {
     return <p className={styles.empty}>No projects yet.</p>;
@@ -24,7 +24,8 @@ export default function ArchiveGrid({ projects, returnTo }: ArchiveGridProps) {
   return (
     <ul className={styles.grid}>
       {projects.map((project) => {
-        const caption = [project.title, project.location, project.status]
+        const caption = [project.title, project.location]
+          .map((part) => part?.trim())
           .filter(Boolean)
           .join(", ");
 

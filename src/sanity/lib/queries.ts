@@ -34,11 +34,12 @@ export const ARCHIVE_PROJECTS_QUERY = defineQuery(`
   }
 `);
 
-// Only categories that actually have displayable projects — empty ones are
-// hidden from the rail's filter list.
+// Only categories with at least one home-featured project — the rail links
+// filter the home rotation, so a category with nothing on home would land on an
+// empty viewer. Empty (for-home) categories are hidden from the rail.
 export const CATEGORIES_QUERY = defineQuery(`
   *[_type == "category" && defined(slug.current)
-      && count(*[_type == "project" && references(^._id) && count(images[defined(asset)]) > 0]) > 0]
+      && count(*[_type == "project" && references(^._id) && showOnHome == true && count(images[defined(asset)]) > 0]) > 0]
     | order(title asc) {
     _id,
     title,
@@ -86,10 +87,11 @@ const VIEWER_FIELDS = `
   }
 `;
 
-// The full rotation, optionally narrowed by the rail's category filter.
-// No "featured" gate — the whole catalog is the landing rotation.
+// The home rotation: only projects flagged `showOnHome` (curated subset of the
+// full catalog — the Archive still lists everything), optionally narrowed by
+// the rail's category filter.
 export const VIEWER_PROJECTS_QUERY = defineQuery(`
-  *[_type == "project" && defined(slug.current) && count(images[defined(asset)]) > 0
+  *[_type == "project" && showOnHome == true && defined(slug.current) && count(images[defined(asset)]) > 0
       && ($category == null || category->slug.current == $category)]
     | order(orderRank) { ${VIEWER_FIELDS} }
 `);
