@@ -10,9 +10,32 @@ export const siteSettings = defineType({
     "Global content for the navigation rail — nav links, plus contact details awaiting a home in the Studio/Contact pass.",
   groups: [
     { name: "nav", title: "Navigation", default: true },
+    { name: "home", title: "Home intro" },
     { name: "footer", title: "Contact (not currently displayed)" },
   ],
   fields: [
+    defineField({
+      name: "introSlideshow",
+      title: "Intro slideshow",
+      type: "array",
+      group: "home",
+      description:
+        "Full-screen images shown once per session when a visitor first lands on the home page. They cross-fade every ~6s until the visitor clicks to enter. Leave empty to disable the intro.",
+      of: [
+        defineArrayMember({
+          type: "image",
+          options: { hotspot: true },
+          fields: [
+            defineField({
+              name: "alt",
+              title: "Alternative text",
+              type: "string",
+              description: "Describes the image for screen readers and SEO.",
+            }),
+          ],
+        }),
+      ],
+    }),
     defineField({
       name: "brandLine",
       title: "Brand Line",

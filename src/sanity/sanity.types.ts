@@ -13,12 +13,28 @@
  */
 
 // Source: src/sanity/extract.json
+export type SanityImageAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+};
+
 export type SiteSettings = {
   _id: string;
   _type: "siteSettings";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
+  introSlideshow?: Array<{
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+    _key: string;
+  }>;
   brandLine?: string;
   secondaryNav?: Array<{
     label: string;
@@ -40,6 +56,22 @@ export type SiteSettings = {
   }>;
 };
 
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x: number;
+  y: number;
+  height: number;
+  width: number;
+};
+
 export type AwardsPage = {
   _id: string;
   _type: "awardsPage";
@@ -52,13 +84,6 @@ export type AwardsPage = {
     _key: string;
   }>;
   studioAwards?: Array<string>;
-};
-
-export type SanityImageAssetReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
 };
 
 export type PublicationsPage = {
@@ -82,22 +107,6 @@ export type PublicationsPage = {
     linkLabel?: string;
     _key: string;
   }>;
-};
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top: number;
-  bottom: number;
-  left: number;
-  right: number;
-};
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x: number;
-  y: number;
-  height: number;
-  width: number;
 };
 
 export type SanityFileAssetReference = {
@@ -327,12 +336,12 @@ export type Geopoint = {
 };
 
 export type AllSanitySchemaTypes =
-  | SiteSettings
-  | AwardsPage
   | SanityImageAssetReference
-  | PublicationsPage
+  | SiteSettings
   | SanityImageCrop
   | SanityImageHotspot
+  | AwardsPage
+  | PublicationsPage
   | SanityFileAssetReference
   | JoinUsPage
   | StudioPage
@@ -493,6 +502,23 @@ export type SITE_SETTINGS_QUERY_RESULT =
       }> | null;
     }
   | null;
+
+// Source: src/sanity/lib/queries.ts
+// Variable: INTRO_SLIDESHOW_QUERY
+// Query: *[_id == "siteSettings"][0].introSlideshow[defined(asset)]{    _key,    alt,    asset,    hotspot,    crop,    "lqip": asset->metadata.lqip,    "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }  }
+export type INTRO_SLIDESHOW_QUERY_RESULT = Array<{
+  _key: string;
+  alt: string | null;
+  asset: SanityImageAssetReference;
+  hotspot: SanityImageHotspot | null;
+  crop: SanityImageCrop | null;
+  lqip: string | null;
+  dimensions: {
+    width: number;
+    height: number;
+    aspectRatio: number;
+  } | null;
+}> | null;
 
 // Source: src/sanity/lib/queries.ts
 // Variable: STUDIO_PAGE_QUERY

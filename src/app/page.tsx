@@ -1,6 +1,7 @@
 import Navigation from "@/components/Navigation/Navigation";
-import { getViewerProjects } from "@/sanity/lib/queries";
+import { getIntroSlideshow, getViewerProjects } from "@/sanity/lib/queries";
 import ProjectViewer from "./_components/ProjectViewer/ProjectViewer";
+import IntroSlideshow from "./_components/IntroSlideshow/IntroSlideshow";
 
 type HomeProps = {
   // The rail's category links filter the rotation via ?category=<slug>. The
@@ -11,7 +12,10 @@ type HomeProps = {
 
 export default async function Home({ searchParams }: HomeProps) {
   const { category } = await searchParams;
-  const projects = await getViewerProjects(category);
+  const [projects, introImages] = await Promise.all([
+    getViewerProjects(category),
+    getIntroSlideshow(),
+  ]);
 
   return (
     <>
@@ -26,6 +30,8 @@ export default async function Home({ searchParams }: HomeProps) {
           category={category}
         />
       </main>
+      {/* Once-per-session full-screen intro (renders nothing if no images set).*/}
+      <IntroSlideshow images={introImages} />
     </>
   );
 }
