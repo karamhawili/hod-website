@@ -400,7 +400,8 @@ export default function ProjectViewer({
     const delta = axis === "x" ? dx : dy;
     const dir: 1 | -1 = delta < 0 ? 1 : -1;
     const dim = axis === "x" ? window.innerWidth : window.innerHeight;
-    const velocity = Math.abs(delta) / Math.max(1, performance.now() - origin.t);
+    const velocity =
+      Math.abs(delta) / Math.max(1, performance.now() - origin.t);
     const commit =
       Math.abs(delta) >= dim * DRAG_COMMIT_RATIO || velocity >= FLICK_VELOCITY;
 
@@ -444,7 +445,11 @@ export default function ProjectViewer({
     <figure
       key={image._key}
       className={`${styles.frame} ${styles.active}`}
-      style={{ "--ar": String(image.dimensions?.aspectRatio ?? 1.5) } as React.CSSProperties}
+      style={
+        {
+          "--ar": String(image.dimensions?.aspectRatio ?? 1.5),
+        } as React.CSSProperties
+      }
     >
       {image.asset && (
         <Image
@@ -659,7 +664,7 @@ export default function ProjectViewer({
         <div className={`${styles.captionGroup} ${styles.captionEnd}`}>
           {project.year && <p className={styles.year}>{project.year}</p>}
           <Link href={projectHref(project.slug)} className={styles.cta}>
-            Go to project
+            Explore More
             <span className={styles.ctaIcon} aria-hidden="true" />
           </Link>
         </div>
