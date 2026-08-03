@@ -17,6 +17,9 @@ import styles from "./IntroSlideshow.module.css";
 const SESSION_KEY = "hod-intro-seen";
 const SLIDE_MS = 6000; // hold time per image before cross-fading to the next
 const FADE_OUT_MS = 700; // dismiss fade — keep in sync with .dismissing in CSS
+// Full-screen hero quality. AVIF/WebP (auto format) at this quality is visually
+// near-lossless; lower it if the payload becomes a concern.
+const IMAGE_QUALITY = 90;
 
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
@@ -95,7 +98,18 @@ export default function IntroSlideshow({ images }: IntroSlideshowProps) {
           >
             {img.asset && (
               <Image
-                src={urlFor(img).width(2400).auto("format").url()}
+                // Serve straight from Sanity's CDN per srcset width (device-
+                // appropriate size, AVIF/WebP, full quality) instead of
+                // re-optimizing through Next — no double-encoding, no quality
+                // cap. blurDataURL still handles the placeholder.
+                loader={({ width }) =>
+                  urlFor(img)
+                    .width(width)
+                    .quality(IMAGE_QUALITY)
+                    .auto("format")
+                    .url()
+                }
+                src={urlFor(img).url()}
                 alt={img.alt ?? ""}
                 fill
                 sizes="100vw"
