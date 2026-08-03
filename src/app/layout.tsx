@@ -43,6 +43,18 @@ export default async function RootLayout({
       lang="en"
       className={`${ebGaramond.variable} ${libreFranklin.variable}`}
     >
+      <head>
+        {/* Runs before first paint: if the home intro has already been seen
+            this session, mark <html> so CSS hides the intro immediately —
+            preventing a one-frame flash on an already-seen full reload (the
+            server can't read sessionStorage, so it always renders the intro). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(sessionStorage.getItem('hod-intro-seen'))document.documentElement.classList.add('intro-seen')}catch(e){}",
+          }}
+        />
+      </head>
       <body>{children}</body>
       <Analytics />
       {!isStudio && <SanityLive />}

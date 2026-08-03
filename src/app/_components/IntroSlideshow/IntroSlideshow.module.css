@@ -11,6 +11,13 @@
   transition: opacity 0.7s ease;
 }
 
+/* Set by the pre-paint script in the root layout when the intro was already
+   seen this session — hides it before the first frame so there's no flash on
+   an already-seen full reload. */
+:global(html.intro-seen) .intro {
+  display: none;
+}
+
 .intro.dismissing {
   opacity: 0;
 }
