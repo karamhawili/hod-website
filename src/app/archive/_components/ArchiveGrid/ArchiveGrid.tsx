@@ -25,6 +25,7 @@ export default function ArchiveGrid({ projects, returnTo }: ArchiveGridProps) {
     <ul className={styles.grid}>
       {projects.map((project) => {
         const caption = [project.title, project.location]
+          .map((part) => part?.trim())
           .filter(Boolean)
           .join(", ");
 
