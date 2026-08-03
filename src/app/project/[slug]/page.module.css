@@ -74,10 +74,17 @@
 
 /* ---- gallery ---- */
 
+/* Desktop: a single grid column sized to the WIDEST image (max-content), the
+   column centered on the page (justify-content) while every image left-aligns
+   to the column's left edge (justify-items: start). So a wide landscape sets
+   the block width and narrower portraits hang from that same left edge, instead
+   of each image centering on its own. The images' max-width cap keeps the
+   column within the viewport. Mobile reverts to a full-width stack below. */
 .gallery {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  grid-template-columns: max-content;
+  justify-content: center;
+  justify-items: start;
   gap: clamp(4rem, 10vh, 7rem);
   margin-top: clamp(5rem, 12vh, 9rem);
 }
@@ -85,8 +92,6 @@
 .figure {
   margin: 0;
   max-width: 100%;
-  display: flex;
-  justify-content: center;
 }
 
 /* Free size at native ratio with BOTH a width and a height guard. The height
@@ -113,7 +118,11 @@
     margin-bottom: 0.75rem;
   }
 
+  /* Full-width stack — images span the viewport (no max-content column). */
   .gallery {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 2.5rem;
     margin-top: 4rem;
     padding-inline: 1.5rem;
