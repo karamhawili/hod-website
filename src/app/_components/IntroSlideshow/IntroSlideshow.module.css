@@ -1,0 +1,73 @@
+/* Full-screen intro overlay, above the nav (z-index: 100). Its own logo is
+   positioned to match the nav logo exactly, so nothing shifts when it fades
+   out to reveal the site. */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--color-bg);
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 0.7s ease;
+}
+
+/* Set by the pre-paint script in the root layout when the intro was already
+   seen this session — hides it before the first frame so there's no flash on
+   an already-seen full reload. */
+:global(html.intro-seen) .intro {
+  display: none;
+}
+
+.intro.dismissing {
+  opacity: 0;
+}
+
+.slides {
+  position: absolute;
+  inset: 0;
+}
+
+/* Stacked full-bleed images; only the active one is opaque. Changing which is
+   opaque cross-fades between them. */
+.slide {
+  position: absolute;
+  inset: 0;
+  transition: opacity 1.4s ease;
+}
+
+.img {
+  object-fit: cover;
+}
+
+/* Positioned to match the nav rail logo (top-left, 2.25rem padding, 32px), but
+   white for legibility over photography. The layered drop-shadows give it a
+   soft dark halo so it also reads on LIGHT images — a glow for definition plus
+   a small offset for depth. */
+.logo {
+  position: absolute;
+  top: 2.25rem;
+  left: 2.25rem;
+  z-index: 1;
+  display: block;
+  height: 32px;
+  width: auto;
+  color: #ffffff;
+  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.5))
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+  pointer-events: none;
+}
+
+/* Matches the mobile nav bar logo. */
+@media (max-width: 899px) {
+  .logo {
+    top: 1.25rem;
+    left: var(--container-padding);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro,
+  .slide {
+    transition: none;
+  }
+}

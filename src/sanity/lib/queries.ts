@@ -8,6 +8,7 @@ import type {
   JOIN_US_PAGE_QUERY_RESULT,
   PUBLICATIONS_PAGE_QUERY_RESULT,
   AWARDS_PAGE_QUERY_RESULT,
+  INTRO_SLIDESHOW_QUERY_RESULT,
 } from "@/sanity/sanity.types";
 import { SiteSettings } from "@/types/sanity";
 
@@ -136,6 +137,31 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
   });
 
   return result.data as SiteSettings | null;
+}
+
+// Home intro slideshow images (with LQIP + intrinsic dimensions for next/image).
+// Empty slots are filtered out; an empty result disables the intro.
+export const INTRO_SLIDESHOW_QUERY = defineQuery(`
+  *[_id == "siteSettings"][0].introSlideshow[defined(asset)]{
+    _key,
+    alt,
+    asset,
+    hotspot,
+    crop,
+    "lqip": asset->metadata.lqip,
+    "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }
+  }
+`);
+
+export async function getIntroSlideshow(): Promise<
+  NonNullable<INTRO_SLIDESHOW_QUERY_RESULT>
+> {
+  const result = await sanityFetch({
+    query: INTRO_SLIDESHOW_QUERY,
+    tags: ["siteSettings"],
+  });
+
+  return (result.data ?? []) as NonNullable<INTRO_SLIDESHOW_QUERY_RESULT>;
 }
 
 // Image projection carrying native-ratio metadata (intrinsic dimensions +
