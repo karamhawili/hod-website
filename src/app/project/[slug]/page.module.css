@@ -1,5 +1,5 @@
-/* Project detail — info header then the ordered gallery as a plain vertical
-   scroll at native aspect ratio (never cropped). No nav, no footer; just the
+/* Project detail — info header then the ordered gallery blocks as a plain
+   vertical scroll (see _components/Gallery). No nav, no footer; just the
    CloseButton. Normal document scroll — the landing viewer stays the only
    scroll interception on the site. */
 
@@ -72,43 +72,8 @@
   margin-bottom: 1rem;
 }
 
-/* ---- gallery ---- */
-
-/* Desktop: a single grid column sized to the WIDEST image (max-content), the
-   column centered on the page (justify-content) while every image left-aligns
-   to the column's left edge (justify-items: start). So a wide landscape sets
-   the block width and narrower portraits hang from that same left edge, instead
-   of each image centering on its own. The images' max-width cap keeps the
-   column within the viewport. Mobile reverts to a full-width stack below. */
-.gallery {
-  display: grid;
-  grid-template-columns: max-content;
-  justify-content: center;
-  justify-items: start;
-  gap: clamp(4rem, 10vh, 7rem);
-  margin-top: clamp(5rem, 12vh, 9rem);
-}
-
-.figure {
-  margin: 0;
-  max-width: 100%;
-}
-
-/* Free size at native ratio with BOTH a width and a height guard. The height
-   guard is what creates the hierarchy: portraits bind on height and come out
-   narrower, landscapes bind on width and run wide — instead of everything
-   inflating to one uniform column. The 34rem hero column above stays narrower
-   than the images, per the reference. */
-.image {
-  display: block;
-  width: auto;
-  height: auto;
-  max-width: min(75vw, 1100px);
-  max-height: 82vh;
-}
-
 @media (max-width: 899px) {
-  /* ~48px around the text section, tighter ~24px around the images. */
+  /* ~48px around the text section (the gallery sets its own tighter gutter). */
   .header {
     padding-top: 6rem;
     padding-inline: 3rem;
@@ -116,20 +81,5 @@
 
   .title {
     margin-bottom: 0.75rem;
-  }
-
-  /* Full-width stack — images span the viewport (no max-content column). */
-  .gallery {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2.5rem;
-    margin-top: 4rem;
-    padding-inline: 1.5rem;
-  }
-
-  .image {
-    max-width: 100%;
-    max-height: none;
   }
 }

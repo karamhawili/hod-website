@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import { PortableText, type PortableTextComponents } from "next-sanity";
 import { sanityFetch } from "@/sanity/lib/live";
-import { urlFor } from "@/sanity/lib/image";
-import { FALLBACK_BLUR } from "@/lib/blur";
 import { PROJECT_DETAIL_QUERY } from "@/sanity/lib/queries";
 import type { PROJECT_DETAIL_QUERY_RESULT } from "@/sanity/sanity.types";
 import CloseButton from "./_components/CloseButton/CloseButton";
+import Gallery from "./_components/Gallery/Gallery";
 import styles from "./page.module.css";
 
 type ProjectPageProps = {
@@ -58,8 +56,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     notFound();
   }
 
-  const images = project.images ?? [];
-
   return (
     <main className={`theme-redesign ${styles.page}`}>
       <CloseButton />
@@ -88,25 +84,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         )}
       </header>
 
-      <section className={styles.gallery} aria-label="Project images">
-        {images.map(
-          (image) =>
-            image.asset && (
-              <figure key={image._key} className={styles.figure}>
-                <Image
-                  src={urlFor(image).width(2000).auto("format").url()}
-                  alt={image.alt ?? project.title}
-                  width={image.dimensions?.width ?? 2000}
-                  height={image.dimensions?.height ?? 1333}
-                  sizes="(max-width: 899px) 100vw, 62vw"
-                  className={styles.image}
-                  placeholder="blur"
-                  blurDataURL={image.lqip ?? FALLBACK_BLUR}
-                />
-              </figure>
-            ),
-        )}
-      </section>
+      <Gallery gallery={project.gallery ?? []} title={project.title} />
     </main>
   );
 }

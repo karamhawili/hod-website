@@ -46,3 +46,6 @@ next-env.d.ts
 
 # ai refs
 design-refs/
+
+# one-off dataset snapshots (see REDESIGN.md dev/prod split)
+*.tar.gz
