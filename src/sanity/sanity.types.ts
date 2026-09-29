@@ -171,6 +171,32 @@ export type StudioPage = {
   };
 };
 
+export type ImageTrio = {
+  _type: "imageTrio";
+  images: Array<{
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+    _key: string;
+  }>;
+};
+
+export type ImagePair = {
+  _type: "imagePair";
+  images: Array<{
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+    _key: string;
+  }>;
+};
+
 export type CategoryReference = {
   _ref: string;
   _type: "reference";
@@ -210,15 +236,23 @@ export type Project = {
     _key: string;
   }>;
   credits?: string;
-  images?: Array<{
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    alt?: string;
-    _type: "image";
-    _key: string;
-  }>;
+  images?: Array<
+    | {
+        asset?: SanityImageAssetReference;
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        alt?: string;
+        _type: "image";
+        _key: string;
+      }
+    | ({
+        _key: string;
+      } & ImagePair)
+    | ({
+        _key: string;
+      } & ImageTrio)
+  >;
   orderRank?: string;
 };
 
@@ -345,6 +379,8 @@ export type AllSanitySchemaTypes =
   | SanityFileAssetReference
   | JoinUsPage
   | StudioPage
+  | ImageTrio
+  | ImagePair
   | CategoryReference
   | Project
   | Slug
@@ -362,7 +398,7 @@ export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: src/sanity/lib/queries.ts
 // Variable: ARCHIVE_PROJECTS_QUERY
-// Query: *[_type == "project" && defined(slug.current) && count(images[defined(asset)]) > 0      && ($category == null || category->slug.current == $category)]    | order(orderRank) {    _id,    title,    "slug": slug.current,    location,    status,    year,    "category": category->title,    "thumb": images[defined(asset)][0]{      alt,      asset,      hotspot,      crop,      "lqip": asset->metadata.lqip,      "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }    }  }
+// Query: *[_type == "project" && defined(slug.current) && (count(images[defined(asset)]) + count(images[].images[defined(asset)])) > 0      && ($category == null || category->slug.current == $category)]    | order(orderRank) {    _id,    title,    "slug": slug.current,    location,    status,    year,    "category": category->title,    "thumb": (images[]{ "items": coalesce(images, [@]) }[].items[defined(asset)]{     _key,    alt,    asset,    hotspot,    crop,    "lqip": asset->metadata.lqip,    "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }  })[0]  }
 export type ARCHIVE_PROJECTS_QUERY_RESULT = Array<{
   _id: string;
   title: string;
@@ -372,6 +408,7 @@ export type ARCHIVE_PROJECTS_QUERY_RESULT = Array<{
   year: string | null;
   category: string;
   thumb: {
+    _key: string;
     alt: string | null;
     asset: SanityImageAssetReference;
     hotspot: SanityImageHotspot | null;
@@ -387,7 +424,7 @@ export type ARCHIVE_PROJECTS_QUERY_RESULT = Array<{
 
 // Source: src/sanity/lib/queries.ts
 // Variable: CATEGORIES_QUERY
-// Query: *[_type == "category" && defined(slug.current)      && count(*[_type == "project" && references(^._id) && showOnHome == true && count(images[defined(asset)]) > 0]) > 0]    | order(title asc) {    _id,    title,    "slug": slug.current  }
+// Query: *[_type == "category" && defined(slug.current)      && count(*[_type == "project" && references(^._id) && showOnHome == true && (count(images[defined(asset)]) + count(images[].images[defined(asset)])) > 0]) > 0]    | order(title asc) {    _id,    title,    "slug": slug.current  }
 export type CATEGORIES_QUERY_RESULT = Array<{
   _id: string;
   title: string;
@@ -396,7 +433,7 @@ export type CATEGORIES_QUERY_RESULT = Array<{
 
 // Source: src/sanity/lib/queries.ts
 // Variable: VIEWER_PROJECTS_QUERY
-// Query: *[_type == "project" && showOnHome == true && defined(slug.current) && count(images[defined(asset)]) > 0      && ($category == null || category->slug.current == $category)]    | order(orderRank) {   _id,  title,  "slug": slug.current,  location,  year,  images[defined(asset)]{    _key,    alt,    asset,    hotspot,    crop,    "lqip": asset->metadata.lqip,    "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }  } }
+// Query: *[_type == "project" && showOnHome == true && defined(slug.current) && (count(images[defined(asset)]) + count(images[].images[defined(asset)])) > 0      && ($category == null || category->slug.current == $category)]    | order(orderRank) {   _id,  title,  "slug": slug.current,  location,  year,  "images": images[]{ "items": coalesce(images, [@]) }[].items[defined(asset)]{     _key,    alt,    asset,    hotspot,    crop,    "lqip": asset->metadata.lqip,    "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }  } }
 export type VIEWER_PROJECTS_QUERY_RESULT = Array<{
   _id: string;
   title: string;
@@ -420,26 +457,13 @@ export type VIEWER_PROJECTS_QUERY_RESULT = Array<{
 
 // Source: src/sanity/lib/queries.ts
 // Variable: PROJECT_DETAIL_QUERY
-// Query: *[_type == "project" && slug.current == $slug][0]{      _id,  title,  "slug": slug.current,  location,  year,  images[defined(asset)]{    _key,    alt,    asset,    hotspot,    crop,    "lqip": asset->metadata.lqip,    "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }  },    description,    credits  }
+// Query: *[_type == "project" && slug.current == $slug][0]{    _id,    title,    "slug": slug.current,    location,    year,    description,    credits,    "gallery": images[]{      _key,      _type,      _type == "image" => {     _key,    alt,    asset,    hotspot,    crop,    "lqip": asset->metadata.lqip,    "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }      },      _type != "image" => {        images[defined(asset)]{     _key,    alt,    asset,    hotspot,    crop,    "lqip": asset->metadata.lqip,    "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }        }      }    }  }
 export type PROJECT_DETAIL_QUERY_RESULT = {
   _id: string;
   title: string;
   slug: string;
   location: string;
   year: string | null;
-  images: Array<{
-    _key: string;
-    alt: string | null;
-    asset: SanityImageAssetReference;
-    hotspot: SanityImageHotspot | null;
-    crop: SanityImageCrop | null;
-    lqip: string | null;
-    dimensions: {
-      width: number;
-      height: number;
-      aspectRatio: number;
-    } | null;
-  }> | null;
   description: Array<{
     children?: Array<{
       marks?: Array<string>;
@@ -459,6 +483,56 @@ export type PROJECT_DETAIL_QUERY_RESULT = {
     _key: string;
   }> | null;
   credits: string | null;
+  gallery: Array<
+    | {
+        _key: string;
+        _type: "image";
+        alt: string | null;
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        lqip: string | null;
+        dimensions: {
+          width: number;
+          height: number;
+          aspectRatio: number;
+        } | null;
+      }
+    | {
+        _key: string;
+        _type: "imagePair";
+        images: Array<{
+          _key: string;
+          alt: string | null;
+          asset: SanityImageAssetReference;
+          hotspot: SanityImageHotspot | null;
+          crop: SanityImageCrop | null;
+          lqip: string | null;
+          dimensions: {
+            width: number;
+            height: number;
+            aspectRatio: number;
+          } | null;
+        }>;
+      }
+    | {
+        _key: string;
+        _type: "imageTrio";
+        images: Array<{
+          _key: string;
+          alt: string | null;
+          asset: SanityImageAssetReference;
+          hotspot: SanityImageHotspot | null;
+          crop: SanityImageCrop | null;
+          lqip: string | null;
+          dimensions: {
+            width: number;
+            height: number;
+            aspectRatio: number;
+          } | null;
+        }>;
+      }
+  > | null;
 } | null;
 
 // Source: src/sanity/lib/queries.ts

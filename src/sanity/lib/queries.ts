@@ -12,9 +12,36 @@ import type {
 } from "@/sanity/sanity.types";
 import { SiteSettings } from "@/types/sanity";
 
-// Archive: the "see everything" grid. Thumb = first gallery image.
+// ---- Project gallery fragments ----
+//
+// `project.images` is a mixed array: plain `image` members plus `imagePair` /
+// `imageTrio` blocks that nest their own `images[]`. The detail page renders
+// the blocks; everything else (landing viewer, archive thumb, presence gates)
+// wants the flat, page-ordered list of every image.
+
+// Per-image projection: LQIP + intrinsic dimensions for next/image.
+const GALLERY_IMAGE = `
+    _key,
+    alt,
+    asset,
+    hotspot,
+    crop,
+    "lqip": asset->metadata.lqip,
+    "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }`;
+
+// Flat list: a plain image member has no `images` field, so coalesce falls
+// through to `[@]` (itself); a pair/trio yields its nested array. The nested
+// `[]` traversal flattens, and assetless slots are dropped.
+const FLAT_IMAGES = `images[]{ "items": coalesce(images, [@]) }[].items[defined(asset)]{ ${GALLERY_IMAGE}
+  }`;
+
+// "Has at least one real image" — top-level image members have no `images`,
+// pair/trio blocks have no `asset`, so the two counts are disjoint.
+const HAS_IMAGES = `(count(images[defined(asset)]) + count(images[].images[defined(asset)])) > 0`;
+
+// Archive: the "see everything" grid. Thumb = first gallery image (flattened).
 export const ARCHIVE_PROJECTS_QUERY = defineQuery(`
-  *[_type == "project" && defined(slug.current) && count(images[defined(asset)]) > 0
+  *[_type == "project" && defined(slug.current) && ${HAS_IMAGES}
       && ($category == null || category->slug.current == $category)]
     | order(orderRank) {
     _id,
@@ -24,14 +51,7 @@ export const ARCHIVE_PROJECTS_QUERY = defineQuery(`
     status,
     year,
     "category": category->title,
-    "thumb": images[defined(asset)][0]{
-      alt,
-      asset,
-      hotspot,
-      crop,
-      "lqip": asset->metadata.lqip,
-      "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }
-    }
+    "thumb": (${FLAT_IMAGES})[0]
   }
 `);
 
@@ -40,7 +60,7 @@ export const ARCHIVE_PROJECTS_QUERY = defineQuery(`
 // empty viewer. Empty (for-home) categories are hidden from the rail.
 export const CATEGORIES_QUERY = defineQuery(`
   *[_type == "category" && defined(slug.current)
-      && count(*[_type == "project" && references(^._id) && showOnHome == true && count(images[defined(asset)]) > 0]) > 0]
+      && count(*[_type == "project" && references(^._id) && showOnHome == true && ${HAS_IMAGES}]) > 0]
     | order(title asc) {
     _id,
     title,
@@ -69,30 +89,23 @@ export async function getCategories(): Promise<CATEGORIES_QUERY_RESULT> {
   return (result.data ?? []) as CATEGORIES_QUERY_RESULT;
 }
 
-// Landing project-viewer payload: the ordered gallery with intrinsic
-// dimensions (native-ratio layout) and LQIP placeholders.
+// Landing project-viewer payload: the ordered gallery, flattened (pair/trio
+// members become individual frames, in page order), with intrinsic dimensions
+// (native-ratio layout) and LQIP placeholders.
 const VIEWER_FIELDS = `
   _id,
   title,
   "slug": slug.current,
   location,
   year,
-  images[defined(asset)]{
-    _key,
-    alt,
-    asset,
-    hotspot,
-    crop,
-    "lqip": asset->metadata.lqip,
-    "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }
-  }
+  "images": ${FLAT_IMAGES}
 `;
 
 // The home rotation: only projects flagged `showOnHome` (curated subset of the
 // full catalog — the Archive still lists everything), optionally narrowed by
 // the rail's category filter.
 export const VIEWER_PROJECTS_QUERY = defineQuery(`
-  *[_type == "project" && showOnHome == true && defined(slug.current) && count(images[defined(asset)]) > 0
+  *[_type == "project" && showOnHome == true && defined(slug.current) && ${HAS_IMAGES}
       && ($category == null || category->slug.current == $category)]
     | order(orderRank) { ${VIEWER_FIELDS} }
 `);
@@ -109,12 +122,28 @@ export async function getViewerProjects(
   return (result.data ?? []) as VIEWER_PROJECTS_QUERY_RESULT;
 }
 
-// Project detail page: the viewer payload plus the long-form fields.
+// Project detail page: the long-form fields plus the gallery as BLOCKS (not
+// flattened) — a plain image renders native-ratio, pair/trio render their
+// layouts. Order is the editor's, top to bottom.
 export const PROJECT_DETAIL_QUERY = defineQuery(`
   *[_type == "project" && slug.current == $slug][0]{
-    ${VIEWER_FIELDS},
+    _id,
+    title,
+    "slug": slug.current,
+    location,
+    year,
     description,
-    credits
+    credits,
+    "gallery": images[]{
+      _key,
+      _type,
+      _type == "image" => { ${GALLERY_IMAGE}
+      },
+      _type != "image" => {
+        images[defined(asset)]{ ${GALLERY_IMAGE}
+        }
+      }
+    }
   }
 `);
 
