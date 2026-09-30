@@ -1,0 +1,132 @@
+/* Project gallery — ordered blocks as a plain vertical scroll. Normal document
+   scroll; the landing viewer stays the only scroll interception on the site. */
+
+/* Desktop: a single grid column sized to the WIDEST block (max-content),
+   centered on the page, with every block centered inside it (reference:
+   verhaal centers each row). The images' width caps keep the column within
+   the viewport. Mobile reverts to a full-width stack below. */
+.gallery {
+  display: grid;
+  grid-template-columns: max-content;
+  justify-content: center;
+  justify-items: center;
+  gap: clamp(4rem, 10vh, 7rem);
+  margin-top: clamp(5rem, 12vh, 9rem);
+}
+
+.figure {
+  margin: 0;
+  max-width: 100%;
+}
+
+/* ---- single image: free size at native ratio ---- */
+
+/* BOTH a width and a height guard. The height guard is what creates the
+   hierarchy: portraits bind on height and come out narrower, landscapes bind on
+   width and run wide — instead of everything inflating to one uniform column.
+   The 34rem hero column above stays narrower than the images, per the
+   reference. */
+.image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: min(75vw, 1100px);
+  max-height: 82vh;
+}
+
+/* ---- multi-image blocks ---- */
+
+/* Images in these blocks are server-cropped to fixed ratios and simply fill
+   their cell. */
+.cropped {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Pair: as wide as a landscape single (reference ≈ 78vw), two 2:3 portraits. */
+.pair {
+  width: min(75vw, 1100px);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: clamp(1.5rem, 4vw, 3rem);
+}
+
+/* Scattered trio: deliberately SMALLER than the other blocks — the reference
+   runs it at ≈54vw (portraits ≈25vw at 1:1.4, square ≈20vw), a quieter
+   interlude between the full-width rows. The two columns are vertically
+   CENTERED against each other: the left column (portrait + square) is
+   taller, so the lone right portrait lands lower than the left one — the
+   staggered look, with no magic offsets. The square sits under the left
+   portrait, narrower and flush with its right edge. */
+.trio {
+  width: min(54vw, 800px);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: clamp(1.25rem, 2vw, 2rem);
+  align-items: center;
+}
+
+.trioLeft {
+  display: grid;
+  row-gap: 2.5rem;
+  justify-items: end;
+}
+
+.trioPortraitLeft {
+  width: 100%;
+}
+
+.trioSquare {
+  width: 78%;
+}
+
+@media (max-width: 899px) {
+  /* Full-width stack — images span the viewport (no max-content column). */
+  .gallery {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5rem;
+    margin-top: 4rem;
+    padding-inline: 1.5rem;
+  }
+
+  .image {
+    max-width: 100%;
+    max-height: none;
+  }
+
+  .pair,
+  .trio {
+    width: 100%;
+    grid-template-columns: 1fr;
+    row-gap: 1.5rem;
+  }
+
+  /* Trio keeps its stagger on mobile (reference: portrait left, portrait
+     right-aligned, smaller square left). The column wrappers dissolve so the
+     three figures become direct grid items and can be re-ordered L → R → ▢. */
+  .trioLeft,
+  .trioRight {
+    display: contents;
+  }
+
+  .trioPortraitLeft {
+    order: 1;
+    width: 75%;
+    justify-self: start;
+  }
+
+  .trioPortraitRight {
+    order: 2;
+    width: 75%;
+    justify-self: end;
+  }
+
+  .trioSquare {
+    order: 3;
+    width: 58%;
+    justify-self: start;
+  }
+}

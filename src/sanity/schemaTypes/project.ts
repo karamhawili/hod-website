@@ -1,9 +1,13 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
 import { ImageIcon } from "@sanity/icons";
 import { orderRankField } from "@sanity/orderable-document-list";
+import { galleryImageMember } from "./objects/galleryBlocks";
 
-// Minimal VVD-style project model. The ordered `images` array is the single
+// Minimal VVD-style project model. The ordered `images` gallery is the single
 // source of truth for BOTH the landing carousel and the detail-page scroll.
+// Its members are plain images (native ratio on the page) plus two layout
+// blocks — `imagePair` / `imageTrio` — whose nested images the landing viewer
+// and archive read flattened, in page order (see FLAT_IMAGES in queries.ts).
 export const project = defineType({
   name: "project",
   title: "Project",
@@ -114,23 +118,14 @@ export const project = defineType({
     }),
     defineField({
       name: "images",
-      title: "Images",
+      title: "Gallery",
       type: "array",
       description:
-        "Ordered gallery — drives both the landing carousel and the project page, top to bottom.",
+        "Ordered gallery — drives both the landing carousel and the project page, top to bottom. A plain image shows at its native ratio; “Two portraits” and “Scattered trio” are multi-image layouts.",
       of: [
-        defineArrayMember({
-          type: "image",
-          options: { hotspot: true },
-          fields: [
-            defineField({
-              name: "alt",
-              title: "Alternative Text",
-              type: "string",
-              description: "Describes the image for screen readers and SEO.",
-            }),
-          ],
-        }),
+        galleryImageMember(),
+        defineArrayMember({ type: "imagePair" }),
+        defineArrayMember({ type: "imageTrio" }),
       ],
       validation: (rule) => rule.min(1).warning("Add at least one image."),
     }),
@@ -145,13 +140,15 @@ export const project = defineType({
       status: "status",
       showOnHome: "showOnHome",
       media: "images.0.asset",
+      // First block may be a pair/trio — fall back to its first image.
+      nestedMedia: "images.0.images.0.asset",
     },
-    prepare({ title, location, status, showOnHome, media }) {
+    prepare({ title, location, status, showOnHome, media, nestedMedia }) {
       return {
         // ★ marks projects featured on the home viewer, scannable in the list.
         title: showOnHome ? `★ ${title}` : title,
         subtitle: [location, status].filter(Boolean).join(" • "),
-        media: media || ImageIcon,
+        media: media || nestedMedia || ImageIcon,
       };
     },
   },

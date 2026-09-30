@@ -64,12 +64,25 @@ Not a scrolling marketing site. Three distinct interaction modes:
 
 - Opens with project info at top: title, location, year (see
   `Project_details_page_hero.png`), then description copy, then credits line.
-- Below: the **same ordered image list** from the landing carousel, now a
-  normal vertical scroll, one image after another.
-- Images respect **native aspect ratio**, width-capped by the page
-  max-width/margins (not full-bleed, not cropped to a fixed ratio).
-- **Mobile:** images go full viewport width, height auto (ratio preserved,
-  width fixed instead of capped by margin).
+- Below: the **same ordered gallery** the landing carousel reads, now a
+  normal vertical scroll. Since 2026-09-30 (client request, reference
+  verhaal.studio/projects/avli) the gallery is a mixed array of three block
+  types, rendered by `project/[slug]/_components/Gallery`:
+  - **Single image** — native aspect ratio, width-capped by the page
+    max-width/margins (not full-bleed, not cropped). Landscape or portrait.
+  - **Two portraits** (`imagePair`) — two equal columns, each server-cropped
+    to 2:3 via the editor's hotspot.
+  - **Scattered trio** (`imageTrio`) — two columns vertically centred against
+    each other: portrait top-left, portrait right (lands lower because the
+    left column is taller), a 1:1 square tucked under the left portrait,
+    right-aligned toward the gutter. Portraits 2:3, square 1:1, all hotspot
+    crops.
+- **Mobile:** singles go full width, height auto (ratio preserved). A pair
+  stacks. A trio keeps its stagger: portrait left (75%), portrait
+  right-aligned (75%), square left (58%) — the reference's mobile treatment.
+- The landing viewer and the archive thumb read the gallery **flattened** in
+  page order (`FLAT_IMAGES` in `queries.ts`), so every pair/trio member is
+  also a landing frame.
 
 ### 3. Archive page (replaces `/portfolio` — rebuild, then rename)
 
@@ -153,13 +166,20 @@ intentionally minimal:
     { name: 'category', type: 'reference', to: [{ type: 'category' }] },
     { name: 'description', type: 'array', of: [{ type: 'block' }] },
     { name: 'credits', type: 'string' },       // "Photos by X"
-    { name: 'images', type: 'array', of: [{
-        type: 'image', fields: [{ name: 'alt', type: 'string' }]
-      }] },                                    // ordered — drives BOTH landing
-                                                 // carousel AND detail scroll
+    { name: 'images', title: 'Gallery', type: 'array', of: [
+        { type: 'image', fields: [{ name: 'alt', type: 'string' }] },
+        { type: 'imagePair' },                 // { images: [image, image] }
+        { type: 'imageTrio' },                 // { images: [image, image, image] }
+      ] },                                     // ordered — drives BOTH landing
+                                                 // carousel (flattened) AND
+                                                 // detail scroll (as blocks)
   ]
 }
 ```
+
+(`imagePair` / `imageTrio` live in `schemaTypes/objects/galleryBlocks.ts`,
+added 2026-09-30. The field name stayed `images` so existing documents needed
+**no migration** — a plain image item already matches the first member.)
 
 (`featured` was in the original spec but dropped in the 2026-07-25 IA
 amendment — the whole catalog is the landing rotation, filterable by the
@@ -287,6 +307,11 @@ content model survived unchanged; restyled to single-column native-ratio).
         track + a caption track, cells subgrid onto them — image bottoms align
         AND captions stay in flow so a long one grows its track instead of
         overlapping. No markup change.
+  - [x] **Gallery layout blocks** (2026-09-30, client request) — project
+        gallery widened from a flat image array to `image | imagePair |
+        imageTrio`; detail page renders single/pair/scattered-trio per
+        verhaal.studio; viewer + archive read it flattened. Zero data
+        migration (field name kept). See §2 above.
   - [x] **Studio project-list thumbnail** — the orderable Projects list showed
         no thumbnails (plugin fetches a minimal projection; the default media
         renderer didn't resolve inline `images.0`). Fixed by changing this to images.0.asset
