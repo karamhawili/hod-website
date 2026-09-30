@@ -16,10 +16,12 @@ interface GalleryProps {
   title: string;
 }
 
-// Fixed crops for the multi-image layouts (the reference's 2:3 portraits and
-// 1:1 square). The URL builder's `fit("crop")` honours the editor's hotspot.
+// Fixed crops for the multi-image layouts, per the reference: pair portraits
+// 2:3, trio portraits 1:1.4 (slightly squarer), square 1:1. The URL builder's
+// `fit("crop")` honours the editor's hotspot.
 const CROP_WIDTH = 1200;
-const PORTRAIT = { w: CROP_WIDTH, h: CROP_WIDTH * 1.5 };
+const PAIR_PORTRAIT = { w: CROP_WIDTH, h: CROP_WIDTH * 1.5 };
+const TRIO_PORTRAIT = { w: CROP_WIDTH, h: CROP_WIDTH * 1.4 };
 const SQUARE = { w: CROP_WIDTH, h: CROP_WIDTH };
 
 // Ordered gallery blocks as a plain vertical scroll: a plain image at its
@@ -72,7 +74,7 @@ function Pair({ images, title }: { images: NestedImage[]; title: string }) {
         <CroppedImage
           key={image._key}
           image={image}
-          crop={PORTRAIT}
+          crop={PAIR_PORTRAIT}
           sizes="(max-width: 899px) 100vw, 36vw"
           alt={image.alt ?? title}
         />
@@ -90,8 +92,8 @@ function Trio({ images, title }: { images: NestedImage[]; title: string }) {
         {left && (
           <CroppedImage
             image={left}
-            crop={PORTRAIT}
-            sizes="(max-width: 899px) 75vw, 36vw"
+            crop={TRIO_PORTRAIT}
+            sizes="(max-width: 899px) 75vw, 26vw"
             alt={left.alt ?? title}
             className={styles.trioPortraitLeft}
           />
@@ -100,7 +102,7 @@ function Trio({ images, title }: { images: NestedImage[]; title: string }) {
           <CroppedImage
             image={square}
             crop={SQUARE}
-            sizes="(max-width: 899px) 58vw, 27vw"
+            sizes="(max-width: 899px) 58vw, 21vw"
             alt={square.alt ?? title}
             className={styles.trioSquare}
           />
@@ -110,8 +112,8 @@ function Trio({ images, title }: { images: NestedImage[]; title: string }) {
         {right && (
           <CroppedImage
             image={right}
-            crop={PORTRAIT}
-            sizes="(max-width: 899px) 75vw, 36vw"
+            crop={TRIO_PORTRAIT}
+            sizes="(max-width: 899px) 75vw, 26vw"
             alt={right.alt ?? title}
             className={styles.trioPortraitRight}
           />

@@ -1,17 +1,15 @@
 /* Project gallery — ordered blocks as a plain vertical scroll. Normal document
    scroll; the landing viewer stays the only scroll interception on the site. */
 
-/* Desktop: a single grid column sized to the WIDEST block (max-content), the
-   column centered on the page (justify-content) while every block left-aligns
-   to the column's left edge (justify-items: start). So a wide landscape — or a
-   pair/trio, which always claims the full width cap — sets the block width and
-   narrower portraits hang from that same left edge, instead of each image
-   centering on its own. Mobile reverts to a full-width stack below. */
+/* Desktop: a single grid column sized to the WIDEST block (max-content),
+   centered on the page, with every block centered inside it (reference:
+   verhaal centers each row). The images' width caps keep the column within
+   the viewport. Mobile reverts to a full-width stack below. */
 .gallery {
   display: grid;
   grid-template-columns: max-content;
   justify-content: center;
-  justify-items: start;
+  justify-items: center;
   gap: clamp(4rem, 10vh, 7rem);
   margin-top: clamp(5rem, 12vh, 9rem);
 }
@@ -38,35 +36,40 @@
 
 /* ---- multi-image blocks ---- */
 
-/* Pair and trio claim the same width cap as a landscape single, so they and
-   the singles share one left edge. Their images are server-cropped to fixed
-   ratios (2:3 portraits, 1:1 square) and simply fill their cell. */
-.pair,
-.trio {
-  width: min(75vw, 1100px);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: clamp(1.5rem, 4vw, 3rem);
-}
-
+/* Images in these blocks are server-cropped to fixed ratios and simply fill
+   their cell. */
 .cropped {
   display: block;
   width: 100%;
   height: auto;
 }
 
-/* Scattered trio: the two columns are vertically CENTERED against each other.
-   The left column (portrait + square) is taller, so the lone right portrait
-   lands lower than the left one — the reference's staggered look, with no
-   magic offsets. The square sits under the left portrait, narrower and pushed
-   toward the gutter. */
+/* Pair: as wide as a landscape single (reference ≈ 78vw), two 2:3 portraits. */
+.pair {
+  width: min(75vw, 1100px);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: clamp(1.5rem, 4vw, 3rem);
+}
+
+/* Scattered trio: deliberately SMALLER than the other blocks — the reference
+   runs it at ≈54vw (portraits ≈25vw at 1:1.4, square ≈20vw), a quieter
+   interlude between the full-width rows. The two columns are vertically
+   CENTERED against each other: the left column (portrait + square) is
+   taller, so the lone right portrait lands lower than the left one — the
+   staggered look, with no magic offsets. The square sits under the left
+   portrait, narrower and flush with its right edge. */
 .trio {
+  width: min(54vw, 800px);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: clamp(1.25rem, 2vw, 2rem);
   align-items: center;
 }
 
 .trioLeft {
   display: grid;
-  row-gap: clamp(1.5rem, 4vw, 3rem);
+  row-gap: 2.5rem;
   justify-items: end;
 }
 
@@ -75,7 +78,7 @@
 }
 
 .trioSquare {
-  width: 75%;
+  width: 78%;
 }
 
 @media (max-width: 899px) {
