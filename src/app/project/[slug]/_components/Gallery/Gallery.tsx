@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import { FALLBACK_BLUR } from "@/lib/blur";
@@ -48,6 +49,9 @@ export default function Gallery({ gallery, title }: GalleryProps) {
 
 function NativeFigure({ image, title }: { image: SingleImage; title: string }) {
   if (!image.asset) return null;
+  // The CSS sizes the image from its ratio (see .image); `sizes` is only the
+  // source-selection hint and is set to the block's upper bound.
+  const ratio = image.dimensions?.aspectRatio ?? 1.5;
   return (
     <figure className={styles.figure}>
       <Image
@@ -55,8 +59,9 @@ function NativeFigure({ image, title }: { image: SingleImage; title: string }) {
         alt={image.alt ?? title}
         width={image.dimensions?.width ?? 2000}
         height={image.dimensions?.height ?? 1333}
-        sizes="(max-width: 899px) 100vw, 62vw"
+        sizes="(max-width: 899px) 100vw, 75vw"
         className={styles.image}
+        style={{ "--ar": ratio } as CSSProperties}
         placeholder="blur"
         blurDataURL={image.lqip ?? FALLBACK_BLUR}
       />
@@ -93,7 +98,7 @@ function Trio({ images, title }: { images: NestedImage[]; title: string }) {
           <CroppedImage
             image={left}
             crop={TRIO_PORTRAIT}
-            sizes="(max-width: 899px) 75vw, 26vw"
+            sizes="(max-width: 899px) 75vw, 27vw"
             alt={left.alt ?? title}
             className={styles.trioPortraitLeft}
           />
@@ -113,7 +118,7 @@ function Trio({ images, title }: { images: NestedImage[]; title: string }) {
           <CroppedImage
             image={right}
             crop={TRIO_PORTRAIT}
-            sizes="(max-width: 899px) 75vw, 26vw"
+            sizes="(max-width: 899px) 75vw, 27vw"
             alt={right.alt ?? title}
             className={styles.trioPortraitRight}
           />

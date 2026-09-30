@@ -28,17 +28,17 @@
 
 /* ---- single image: free size at native ratio ---- */
 
-/* BOTH a width and a height guard. The height guard is what creates the
-   hierarchy: portraits bind on height and come out narrower, landscapes bind on
-   width and run wide — instead of everything inflating to one uniform column.
-   The 34rem hero column above stays narrower than the images, per the
-   reference. */
+/* Deterministic width — never the <img>'s intrinsic size. (With width: auto,
+   an image that carries srcset/sizes lays out at its `sizes` width, which
+   silently pinned landscapes to 62vw and left the pair wider than them.)
+   The width is the shared block width, or narrower when the 82vh height guard
+   binds for THIS image's ratio (--ar, set inline from the asset metadata):
+   a 3:2 landscape gets exactly --block-w (same edges as the pair); a portrait
+   binds on height and comes out narrower — the hierarchy the page relies on. */
 .image {
   display: block;
-  width: auto;
+  width: min(var(--block-w), calc(82vh * var(--ar, 1.5)));
   height: auto;
-  max-width: var(--block-w);
-  max-height: 82vh;
 }
 
 /* ---- multi-image blocks ---- */
@@ -102,8 +102,7 @@
   }
 
   .image {
-    max-width: 100%;
-    max-height: none;
+    width: 100%;
   }
 
   .pair,
