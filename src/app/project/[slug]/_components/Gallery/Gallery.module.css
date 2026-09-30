@@ -6,6 +6,13 @@
    verhaal centers each row). The images' width caps keep the column within
    the viewport. Mobile reverts to a full-width stack below. */
 .gallery {
+  /* ONE block width shared by landscape singles, the pair, and (scaled) the
+     trio, so their edges agree. It is the width a 3:2 landscape gets under
+     the single-image guards below: the viewport width cap AND the 82vh
+     height cap expressed as a width (82vh × 1.5). Whichever binds, the pair
+     lands exactly as wide as that landscape instead of overshooting it. */
+  --block-w: min(75vw, 1100px, calc(82vh * 1.5));
+
   display: grid;
   grid-template-columns: max-content;
   justify-content: center;
@@ -30,7 +37,7 @@
   display: block;
   width: auto;
   height: auto;
-  max-width: min(75vw, 1100px);
+  max-width: var(--block-w);
   max-height: 82vh;
 }
 
@@ -44,23 +51,25 @@
   height: auto;
 }
 
-/* Pair: as wide as a landscape single (reference ≈ 78vw), two 2:3 portraits. */
+/* Pair: exactly as wide as a landscape single, two 2:3 portraits. */
 .pair {
-  width: min(75vw, 1100px);
+  width: var(--block-w);
   display: grid;
   grid-template-columns: 1fr 1fr;
   column-gap: clamp(1.5rem, 4vw, 3rem);
 }
 
-/* Scattered trio: deliberately SMALLER than the other blocks — the reference
-   runs it at ≈54vw (portraits ≈25vw at 1:1.4, square ≈20vw), a quieter
-   interlude between the full-width rows. The two columns are vertically
+/* Scattered trio: deliberately SMALLER than the other blocks — a fixed 72%
+   of the shared block width (the reference runs it at ≈54vw vs ≈78vw rows:
+   portraits ≈25vw at 1:1.4, square ≈20vw), a quieter interlude between the
+   full-width rows. Deriving it from --block-w keeps it smaller on every
+   screen, whichever guard binds. The two columns are vertically
    CENTERED against each other: the left column (portrait + square) is
    taller, so the lone right portrait lands lower than the left one — the
    staggered look, with no magic offsets. The square sits under the left
    portrait, narrower and flush with its right edge. */
 .trio {
-  width: min(54vw, 800px);
+  width: calc(var(--block-w) * 0.72);
   display: grid;
   grid-template-columns: 1fr 1fr;
   column-gap: clamp(1.25rem, 2vw, 2rem);
