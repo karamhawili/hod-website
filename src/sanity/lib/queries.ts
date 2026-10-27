@@ -9,6 +9,7 @@ import type {
   PUBLICATIONS_PAGE_QUERY_RESULT,
   AWARDS_PAGE_QUERY_RESULT,
   INTRO_SLIDESHOW_QUERY_RESULT,
+  SITEMAP_PROJECTS_QUERY_RESULT,
 } from "@/sanity/sanity.types";
 import { SiteSettings } from "@/types/sanity";
 
@@ -78,6 +79,23 @@ export async function getArchiveProjects(
   });
 
   return (result.data ?? []) as ARCHIVE_PROJECTS_QUERY_RESULT;
+}
+
+// sitemap.xml: the same project set the archive lists, with last-edit dates.
+export const SITEMAP_PROJECTS_QUERY = defineQuery(`
+  *[_type == "project" && defined(slug.current) && ${HAS_IMAGES}]
+    | order(orderRank) { "slug": slug.current, _updatedAt }
+`);
+
+export async function getSitemapProjects(): Promise<
+  SITEMAP_PROJECTS_QUERY_RESULT
+> {
+  const result = await sanityFetch({
+    query: SITEMAP_PROJECTS_QUERY,
+    tags: ["project"],
+  });
+
+  return (result.data ?? []) as SITEMAP_PROJECTS_QUERY_RESULT;
 }
 
 export async function getCategories(): Promise<CATEGORIES_QUERY_RESULT> {

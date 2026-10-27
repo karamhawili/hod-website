@@ -432,6 +432,14 @@ export type CATEGORIES_QUERY_RESULT = Array<{
 }>;
 
 // Source: src/sanity/lib/queries.ts
+// Variable: SITEMAP_PROJECTS_QUERY
+// Query: *[_type == "project" && defined(slug.current) && (count(images[defined(asset)]) + count(images[].images[defined(asset)])) > 0]    | order(orderRank) { "slug": slug.current, _updatedAt }
+export type SITEMAP_PROJECTS_QUERY_RESULT = Array<{
+  slug: string;
+  _updatedAt: string;
+}>;
+
+// Source: src/sanity/lib/queries.ts
 // Variable: VIEWER_PROJECTS_QUERY
 // Query: *[_type == "project" && showOnHome == true && defined(slug.current) && (count(images[defined(asset)]) + count(images[].images[defined(asset)])) > 0      && ($category == null || category->slug.current == $category)]    | order(orderRank) {   _id,  title,  "slug": slug.current,  location,  year,  "images": images[]{ "items": coalesce(images, [@]) }[].items[defined(asset)]{     _key,    alt,    asset,    hotspot,    crop,    "lqip": asset->metadata.lqip,    "dimensions": asset->metadata.dimensions{ width, height, aspectRatio }  } }
 export type VIEWER_PROJECTS_QUERY_RESULT = Array<{
