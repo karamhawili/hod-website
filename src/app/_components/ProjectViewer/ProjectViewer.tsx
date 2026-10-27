@@ -8,9 +8,9 @@ import {
   useRef,
   useState,
 } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import ResilientImage from "@/components/ResilientImage/ResilientImage";
 import { urlFor } from "@/sanity/lib/image";
 import { FALLBACK_BLUR } from "@/lib/blur";
 import type { VIEWER_PROJECTS_QUERY_RESULT } from "@/sanity/sanity.types";
@@ -452,7 +452,7 @@ export default function ProjectViewer({
       }
     >
       {image.asset && (
-        <Image
+        <ResilientImage
           src={urlFor(image).width(2000).auto("format").url()}
           alt={image.alt ?? title}
           fill
@@ -492,7 +492,7 @@ export default function ProjectViewer({
       }
     >
       {image.asset && (
-        <Image
+        <ResilientImage
           src={urlFor(image).width(2000).auto("format").url()}
           alt={image.alt ?? title}
           fill

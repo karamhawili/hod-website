@@ -1,5 +1,6 @@
-import Image, { type StaticImageData } from "next/image";
+import type { StaticImageData } from "next/image";
 import type { SanityImageSource } from "@sanity/image-url";
+import ResilientImage from "@/components/ResilientImage/ResilientImage";
 import { urlFor } from "@/sanity/lib/image";
 import { FALLBACK_BLUR } from "@/lib/blur";
 
@@ -36,7 +37,7 @@ export default function NativeImage({
 }: NativeImageProps) {
   if (image?.asset && image.dimensions) {
     return (
-      <Image
+      <ResilientImage
         src={urlFor(image as SanityImageSource)
           .width(1600)
           .auto("format")
@@ -55,7 +56,7 @@ export default function NativeImage({
 
   if (fallback) {
     return (
-      <Image
+      <ResilientImage
         src={fallback}
         alt={alt}
         sizes={sizes}
