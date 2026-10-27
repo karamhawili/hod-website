@@ -1,64 +1,62 @@
 import type { STUDIO_PAGE_QUERY_RESULT } from "@/sanity/sanity.types";
 import styles from "../studio.module.css";
 
-const DEFAULTS = {
-  heading: "What we do",
-  body: "Experts in high-end F&B spaces, we apply our sophisticated interior design skills to restaurants, beaches, lounges, and other exclusive venues, tailoring our expertise to craft exceptional environments throughout the sector.",
-  sectors: ["Private Residential", "Restaurants", "Lounges", "Beaches"],
-  services: [
-    "Architecture",
-    "Interior Design",
-    "Interior Architecture",
-    "Creative Concept",
-  ],
-};
+type Disciplines = NonNullable<STUDIO_PAGE_QUERY_RESULT>["disciplines"];
 
 interface StudioDisciplinesProps {
-  disciplines?: NonNullable<STUDIO_PAGE_QUERY_RESULT>["disciplines"];
+  disciplines?: Disciplines;
 }
 
-// Sectors we work in / services we offer — text only, two-column lists.
+export function hasDisciplinesContent(disciplines?: Disciplines) {
+  return Boolean(
+    disciplines?.heading ||
+      disciplines?.body ||
+      disciplines?.sectors?.length ||
+      disciplines?.services?.length,
+  );
+}
+
+// Sectors we work in / services we offer — text only, two-column lists, from
+// the CMS (studioPage.disciplines). An empty list hides with its label.
 export default function StudioDisciplines({
   disciplines,
 }: StudioDisciplinesProps) {
-  const sectors = disciplines?.sectors?.length
-    ? disciplines.sectors
-    : DEFAULTS.sectors;
-  const services = disciplines?.services?.length
-    ? disciplines.services
-    : DEFAULTS.services;
+  if (!disciplines || !hasDisciplinesContent(disciplines)) return null;
+
+  const lists = [
+    { label: "Sectors", items: disciplines.sectors ?? [] },
+    { label: "Services", items: disciplines.services ?? [] },
+  ].filter((list) => list.items.length > 0);
 
   return (
     <section className={styles.section}>
-      <div className={styles.text}>
-        <h2 className={styles.heading}>
-          {disciplines?.heading || DEFAULTS.heading}
-        </h2>
-        <p className={styles.body}>{disciplines?.body || DEFAULTS.body}</p>
-      </div>
+      {(disciplines.heading || disciplines.body) && (
+        <div className={styles.text}>
+          {disciplines.heading && (
+            <h2 className={styles.heading}>{disciplines.heading}</h2>
+          )}
+          {disciplines.body && (
+            <p className={styles.body}>{disciplines.body}</p>
+          )}
+        </div>
+      )}
 
-      <div className={styles.lists}>
-        <div>
-          <p className={styles.listLabel}>Sectors</p>
-          <ul className={styles.list}>
-            {sectors.map((sector) => (
-              <li key={sector} className={styles.row}>
-                {sector}
-              </li>
-            ))}
-          </ul>
+      {lists.length > 0 && (
+        <div className={styles.lists}>
+          {lists.map((list) => (
+            <div key={list.label}>
+              <p className={styles.listLabel}>{list.label}</p>
+              <ul className={styles.list}>
+                {list.items.map((item) => (
+                  <li key={item} className={styles.row}>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
-        <div>
-          <p className={styles.listLabel}>Services</p>
-          <ul className={styles.list}>
-            {services.map((service) => (
-              <li key={service} className={styles.row}>
-                {service}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+      )}
     </section>
   );
 }
