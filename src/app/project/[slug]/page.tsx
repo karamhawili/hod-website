@@ -6,6 +6,7 @@ import {
   type PortableTextComponents,
 } from "next-sanity";
 import { pageMetadata } from "@/lib/site";
+import { urlFor } from "@/sanity/lib/image";
 import { sanityFetch } from "@/sanity/lib/live";
 import { PROJECT_DETAIL_QUERY } from "@/sanity/lib/queries";
 import type { PROJECT_DETAIL_QUERY_RESULT } from "@/sanity/sanity.types";
@@ -52,12 +53,30 @@ function metaDescription(project: NonNullable<PROJECT_DETAIL_QUERY_RESULT>) {
     ? toPlainText(project.description).replace(/\s+/g, " ").trim()
     : "";
   if (!text) {
-    return [project.title, project.location, project.year]
+    return [project.title?.trim(), project.location, project.year]
       .filter(Boolean)
       .join(" — ");
   }
   if (text.length <= 160) return text;
   return `${text.slice(0, 157).replace(/\s+\S*$/, "")}…`;
+}
+
+// Link-preview image: the first gallery image in page order (a pair/trio
+// contributes its first member — same flattening as the landing viewer),
+// cropped to 1200×630 on the CDN around the editor's hotspot. JPG because
+// some preview crawlers reject WebP/AVIF.
+function ogImage(project: NonNullable<PROJECT_DETAIL_QUERY_RESULT>) {
+  const first = (project.gallery ?? [])
+    .map((block) => (block._type === "image" ? block : block.images?.[0]))
+    .find((image) => image?.asset);
+  if (!first) return undefined;
+
+  return {
+    url: urlFor(first).width(1200).height(630).fit("crop").format("jpg").url(),
+    width: 1200,
+    height: 630,
+    alt: first.alt ?? project.title?.trim() ?? "",
+  };
 }
 
 export async function generateMetadata({
@@ -67,9 +86,10 @@ export async function generateMetadata({
   if (!project) return {};
 
   return pageMetadata({
-    title: project.title ?? undefined,
+    title: project.title?.trim(),
     description: metaDescription(project),
     path: `/project/${project.slug}`,
+    image: ogImage(project),
   });
 }
 
