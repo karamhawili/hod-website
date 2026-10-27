@@ -13,6 +13,10 @@ const STATIC_ROUTES = [
   "/join-us",
 ];
 
+// Prerendered at build; refresh hourly so newly published projects appear
+// without waiting for a deploy.
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const projects = await getSitemapProjects();
 
