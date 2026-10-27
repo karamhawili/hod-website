@@ -7,11 +7,11 @@ export const siteSettings = defineType({
   type: "document",
   icon: CogIcon,
   description:
-    "Global content for the navigation rail — nav links, plus contact details awaiting a home in the Studio/Contact pass.",
+    "Global content: the navigation rail's links, the home intro, and the studio's contact details (Contact page).",
   groups: [
     { name: "nav", title: "Navigation", default: true },
     { name: "home", title: "Home intro" },
-    { name: "footer", title: "Contact (not currently displayed)" },
+    { name: "contact", title: "Contact" },
   ],
   fields: [
     defineField({
@@ -40,8 +40,9 @@ export const siteSettings = defineType({
       name: "brandLine",
       title: "Brand Line",
       type: "string",
-      group: "footer",
-      description: "The name shown in the footer, e.g. “HOUSE OF DESIGN BY SUZY HABRE”.",
+      group: "contact",
+      description:
+        "The bold name line at the top of the Contact page, e.g. “House of Design by Suzy Habre”.",
     }),
     // The former "nav" (primary links) field was retired: the top stack of
     // the rail now renders the project categories directly (landing filter).
@@ -80,8 +81,8 @@ export const siteSettings = defineType({
       name: "locations",
       title: "Locations",
       type: "array",
-      group: "footer",
-      description: "Office locations shown in the footer.",
+      group: "contact",
+      description: "Office locations shown on the Contact page.",
       of: [
         defineArrayMember({
           type: "object",
@@ -111,26 +112,29 @@ export const siteSettings = defineType({
       name: "phone",
       title: "Phone",
       type: "string",
-      group: "footer",
+      group: "contact",
+      description: "Shown under each location on the Contact page.",
     }),
     defineField({
       name: "email",
       title: "Email",
       type: "string",
-      group: "footer",
+      group: "contact",
+      description:
+        "Inquiries address on the Contact page; also used on Join Us when that page has no email of its own.",
     }),
     defineField({
       name: "mapUrl",
       title: "Map Link",
       type: "url",
-      group: "footer",
-      description: "Destination for the “VIEW MAP” button.",
+      group: "contact",
+      description: "Google Maps link. Not currently shown on the site.",
     }),
     defineField({
       name: "socials",
       title: "Social Links",
       type: "array",
-      group: "footer",
+      group: "contact",
       of: [
         defineArrayMember({
           type: "object",
