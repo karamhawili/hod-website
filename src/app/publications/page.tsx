@@ -3,6 +3,7 @@ import type { StaticImageData } from "next/image";
 import Navigation from "@/components/Navigation/Navigation";
 import NativeImage from "@/components/NativeImage/NativeImage";
 import OutwardIcon from "@/components/icons/OutwardIcon";
+import { pageMetadata } from "@/lib/site";
 import { splitParagraphs } from "@/lib/splitParagraphs";
 import { getPublicationsPage } from "@/sanity/lib/queries";
 import type { PUBLICATIONS_PAGE_QUERY_RESULT } from "@/sanity/sanity.types";
@@ -11,9 +12,11 @@ import coverB from "../../../public/press-2.png";
 import coverC from "../../../public/press-3.png";
 import styles from "./page.module.css";
 
-export const metadata: Metadata = {
-  title: "Publications — House of Design",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Publications",
+  description: "Press and publications featuring House of Design.",
+  path: "/publications",
+});
 
 type Publication = NonNullable<
   NonNullable<PUBLICATIONS_PAGE_QUERY_RESULT>["publications"]

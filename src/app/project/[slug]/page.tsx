@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { PortableText, type PortableTextComponents } from "next-sanity";
+import {
+  PortableText,
+  toPlainText,
+  type PortableTextComponents,
+} from "next-sanity";
+import { pageMetadata } from "@/lib/site";
 import { sanityFetch } from "@/sanity/lib/live";
 import { PROJECT_DETAIL_QUERY } from "@/sanity/lib/queries";
 import type { PROJECT_DETAIL_QUERY_RESULT } from "@/sanity/sanity.types";
@@ -40,13 +45,32 @@ async function getProject(params: ProjectPageProps["params"]) {
   return result.data as PROJECT_DETAIL_QUERY_RESULT;
 }
 
+// Search/preview snippet: the description's opening, cut at a word boundary to
+// fit the ~160-char limit; projects without copy fall back to their meta line.
+function metaDescription(project: NonNullable<PROJECT_DETAIL_QUERY_RESULT>) {
+  const text = project.description
+    ? toPlainText(project.description).replace(/\s+/g, " ").trim()
+    : "";
+  if (!text) {
+    return [project.title, project.location, project.year]
+      .filter(Boolean)
+      .join(" — ");
+  }
+  if (text.length <= 160) return text;
+  return `${text.slice(0, 157).replace(/\s+\S*$/, "")}…`;
+}
+
 export async function generateMetadata({
   params,
 }: ProjectPageProps): Promise<Metadata> {
   const project = await getProject(params);
-  return {
-    title: project ? `${project.title} — House of Design` : "House of Design",
-  };
+  if (!project) return {};
+
+  return pageMetadata({
+    title: project.title ?? undefined,
+    description: metaDescription(project),
+    path: `/project/${project.slug}`,
+  });
 }
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
