@@ -64,25 +64,28 @@ export default function JoinUsHero({ joinUs, fallbackEmail }: JoinUsHeroProps) {
         </div>
       )}
 
-      <div className={styles.text}>
-        <p className={styles.label}>Careers</p>
-        {joinUs?.heading && (
-          <h1 className={styles.heading}>{joinUs.heading}</h1>
-        )}
-        {paragraphs.map((paragraph, index) => (
-          <p key={index} className={styles.body}>
-            {paragraph}
-          </p>
-        ))}
-        {email && (
-          <>
-            <p className={styles.emailLead}>Send your resume to</p>
-            <a href={`mailto:${email}`} className={styles.cta}>
-              {email}
-            </a>
-          </>
-        )}
-      </div>
+      {/* The "Careers" label only introduces real content — never alone. */}
+      {(joinUs?.heading || paragraphs.length > 0) && (
+        <div className={styles.text}>
+          <p className={styles.label}>Careers</p>
+          {joinUs?.heading && (
+            <h1 className={styles.heading}>{joinUs.heading}</h1>
+          )}
+          {paragraphs.map((paragraph, index) => (
+            <p key={index} className={styles.body}>
+              {paragraph}
+            </p>
+          ))}
+          {email && (
+            <>
+              <p className={styles.emailLead}>Send your resume to</p>
+              <a href={`mailto:${email}`} className={styles.cta}>
+                {email}
+              </a>
+            </>
+          )}
+        </div>
+      )}
     </section>
   );
 }
