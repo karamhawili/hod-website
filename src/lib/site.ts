@@ -37,9 +37,18 @@ type PageMetadataInput = {
   image?: { url: string; width: number; height: number; alt: string };
 };
 
+// The generated ./app/opengraph-image.tsx card (1200×630, see brandArt.tsx).
+const DEFAULT_OG_IMAGE = {
+  url: "/opengraph-image",
+  width: 1200,
+  height: 630,
+  alt: SITE_NAME,
+};
+
 // Per-page metadata in one place. A page-level `openGraph` object REPLACES the
-// layout's (Next merges metadata shallowly), so the shared Open Graph fields
-// are re-applied here rather than relying on inheritance.
+// layout's (Next merges metadata shallowly) — including the root
+// opengraph-image file below the root segment — so the shared Open Graph
+// fields and the default card are re-applied here rather than inherited.
 export function pageMetadata({
   title,
   description = SITE_DESCRIPTION,
@@ -56,7 +65,7 @@ export function pageMetadata({
       title: fullTitle,
       description,
       url: path,
-      ...(image && { images: [image] }),
+      images: [image ?? DEFAULT_OG_IMAGE],
     },
   };
 }
