@@ -11,7 +11,7 @@ import { NextStudio } from 'next-sanity/studio'
 import config from '../../../../sanity.config'
 
 // NOTE: `force-static` was removed — the root layout now reads headers()
-// (via middleware) to keep SanityLive off the Studio, which makes the tree
+// (via proxy) to keep SanityLive off the Studio, which makes the tree
 // dynamic. The Studio is a client-rendered SPA, so dynamic is fine.
 
 export { metadata, viewport } from 'next-sanity/studio'

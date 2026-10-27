@@ -5,7 +5,7 @@ import { NextResponse, type NextRequest } from "next/server";
 // the embedded Studio at /admin. SanityLive's live-content revalidation calls
 // router.refresh() on every mutation, which — inside the Studio — flickers the
 // UI, loses scroll position, and closes open modals on upload/edit.
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-pathname", request.nextUrl.pathname);
   return NextResponse.next({ request: { headers: requestHeaders } });

@@ -252,7 +252,7 @@ content model survived unchanged; restyled to single-column native-ratio).
       (old `StudioPublications` + `studioPage.publications` were removed in
       8.1; press-list content recoverable from git history).
 - [~] Phase 8.4 — Splash / intro screen: built then **removed at user
-  request** (component + layout render deleted). The middleware +
+  request** (component + layout render deleted). The proxy (`src/proxy.ts`) +
   `headers()` pathname logic in the root layout stays — it's what keeps
   `SanityLive` off the Studio (the more important reason it exists).
 - [ ] Phase 9 — Refinements + Press/Awards + polish. Sub-tasks:

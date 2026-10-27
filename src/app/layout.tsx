@@ -34,7 +34,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // The Studio (/admin) must not run the frontend's SanityLive (see
-  // middleware.ts). Pathname comes from the middleware-set header.
+  // proxy.ts). Pathname comes from the proxy-set header.
   const pathname = (await headers()).get("x-pathname") ?? "";
   const isStudio = pathname.startsWith("/admin");
 
