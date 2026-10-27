@@ -105,6 +105,7 @@ export default function IntroSlideshow({ images }: IntroSlideshowProps) {
                 loader={({ width }) =>
                   urlFor(img)
                     .width(width)
+                    .fit("max")
                     .quality(IMAGE_QUALITY)
                     .auto("format")
                     .url()

@@ -40,6 +40,7 @@ export default function NativeImage({
       <ResilientImage
         src={urlFor(image as SanityImageSource)
           .width(1600)
+          .fit("max")
           .auto("format")
           .url()}
         alt={alt}

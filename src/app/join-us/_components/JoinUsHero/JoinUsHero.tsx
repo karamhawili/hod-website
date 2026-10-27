@@ -26,6 +26,7 @@ export default function JoinUsHero({ joinUs, fallbackEmail }: JoinUsHeroProps) {
   const posterUrl = joinUs?.image?.asset
     ? urlFor(joinUs.image as SanityImageSource)
         .width(1400)
+        .fit("max")
         .auto("format")
         .url()
     : undefined;

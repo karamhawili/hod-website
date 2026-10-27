@@ -37,7 +37,11 @@ export default function ArchiveGrid({ projects, returnTo }: ArchiveGridProps) {
             >
               {project.thumb?.asset && (
                 <ResilientImage
-                  src={urlFor(project.thumb).width(800).auto("format").url()}
+                  src={urlFor(project.thumb)
+                    .width(800)
+                    .fit("max")
+                    .auto("format")
+                    .url()}
                   alt={project.thumb.alt ?? project.title}
                   width={project.thumb.dimensions?.width ?? 800}
                   height={project.thumb.dimensions?.height ?? 600}
