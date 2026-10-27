@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import Image from "next/image";
+import ResilientImage from "@/components/ResilientImage/ResilientImage";
 import { urlFor } from "@/sanity/lib/image";
 import { FALLBACK_BLUR } from "@/lib/blur";
 import Logo from "@/components/Logo/Logo";
@@ -97,7 +97,7 @@ export default function IntroSlideshow({ images }: IntroSlideshowProps) {
             style={{ opacity: i === index ? 1 : 0 }}
           >
             {img.asset && (
-              <Image
+              <ResilientImage
                 // Serve straight from Sanity's CDN per srcset width (device-
                 // appropriate size, AVIF/WebP, full quality) instead of
                 // re-optimizing through Next — no double-encoding, no quality

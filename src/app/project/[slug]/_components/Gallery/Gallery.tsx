@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import Image from "next/image";
+import ResilientImage from "@/components/ResilientImage/ResilientImage";
 import { urlFor } from "@/sanity/lib/image";
 import { FALLBACK_BLUR } from "@/lib/blur";
 import type { PROJECT_DETAIL_QUERY_RESULT } from "@/sanity/sanity.types";
@@ -54,7 +54,7 @@ function NativeFigure({ image, title }: { image: SingleImage; title: string }) {
   const ratio = image.dimensions?.aspectRatio ?? 1.5;
   return (
     <figure className={styles.figure}>
-      <Image
+      <ResilientImage
         src={urlFor(image).width(2000).auto("format").url()}
         alt={image.alt ?? title}
         width={image.dimensions?.width ?? 2000}
@@ -143,7 +143,7 @@ function CroppedImage({
 }) {
   return (
     <figure className={`${styles.figure} ${className ?? ""}`}>
-      <Image
+      <ResilientImage
         src={urlFor(image)
           .width(crop.w)
           .height(crop.h)
