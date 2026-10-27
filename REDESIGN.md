@@ -334,6 +334,10 @@ content model survived unchanged; restyled to single-column native-ratio).
         `error` pages. Remaining launch work is non-code: CMS content
         (siteSettings contact details, Publications/Awards/Join Us docs),
         custom domain in Vercel, domain in Sanity CORS origins.
+  - [x] **Failed images keep their blur** (2026-10-28) — every image goes
+        through `components/ResilientImage`: a load failure keeps the blur
+        (no broken glyph / alt text) and retries after 2s/5s/15s + on
+        `online`. Use it instead of `next/image` for new images.
   - [ ] **Responsive + QA pass** — deliberate breakpoint walk across every
         route (landing viewer, archive, project detail, studio, contact,
         publications, awards, join us).
