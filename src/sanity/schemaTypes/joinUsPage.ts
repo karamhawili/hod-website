@@ -14,7 +14,7 @@ export const joinUsPage = defineType({
       type: "file",
       options: { accept: "video/mp4,video/webm" },
       description:
-        "A short looping video, shown on the left. It plays automatically, without sound. Leave empty to keep the built-in studio video.",
+        "A short looping video, shown on the left. It plays automatically, without sound. Leave empty for no video (the image below is shown instead, if set).",
     }),
     defineField({
       name: "image",
@@ -30,6 +30,7 @@ export const joinUsPage = defineType({
       type: "string",
       description:
         "The statement beside the video, e.g. “Grow as a professional on our side”.",
+      validation: (rule) => rule.required(),
     }),
     defineField({
       name: "body",
