@@ -453,7 +453,7 @@ export default function ProjectViewer({
     >
       {image.asset && (
         <ResilientImage
-          src={urlFor(image).width(2000).auto("format").url()}
+          src={urlFor(image).width(2000).fit("max").auto("format").url()}
           alt={image.alt ?? title}
           fill
           sizes="(max-width: 899px) 92vw, 60vw"
@@ -493,7 +493,7 @@ export default function ProjectViewer({
     >
       {image.asset && (
         <ResilientImage
-          src={urlFor(image).width(2000).auto("format").url()}
+          src={urlFor(image).width(2000).fit("max").auto("format").url()}
           alt={image.alt ?? title}
           fill
           sizes="(max-width: 899px) 92vw, 60vw"

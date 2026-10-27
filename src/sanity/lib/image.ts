@@ -14,6 +14,8 @@ export const urlFor = (source: SanityImageSource) => {
 
 // Preferred helper for new components: caps the source width and lets the
 // CDN pick the best format, instead of shipping full-res originals.
+// `fit("max")` makes the width a true cap — without it Sanity treats `w` as a
+// target and upscales smaller originals (bigger file, no added detail).
 export const urlForSized = (source: SanityImageSource, width: number) => {
-  return urlFor(source).width(width).auto("format").url();
+  return urlFor(source).width(width).fit("max").auto("format").url();
 };

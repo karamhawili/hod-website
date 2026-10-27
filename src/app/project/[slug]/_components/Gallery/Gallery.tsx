@@ -55,7 +55,7 @@ function NativeFigure({ image, title }: { image: SingleImage; title: string }) {
   return (
     <figure className={styles.figure}>
       <ResilientImage
-        src={urlFor(image).width(2000).auto("format").url()}
+        src={urlFor(image).width(2000).fit("max").auto("format").url()}
         alt={image.alt ?? title}
         width={image.dimensions?.width ?? 2000}
         height={image.dimensions?.height ?? 1333}
