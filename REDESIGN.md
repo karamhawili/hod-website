@@ -326,6 +326,14 @@ content model survived unchanged; restyled to single-column native-ratio).
         Grotesque, Great Vibes) from `layout.tsx`; migrated the base
         `body`/`h1-h6` defaults onto the redesign tokens. `--tracking-label`
         kept (Awards section labels). Build + all routes (incl. `/admin`) green.
+  - [x] **Launch readiness (code side, 2026-10-28)** — `proxy.ts` rename,
+        unused `public/` assets removed, `src/lib/site.ts` (`SITE_URL` +
+        `pageMetadata()`: title template, descriptions, canonicals, OG),
+        `robots.ts` + `sitemap.ts`, generated OG card / favicon / Apple icon
+        (`lib/brandArt.tsx`), per-project OG photo, branded `not-found` +
+        `error` pages. Remaining launch work is non-code: CMS content
+        (siteSettings contact details, Publications/Awards/Join Us docs),
+        custom domain in Vercel, domain in Sanity CORS origins.
   - [ ] **Responsive + QA pass** — deliberate breakpoint walk across every
         route (landing viewer, archive, project detail, studio, contact,
         publications, awards, join us).
