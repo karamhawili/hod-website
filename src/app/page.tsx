@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import Navigation from "@/components/Navigation/Navigation";
+import { pageMetadata } from "@/lib/site";
 import { getIntroSlideshow, getViewerProjects } from "@/sanity/lib/queries";
 import ProjectViewer from "./_components/ProjectViewer/ProjectViewer";
 import IntroSlideshow from "./_components/IntroSlideshow/IntroSlideshow";
+
+// Canonical is "/" so the ?category= filter views aren't indexed as duplicates.
+export const metadata: Metadata = pageMetadata({ path: "/" });
 
 type HomeProps = {
   // The rail's category links filter the rotation via ?category=<slug>. The

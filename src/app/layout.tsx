@@ -1,8 +1,14 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import { EB_Garamond, Libre_Franklin } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
+import {
+  OPEN_GRAPH_DEFAULTS,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_URL,
+} from "@/lib/site";
 import { SanityLive } from "@/sanity/lib/live";
 
 // Fonts (VVD direction): EB Garamond stands in for Custodia Pro (old-style serif
@@ -22,10 +28,24 @@ const libreFranklin = Libre_Franklin({
   display: "swap",
 });
 
+// Pages set just their own name as `title`; the template adds the brand.
+// The default Open Graph image is ./opengraph-image.tsx (project pages
+// override it with their first gallery image).
 export const metadata: Metadata = {
-  title: "House of Design",
-  description:
-    "Leading design studio - Private Residential, Restaurants, Lounge, Beaches",
+  metadataBase: new URL(SITE_URL),
+  title: { default: SITE_NAME, template: `%s — ${SITE_NAME}` },
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    ...OPEN_GRAPH_DEFAULTS,
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+  },
+  twitter: { card: "summary_large_image" },
+};
+
+// Matches --color-bg so mobile browser chrome blends into the page.
+export const viewport: Viewport = {
+  themeColor: "#fffffa",
 };
 
 export default async function RootLayout({
@@ -34,7 +54,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // The Studio (/admin) must not run the frontend's SanityLive (see
-  // middleware.ts). Pathname comes from the middleware-set header.
+  // proxy.ts). Pathname comes from the proxy-set header.
   const pathname = (await headers()).get("x-pathname") ?? "";
   const isStudio = pathname.startsWith("/admin");
 

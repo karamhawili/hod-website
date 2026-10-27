@@ -252,7 +252,7 @@ content model survived unchanged; restyled to single-column native-ratio).
       (old `StudioPublications` + `studioPage.publications` were removed in
       8.1; press-list content recoverable from git history).
 - [~] Phase 8.4 — Splash / intro screen: built then **removed at user
-  request** (component + layout render deleted). The middleware +
+  request** (component + layout render deleted). The proxy (`src/proxy.ts`) +
   `headers()` pathname logic in the root layout stays — it's what keeps
   `SanityLive` off the Studio (the more important reason it exists).
 - [ ] Phase 9 — Refinements + Press/Awards + polish. Sub-tasks:
@@ -326,6 +326,14 @@ content model survived unchanged; restyled to single-column native-ratio).
         Grotesque, Great Vibes) from `layout.tsx`; migrated the base
         `body`/`h1-h6` defaults onto the redesign tokens. `--tracking-label`
         kept (Awards section labels). Build + all routes (incl. `/admin`) green.
+  - [x] **Launch readiness (code side, 2026-10-28)** — `proxy.ts` rename,
+        unused `public/` assets removed, `src/lib/site.ts` (`SITE_URL` +
+        `pageMetadata()`: title template, descriptions, canonicals, OG),
+        `robots.ts` + `sitemap.ts`, generated OG card / favicon / Apple icon
+        (`lib/brandArt.tsx`), per-project OG photo, branded `not-found` +
+        `error` pages. Remaining launch work is non-code: CMS content
+        (siteSettings contact details, Publications/Awards/Join Us docs),
+        custom domain in Vercel, domain in Sanity CORS origins.
   - [ ] **Responsive + QA pass** — deliberate breakpoint walk across every
         route (landing viewer, archive, project detail, studio, contact,
         publications, awards, join us).

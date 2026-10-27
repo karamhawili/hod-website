@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import Navigation from "@/components/Navigation/Navigation";
+import { pageMetadata } from "@/lib/site";
 import { getAwardsPage } from "@/sanity/lib/queries";
 import type { AWARDS_PAGE_QUERY_RESULT } from "@/sanity/sanity.types";
 import styles from "./page.module.css";
 
-export const metadata: Metadata = {
-  title: "Awards — House of Design",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Awards",
+  description: "Awards and recognition for House of Design projects.",
+  path: "/awards",
+});
 
 type Recognition = NonNullable<
   NonNullable<AWARDS_PAGE_QUERY_RESULT>["recognition"]

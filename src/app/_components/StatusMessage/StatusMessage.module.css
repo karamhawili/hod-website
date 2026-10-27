@@ -1,0 +1,57 @@
+/* Mirrors the Contact page column (contact/page.module.css). */
+.status {
+  max-width: 34rem;
+  padding-block: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: var(--text-title);
+  font-weight: 500;
+  letter-spacing: var(--tracking-heading);
+  color: var(--color-title);
+  margin-bottom: 1.75rem;
+}
+
+.body {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
+  line-height: var(--leading-body);
+  color: var(--color-fg);
+  margin-bottom: 1.75rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.75rem;
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
+}
+
+/* Links and the error page's retry button share one quiet treatment. */
+.actions :is(a, button) {
+  color: var(--color-fg);
+  font: inherit;
+  letter-spacing: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.actions :is(a, button):hover {
+  opacity: 0.7;
+}
+
+@media (max-width: 899px) {
+  .status {
+    padding-inline: 1.5rem;
+  }
+}

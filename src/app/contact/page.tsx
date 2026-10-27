@@ -1,13 +1,16 @@
 import { Fragment } from "react";
 import type { Metadata } from "next";
 import Navigation from "@/components/Navigation/Navigation";
+import { pageMetadata } from "@/lib/site";
 import { getSiteSettings } from "@/sanity/lib/queries";
 import type { SiteSettings } from "@/types/sanity";
 import styles from "./page.module.css";
 
-export const metadata: Metadata = {
-  title: "Contact — House of Design",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Contact",
+  description: "Contact House of Design in Beirut and Dubai.",
+  path: "/contact",
+});
 
 // Fallbacks mirror the old footer so the page is never empty pre-CMS.
 const FALLBACK: SiteSettings = {

@@ -1,0 +1,15 @@
+/* Same vertical centring as the Contact page. */
+.main {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+@media (max-width: 899px) {
+  /* Below the in-flow mobile header (64px). */
+  .main {
+    min-height: calc(100dvh - 64px);
+  }
+}
