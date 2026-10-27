@@ -22,9 +22,15 @@ function svgDataUri(paths: string[], viewBox: string) {
 
 /**
  * The round monogram centred on a square off-white tile. `markRatio` is the
- * share of the tile's width the monogram spans (smaller = more padding).
+ * share of the tile's width the monogram spans (smaller = more padding);
+ * `cornerRatio` rounds the tile's corners as a share of its side (0 = square,
+ * corners outside the radius stay transparent).
  */
-export function monogramIcon(size: number, markRatio: number) {
+export function monogramIcon(
+  size: number,
+  markRatio: number,
+  cornerRatio = 0,
+) {
   const { x, y, width, height } = MONOGRAM_BOUNDS;
   // Square viewBox around the monogram's centre; the side is set so the
   // monogram's width fills `markRatio` of it.
@@ -44,6 +50,7 @@ export function monogramIcon(size: number, markRatio: number) {
           width: "100%",
           height: "100%",
           background: BG,
+          borderRadius: Math.round(size * cornerRatio),
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse, not the DOM */}
