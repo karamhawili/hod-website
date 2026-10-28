@@ -341,9 +341,9 @@ content model survived unchanged; restyled to single-column native-ratio).
   - [x] **CMS is the only source of page content** (2026-10-28) — no
         hardcoded fallbacks; empty fields hide their block. Content seeded by
         `scripts/seed-page-content.ts` (development done).
-  - [ ] **Seed production** (dry run → explicit OK → `--apply`) **before
-        the push**, then delete `public/about/founder.jpg`,
-        `public/press*.png`, `public/join-us/join-us-video.mp4`.
+  - [x] **Seed production** (2026-10-28, dry run → OK → `--apply`) — then
+        deleted `public/about/founder.jpg`, `public/press*.png`,
+        `public/join-us/join-us-video.mp4` (now in Sanity).
   - [ ] **Responsive + QA pass** — deliberate breakpoint walk across every
         route (landing viewer, archive, project detail, studio, contact,
         publications, awards, join us).

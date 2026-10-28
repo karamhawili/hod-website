@@ -17,6 +17,11 @@
  *   npx sanity exec scripts/seed-page-content.ts --with-user-token -- --dataset development
  *   npx sanity exec scripts/seed-page-content.ts --with-user-token -- --dataset development --apply
  *
+ * STATUS: run against both `development` and `production` on 2026-10-28.
+ * The local files it uploads (public/press*.png, public/join-us/
+ * join-us-video.mp4) were deleted afterwards; to re-run it, restore them
+ * from git first (e.g. `git checkout 319cb8d -- public/`).
+ *
  * Deliberately NOT seeded: the placeholder phone (+961 1 234 567), the
  * LinkedIn URL (company/addmindhospitality — Audit N5) and the map link (not
  * shown on the site). The client fills those in /admin.
