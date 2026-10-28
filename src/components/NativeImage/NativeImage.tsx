@@ -1,4 +1,3 @@
-import type { StaticImageData } from "next/image";
 import type { SanityImageSource } from "@sanity/image-url";
 import ResilientImage from "@/components/ResilientImage/ResilientImage";
 import { urlFor } from "@/sanity/lib/image";
@@ -16,20 +15,17 @@ export interface SanityImageWithMeta {
 
 interface NativeImageProps {
   image?: SanityImageWithMeta | null;
-  fallback?: StaticImageData;
   alt: string;
   sizes: string;
   className?: string;
   priority?: boolean;
 }
 
-// Renders an image at its true aspect ratio (never cropped) via intrinsic
-// width/height — from Sanity asset metadata, or from a static import's
-// compile-time dimensions when the CMS field is empty. Renders nothing when
-// neither source is present.
+// Renders a CMS image at its true aspect ratio (never cropped) via intrinsic
+// width/height from Sanity asset metadata. Renders nothing when the field is
+// empty.
 export default function NativeImage({
   image,
-  fallback,
   alt,
   sizes,
   className,
@@ -50,19 +46,6 @@ export default function NativeImage({
         className={className}
         placeholder="blur"
         blurDataURL={image.lqip ?? FALLBACK_BLUR}
-        priority={priority}
-      />
-    );
-  }
-
-  if (fallback) {
-    return (
-      <ResilientImage
-        src={fallback}
-        alt={alt}
-        sizes={sizes}
-        className={className}
-        placeholder="blur"
         priority={priority}
       />
     );

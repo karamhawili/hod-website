@@ -36,11 +36,6 @@ export type SiteSettings = {
     _key: string;
   }>;
   brandLine?: string;
-  secondaryNav?: Array<{
-    label: string;
-    href: string;
-    _key: string;
-  }>;
   locations?: Array<{
     label: string;
     address?: string;
@@ -134,7 +129,7 @@ export type JoinUsPage = {
     crop?: SanityImageCrop;
     _type: "image";
   };
-  heading?: string;
+  heading: string;
   body?: string;
   email?: string;
 };
@@ -146,7 +141,7 @@ export type StudioPage = {
   _updatedAt: string;
   _rev: string;
   founder?: {
-    name?: string;
+    name: string;
     role?: string;
     image?: {
       asset?: SanityImageAssetReference;
@@ -160,11 +155,11 @@ export type StudioPage = {
     linkUrl?: string;
   };
   intro?: {
-    heading?: string;
+    heading: string;
     body?: string;
   };
   disciplines?: {
-    heading?: string;
+    heading: string;
     body?: string;
     sectors?: Array<string>;
     services?: Array<string>;
@@ -545,11 +540,10 @@ export type PROJECT_DETAIL_QUERY_RESULT = {
 
 // Source: src/sanity/lib/queries.ts
 // Variable: SITE_SETTINGS_QUERY
-// Query: *[_id == "siteSettings"][0]{    brandLine,    secondaryNav[]{ label, href },    locations[]{ label, address },    phone,    email,    mapUrl,    socials[]{ platform, url }  }
+// Query: *[_id == "siteSettings"][0]{    brandLine,    locations[]{ label, address },    phone,    email,    mapUrl,    socials[]{ platform, url }  }
 export type SITE_SETTINGS_QUERY_RESULT =
   | {
       brandLine: null;
-      secondaryNav: null;
       locations: null;
       phone: null;
       email: null;
@@ -558,7 +552,6 @@ export type SITE_SETTINGS_QUERY_RESULT =
     }
   | {
       brandLine: null;
-      secondaryNav: null;
       locations: null;
       phone: null;
       email: string | null;
@@ -567,10 +560,6 @@ export type SITE_SETTINGS_QUERY_RESULT =
     }
   | {
       brandLine: string | null;
-      secondaryNav: Array<{
-        label: string;
-        href: string;
-      }> | null;
       locations: Array<{
         label: string;
         address: string | null;
@@ -613,7 +602,7 @@ export type STUDIO_PAGE_QUERY_RESULT =
     }
   | {
       founder: {
-        name: string | null;
+        name: string;
         role: string | null;
         bio: string | null;
         linkLabel: string | null;
@@ -631,11 +620,11 @@ export type STUDIO_PAGE_QUERY_RESULT =
         } | null;
       } | null;
       intro: {
-        heading: string | null;
+        heading: string;
         body: string | null;
       } | null;
       disciplines: {
-        heading: string | null;
+        heading: string;
         body: string | null;
         sectors: Array<string> | null;
         services: Array<string> | null;
@@ -721,7 +710,7 @@ export type JOIN_US_PAGE_QUERY_RESULT =
           aspectRatio: number;
         } | null;
       } | null;
-      heading: string | null;
+      heading: string;
       body: string | null;
       email: string | null;
     }

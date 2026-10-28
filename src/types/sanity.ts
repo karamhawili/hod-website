@@ -12,11 +12,6 @@ export interface SanityImage {
   };
 }
 
-export interface NavLink {
-  label: string;
-  href: string;
-}
-
 export interface SiteLocation {
   label: string;
   address?: string;
@@ -29,7 +24,6 @@ export interface SocialLink {
 
 export interface SiteSettings {
   brandLine?: string;
-  secondaryNav?: NavLink[];
   locations?: SiteLocation[];
   phone?: string;
   email?: string;

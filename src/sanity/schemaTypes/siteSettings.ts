@@ -7,10 +7,9 @@ export const siteSettings = defineType({
   type: "document",
   icon: CogIcon,
   description:
-    "Global content: the navigation rail's links, the home intro, and the studio's contact details (Contact page).",
+    "Global content: the home intro slideshow and the studio's contact details (Contact page).",
   groups: [
-    { name: "nav", title: "Navigation", default: true },
-    { name: "home", title: "Home intro" },
+    { name: "home", title: "Home intro", default: true },
     { name: "contact", title: "Contact" },
   ],
   fields: [
@@ -43,39 +42,6 @@ export const siteSettings = defineType({
       group: "contact",
       description:
         "The bold name line at the top of the Contact page, e.g. “House of Design by Suzy Habre”.",
-    }),
-    // The former "nav" (primary links) field was retired: the top stack of
-    // the rail now renders the project categories directly (landing filter).
-    defineField({
-      name: "secondaryNav",
-      title: "Secondary Navigation",
-      type: "array",
-      group: "nav",
-      description:
-        "Links pinned to the bottom of the left rail — e.g. Archive, Studio, Join Us. (The top of the rail shows the project categories automatically.)",
-      of: [
-        defineArrayMember({
-          type: "object",
-          fields: [
-            defineField({
-              name: "label",
-              title: "Label",
-              type: "string",
-              validation: (rule) => rule.required(),
-            }),
-            defineField({
-              name: "href",
-              title: "Link",
-              type: "string",
-              description: "A path like /studio or /join-us, or a full URL.",
-              validation: (rule) => rule.required(),
-            }),
-          ],
-          preview: {
-            select: { title: "label", subtitle: "href" },
-          },
-        }),
-      ],
     }),
     defineField({
       name: "locations",

@@ -27,6 +27,7 @@ export const studioPage = defineType({
           title: "Name",
           type: "string",
           description: "e.g. “Suzy Habre”.",
+          validation: (rule) => rule.required(),
         }),
         defineField({
           name: "role",
@@ -76,6 +77,7 @@ export const studioPage = defineType({
           type: "string",
           description:
             "The opening statement, e.g. “House of Design is an interior design studio rooted in Beirut”.",
+          validation: (rule) => rule.required(),
         }),
         defineField({
           name: "body",
@@ -100,6 +102,7 @@ export const studioPage = defineType({
           title: "Title",
           type: "string",
           description: "The section title, e.g. “What we do”.",
+          validation: (rule) => rule.required(),
         }),
         defineField({
           name: "body",
@@ -125,4 +128,11 @@ export const studioPage = defineType({
       ],
     }),
   ],
+  // A fixed title: without it the Studio derives one from the first field
+  // and shows the whole content as the document heading.
+  preview: {
+    prepare() {
+      return { title: "Studio Page" };
+    },
+  },
 });

@@ -168,7 +168,6 @@ export const PROJECT_DETAIL_QUERY = defineQuery(`
 export const SITE_SETTINGS_QUERY = defineQuery(`
   *[_id == "siteSettings"][0]{
     brandLine,
-    secondaryNav[]{ label, href },
     locations[]{ label, address },
     phone,
     email,
