@@ -128,4 +128,11 @@ export const studioPage = defineType({
       ],
     }),
   ],
+  // A fixed title: without it the Studio derives one from the first field
+  // and shows the whole content as the document heading.
+  preview: {
+    prepare() {
+      return { title: "Studio Page" };
+    },
+  },
 });

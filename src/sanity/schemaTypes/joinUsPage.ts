@@ -48,4 +48,11 @@ export const joinUsPage = defineType({
         "Where applicants send their resume. Leave empty to use the general email from Site Settings.",
     }),
   ],
+  // A fixed title: without it the Studio derives one from the first field
+  // and shows the whole content as the document heading.
+  preview: {
+    prepare() {
+      return { title: "Join Us Page" };
+    },
+  },
 });
