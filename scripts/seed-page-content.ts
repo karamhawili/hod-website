@@ -8,6 +8,9 @@
  *   - every field is written with setIfMissing — anything already set (e.g.
  *     the founder portrait, the intro slideshow) is never touched
  *   - re-running is harmless; a second run reports nothing left to set
+ *   - drafts: an EMPTY draft of a seeded page (system fields only) is
+ *     discarded — it would hide the published content in /admin. A draft
+ *     with content is never deleted; it only gets its missing fields filled.
  *
  * Dry run by default (prints what it would do, writes nothing). Runs with your
  * `sanity login` auth:
@@ -361,6 +364,41 @@ function preview(value: unknown) {
   return text.length > 70 ? `"${text.slice(0, 67)}…"` : `"${text}"`;
 }
 
+// The seed values for every field of `doc` that's empty in `target`, keyed
+// by path (uploads resolved). Logs each field as set or skipped.
+async function missingFields(
+  doc: Doc,
+  target: Record<string, unknown> | null,
+  indent: string,
+) {
+  const patch: Record<string, unknown> = {};
+
+  for (const field of doc.fields) {
+    const flag = field.review ? "  [review: written during build]" : "";
+
+    if (!isEmpty(getPath(target, field.path))) {
+      console.log(`${indent}skip  ${field.path} — already set${flag}`);
+      continue;
+    }
+
+    const notes: string[] = [];
+    patch[field.path] = await materialise(field.value, notes);
+    console.log(`${indent}set   ${field.path} = ${preview(field.value)}${flag}`);
+    for (const note of notes) console.log(`${indent}        ↳ ${note}`);
+  }
+
+  return patch;
+}
+
+// Nested paths (e.g. "founder.name") need their parent object to exist.
+function parentObjects(patch: Record<string, unknown>) {
+  return Object.fromEntries(
+    Object.keys(patch)
+      .filter((path) => path.includes("."))
+      .map((path) => [path.split(".")[0], {}]),
+  );
+}
+
 // ---- run ----
 
 async function run() {
@@ -376,44 +414,46 @@ async function run() {
       `${doc._id} ${existing ? "(exists — only missing fields are filled)" : "(missing — will be created)"}`,
     );
 
-    const patch: Record<string, unknown> = {};
-
-    for (const field of doc.fields) {
-      const current = getPath(existing ?? null, field.path);
-      const flag = field.review ? "  [review: written during build]" : "";
-
-      if (!isEmpty(current)) {
-        console.log(`  skip  ${field.path} — already set${flag}`);
-        continue;
-      }
-
-      const notes: string[] = [];
-      const value = await materialise(field.value, notes);
-      patch[field.path] = value;
-      toSet += 1;
-      console.log(`  set   ${field.path} = ${preview(field.value)}${flag}`);
-      for (const note of notes) console.log(`          ↳ ${note}`);
-    }
+    const patch = await missingFields(doc, existing ?? null, "  ");
+    toSet += Object.keys(patch).length;
 
     if (APPLY && Object.keys(patch).length > 0) {
-      // Nested paths need their parent object to exist first.
-      const parents = [
-        ...new Set(
-          Object.keys(patch)
-            .filter((path) => path.includes("."))
-            .map((path) => path.split(".")[0]),
-        ),
-      ];
       await client
         .transaction()
         .createIfNotExists({ _id: doc._id, _type: doc._type })
         .patch(doc._id, (p) =>
-          p
-            .setIfMissing(Object.fromEntries(parents.map((key) => [key, {}])))
-            .setIfMissing(patch),
+          p.setIfMissing(parentObjects(patch)).setIfMissing(patch),
         )
         .commit();
       console.log(`  ✓ committed`);
+    }
+
+    // A draft shadows the published document in the Studio — editors would
+    // see the draft, not the seeded content (and publishing it would wipe
+    // the seed). An EMPTY draft (system fields only) holds nothing, so it's
+    // discarded. A draft WITH content is never deleted: it gets the same
+    // fill-only-missing treatment, so its edits survive.
+    const draftId = `drafts.${doc._id}`;
+    const draft = await client.getDocument(draftId);
+    if (draft) {
+      const hasContent = Object.keys(draft).some((key) => !key.startsWith("_"));
+      if (!hasContent) {
+        console.log(
+          `  draft ${draftId} is empty — ${APPLY ? "discarded" : "would be discarded"} (it hides the published page in /admin)`,
+        );
+        if (APPLY) await client.delete(draftId);
+      } else {
+        console.log(`  draft ${draftId} has content — filling only its missing fields:`);
+        const draftPatch = await missingFields(doc, draft, "    ");
+        if (APPLY && Object.keys(draftPatch).length > 0) {
+          await client
+            .patch(draftId)
+            .setIfMissing(parentObjects(draftPatch))
+            .setIfMissing(draftPatch)
+            .commit();
+          console.log(`    ✓ committed`);
+        }
+      }
     }
 
     console.log("");
